@@ -53,5 +53,8 @@ module.exports = (env, argv) => ({
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/index.html')
     })
-  ]
+  ],
+  devServer: {
+    historyApiFallback: true
+  }
 });

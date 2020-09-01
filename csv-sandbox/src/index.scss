@@ -4,3 +4,9 @@ body {
   height: 100%;
   padding: 0px;
 }
+
+#root {
+  position: relative;
+  height: 100%;
+  z-index: 0; // reset stacking order
+}
