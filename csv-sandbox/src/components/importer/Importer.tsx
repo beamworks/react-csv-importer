@@ -1,31 +1,24 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-  dropZone: {
-    border: `4px dashed ${theme.palette.primary.main}`,
-    borderRadius: 5,
-    background: theme.palette.grey.A100,
-    padding: theme.spacing(8),
-    textAlign: 'center',
-
-    '&[data-active=true]': {
-      background: theme.palette.secondary.light,
-      color: theme.palette.secondary.contrastText,
-      transition: 'background 0.1s ease-out'
-    }
-  }
-}));
+import { FileSelector } from './FileSelector';
 
 export const Importer: React.FC = () => {
-  const styles = useStyles();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
+  const fileHandler = useCallback((file: File) => {
+    setSelectedFile(file);
+  }, []);
 
-    Papa.parse(file, {
+  useEffect(() => {
+    // ignore if nothing to do
+    if (selectedFile === null) {
+      return;
+    }
+
+    Papa.parse(selectedFile, {
       preview: 5,
       skipEmptyLines: true,
       error: (error) => console.error('PapaParse error', error.message),
@@ -33,23 +26,13 @@ export const Importer: React.FC = () => {
         console.log(results);
       }
     });
-  }, []);
+  }, [selectedFile]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  return (
-    <div
-      className={styles.dropZone}
-      data-active={!!isDragActive}
-      {...getRootProps()}
-    >
-      <input {...getInputProps()} />
-
-      {isDragActive ? (
-        <span>Drop the files here ...</span>
-      ) : (
-        <span>Drag 'n' drop some files here, or click to select files</span>
-      )}
+  return selectedFile === null ? (
+    <FileSelector onSelected={fileHandler} />
+  ) : (
+    <div>
+      Parsing <i>{selectedFile.name}</i>
     </div>
   );
 };
