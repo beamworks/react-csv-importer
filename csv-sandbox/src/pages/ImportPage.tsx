@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -21,8 +22,17 @@ const useStyles = makeStyles((theme) => ({
 export const ImportPage: React.FC = () => {
   const styles = useStyles();
 
-  const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+
+    Papa.parse(file, {
+      preview: 5,
+      skipEmptyLines: true,
+      error: (error) => console.error('PapaParse error', error.message),
+      complete: function (results) {
+        console.log(results);
+      }
+    });
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
