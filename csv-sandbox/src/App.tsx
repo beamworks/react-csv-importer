@@ -9,6 +9,7 @@ import {
 import { AppTheme } from './components/AppTheme';
 import { PageLayout } from './components/PageLayout';
 import { HomePage } from './pages/HomePage';
+import { ImportPage } from './pages/ImportPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const AppRoutes: React.FC = React.memo(() => {
@@ -16,6 +17,7 @@ const AppRoutes: React.FC = React.memo(() => {
     <Switch>
       <Redirect exact from="/" to="/home" />
       <Route path="/home" component={HomePage} />
+      <Route path="/import" component={ImportPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
