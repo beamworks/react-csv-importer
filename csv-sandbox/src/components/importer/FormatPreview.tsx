@@ -22,7 +22,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 const useStyles = makeStyles((theme) => ({
   rawPreview: {
-    height: theme.spacing(10),
+    height: theme.spacing(12),
     borderRadius: theme.shape.borderRadius,
     background: theme.palette.primary.dark,
     color: theme.palette.primary.contrastText,
@@ -34,8 +34,19 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.fontSize,
 
     '& > aside': {
+      display: 'inline-block',
+      marginLeft: theme.spacing(0.5),
+      padding: `0 0.25em`,
+      borderRadius: theme.shape.borderRadius / 2,
+      background: theme.palette.primary.contrastText,
+      color: theme.palette.primary.dark,
+      fontSize: '0.75em',
       opacity: 0.75
     }
+  },
+  tableCell: {
+    fontSize: '0.75em',
+    whiteSpace: 'nowrap'
   },
   mainHeader: {
     display: 'flex',
@@ -146,6 +157,8 @@ const RawPreview: React.FC<{ chunk: string }> = React.memo(({ chunk }) => {
 
 const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
   ({ rows }) => {
+    const styles = useStyles();
+
     return (
       <TableContainer component={Paper}>
         <Table size="small">
@@ -153,7 +166,7 @@ const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
             {rows.map((row, rowIndex) => (
               <TableRow key={rowIndex}>
                 {row.map((item, itemIndex) => (
-                  <TableCell key={itemIndex}>
+                  <TableCell key={itemIndex} className={styles.tableCell}>
                     {typeof item !== 'string' ? null : item}
                   </TableCell>
                 ))}
@@ -221,7 +234,7 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
       <>
         <div className={styles.mainResultBlock}>
           <Typography variant="overline" color="textSecondary">
-            Source Data
+            Raw Data
           </Typography>
           <RawPreview chunk={preview.firstChunk} />
         </div>
