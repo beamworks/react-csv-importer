@@ -7,11 +7,67 @@ import React, {
 } from 'react';
 import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import IconButton from '@material-ui/core/IconButton';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Paper from '@material-ui/core/Paper';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+  rawPreview: {
+    height: theme.spacing(10),
+    borderRadius: theme.shape.borderRadius,
+    background: theme.palette.primary.dark,
+    color: theme.palette.primary.contrastText,
+    overflow: 'auto'
+  },
+  rawPreviewPre: {
+    margin: 0, // override default
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    fontSize: theme.typography.fontSize,
+
+    '& > aside': {
+      opacity: 0.75
+    }
+  },
+  mainHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: -theme.spacing(2)
+  },
+  mainError: {
+    borderRadius: theme.shape.borderRadius,
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    background: theme.palette.error.main,
+    fontSize: theme.typography.fontSize,
+    color: theme.palette.error.contrastText
+  },
+  mainResultBlock: {
+    marginTop: theme.spacing(2)
+  },
+  mainPendingBlock: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(4),
+    color: theme.palette.text.secondary
+  },
+  mainFileName: {
+    fontWeight: 'bold',
+    color: theme.palette.text.primary
+  }
+}));
 
 const MAX_ROWS = 5;
+const RAW_PREVIEW_SIZE = 500;
 
 type PreviewResults =
   | {
@@ -73,18 +129,39 @@ function parsePreview(file: File): Promise<PreviewResults> {
   });
 }
 
+const RawPreview: React.FC<{ chunk: string }> = React.memo(({ chunk }) => {
+  const styles = useStyles();
+  const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
+  const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
+
+  return (
+    <div className={styles.rawPreview}>
+      <pre className={styles.rawPreviewPre}>
+        {chunkSlice}
+        {chunkHasMore && <aside>...</aside>}
+      </pre>
+    </div>
+  );
+});
+
 const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
   ({ rows }) => {
-    const firstRow = rows[0].map((item) =>
-      typeof item !== 'string' ? '' : item
-    );
-
     return (
-      <ul>
-        {firstRow.map((item, itemIndex) => (
-          <li key={itemIndex}>{item}</li>
-        ))}
-      </ul>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableBody>
+            {rows.map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {row.map((item, itemIndex) => (
+                  <TableCell key={itemIndex}>
+                    {typeof item !== 'string' ? null : item}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 );
@@ -99,7 +176,7 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
   onCancelRef.current = onCancel;
 
   const cancelClickHandler = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       onCancelRef.current();
     },
     []
@@ -141,33 +218,47 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
     }
 
     return (
-      <div>
-        <div>
-          Data preview:
-          <pre>{preview.firstChunk.slice(0, 100)}</pre>
+      <>
+        <div className={styles.mainResultBlock}>
+          <Typography variant="overline" color="textSecondary">
+            Source Data
+          </Typography>
+          <RawPreview chunk={preview.firstChunk} />
         </div>
-        <div>
-          {preview.parseWarning ? (
-            <div>
+        {preview.parseWarning ? (
+          <div className={styles.mainResultBlock}>
+            <div className={styles.mainError}>
               {preview.parseWarning.message}: please check data formatting
             </div>
-          ) : (
-            <div>
-              <DataRowPreview rows={preview.firstRows} />
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        ) : (
+          <div className={styles.mainResultBlock}>
+            <Typography variant="overline" color="textSecondary">
+              Preview Import
+            </Typography>
+            <DataRowPreview rows={preview.firstRows} />
+          </div>
+        )}
+      </>
     );
-  }, [preview]);
+  }, [styles, preview]);
 
   return (
-    <div>
-      Importing file <i>{file.name}</i>{' '}
-      <Link href="#" onClick={cancelClickHandler}>
-        Go back
-      </Link>
-      {report || <div>Parsing...</div>}
-    </div>
+    <Card variant="outlined">
+      <CardContent>
+        <div className={styles.mainHeader}>
+          <IconButton onClick={cancelClickHandler}>
+            <ChevronLeftIcon />
+          </IconButton>
+          <Typography variant="subtitle1" color="textPrimary" noWrap>
+            {file.name}
+          </Typography>
+        </div>
+
+        {report || (
+          <div className={styles.mainPendingBlock}>Loading preview...</div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
