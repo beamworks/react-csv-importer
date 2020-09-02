@@ -39,6 +39,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
       });
     }
 
+    // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
       preview: MAX_ROWS,
       skipEmptyLines: true,
