@@ -41,6 +41,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
 
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
+      chunkSize: 20000,
       preview: MAX_ROWS,
       skipEmptyLines: true,
       error: (error) => {
@@ -51,17 +52,21 @@ function parsePreview(file: File): Promise<PreviewResults> {
       beforeFirstChunk: (chunk) => {
         firstChunk = chunk;
       },
-      step: ({ data, errors }) => {
-        rowAccumulator.push(data);
+      chunk: ({ data, errors }, parser) => {
+        data.forEach((row) => {
+          rowAccumulator.push(row as unknown[]);
+        });
 
         if (errors.length > 0 && !firstWarning) {
           firstWarning = errors[0];
         }
 
-        // finish if parsing stops here (PP does not call done then)
-        if (rowAccumulator.length === MAX_ROWS) {
-          reportSuccess();
+        // finish parsing after first chunk
+        if (rowAccumulator.length < MAX_ROWS) {
+          parser.abort();
         }
+
+        reportSuccess();
       },
       complete: reportSuccess
     });
@@ -135,8 +140,6 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
       );
     }
 
-    console.log(preview.parseWarning);
-
     return (
       <div>
         <div>
@@ -144,8 +147,10 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
           <pre>{preview.firstChunk.slice(0, 100)}</pre>
         </div>
         <div>
-          {preview.parseWarning && preview.parseWarning.type === 'Delimiter' ? (
-            <div>Could not detect delimiter: please check data formatting</div>
+          {preview.parseWarning ? (
+            <div>
+              {preview.parseWarning.message}: please check data formatting
+            </div>
           ) : (
             <div>
               <DataRowPreview rows={preview.firstRows} />
