@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState
+} from 'react';
 import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
@@ -47,7 +53,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
       step: ({ data, errors }) => {
         rowAccumulator.push(data);
 
-        if (errors.length > 0 && firstWarning === null) {
+        if (errors.length > 0 && !firstWarning) {
           firstWarning = errors[0];
         }
 
@@ -60,6 +66,22 @@ function parsePreview(file: File): Promise<PreviewResults> {
     });
   });
 }
+
+const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
+  ({ rows }) => {
+    const firstRow = rows[0].map((item) =>
+      typeof item !== 'string' ? '' : item
+    );
+
+    return (
+      <ul>
+        {firstRow.map((item, itemIndex) => (
+          <li key={itemIndex}>{item}</li>
+        ))}
+      </ul>
+    );
+  }
+);
 
 export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
   file,
@@ -99,20 +121,47 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
     };
   }, [file]);
 
+  const report = useMemo(() => {
+    if (!preview) {
+      return null;
+    }
+
+    if (preview.parseError) {
+      return (
+        <div>
+          Parse error: <b>{preview.parseError.message}</b>
+        </div>
+      );
+    }
+
+    console.log(preview.parseWarning);
+
+    return (
+      <div>
+        <div>
+          Data preview:
+          <pre>{preview.firstChunk.slice(0, 100)}</pre>
+        </div>
+        <div>
+          {preview.parseWarning && preview.parseWarning.type === 'Delimiter' ? (
+            <div>Could not detect delimiter: please check data formatting</div>
+          ) : (
+            <div>
+              <DataRowPreview rows={preview.firstRows} />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }, [preview]);
+
   return (
     <div>
       Importing file <i>{file.name}</i>{' '}
       <Link href="#" onClick={cancelClickHandler}>
         Go back
       </Link>
-      {preview === null ? (
-        <div>Parsing...</div>
-      ) : (
-        <div>
-          Data preview:
-          <pre>{!preview.parseError && preview.firstChunk.slice(0, 100)}</pre>
-        </div>
-      )}
+      {report || <div>Parsing...</div>}
     </div>
   );
 };
