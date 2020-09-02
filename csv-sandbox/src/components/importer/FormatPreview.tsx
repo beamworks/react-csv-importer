@@ -9,6 +9,7 @@ import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -18,10 +19,19 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
   rawPreview: {
+    flex: '1 1 0', // avoid stretching to internal width
+    width: 0
+  },
+  rawPreviewScroll: {
+    marginBottom: theme.spacing(2),
     height: theme.spacing(12),
     borderRadius: theme.shape.borderRadius,
     background: theme.palette.primary.dark,
@@ -44,6 +54,25 @@ const useStyles = makeStyles((theme) => ({
       opacity: 0.75
     }
   },
+  errorWithButton: {
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: theme.shape.borderRadius,
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    background: theme.palette.error.main,
+    fontSize: theme.typography.fontSize,
+    color: theme.palette.error.contrastText,
+
+    '& > span': {
+      flex: '1 1 0',
+      marginRight: theme.spacing(2),
+      wordBreak: 'break-word'
+    },
+
+    '& > button': {
+      flex: 'none'
+    }
+  },
   tableCell: {
     fontSize: '0.75em',
     whiteSpace: 'nowrap'
@@ -52,13 +81,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     margin: -theme.spacing(2)
-  },
-  mainError: {
-    borderRadius: theme.shape.borderRadius,
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.error.main,
-    fontSize: theme.typography.fontSize,
-    color: theme.palette.error.contrastText
   },
   mainResultBlock: {
     marginTop: theme.spacing(2)
@@ -70,6 +92,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     padding: theme.spacing(4),
     color: theme.palette.text.secondary
+  },
+  mainPanelSummary: {
+    // extra selector to override specificity
+    '&[aria-expanded=true]': {
+      minHeight: 0 // condensed appearance
+    },
+
+    '& > div:first-child': {
+      margin: 0 // condensed appearance
+    }
   },
   mainFileName: {
     fontWeight: 'bold',
@@ -88,11 +120,12 @@ type PreviewResults =
       firstRows: unknown[][];
     }
   | {
-      parseError: Papa.ParseError;
+      parseError: Error | Papa.ParseError;
     };
 
 function parsePreview(file: File): Promise<PreviewResults> {
-  return new Promise((resolve) => {
+  // wrap synchronous errors in promise
+  return new Promise<PreviewResults>((resolve) => {
     let firstChunk: string | null = null;
     let firstWarning: Papa.ParseError | undefined = undefined;
     const rowAccumulator: unknown[][] = [];
@@ -137,20 +170,39 @@ function parsePreview(file: File): Promise<PreviewResults> {
       },
       complete: reportSuccess
     });
+  }).catch(() => {
+    return {
+      parseError: new Error('Internal error while generating preview')
+    };
   });
 }
 
-const RawPreview: React.FC<{ chunk: string }> = React.memo(({ chunk }) => {
+const RawPreview: React.FC<{
+  chunk: string;
+  warning?: Papa.ParseError;
+  onCancelClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}> = React.memo(({ chunk, warning, onCancelClick }) => {
   const styles = useStyles();
   const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
   const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
 
   return (
     <div className={styles.rawPreview}>
-      <pre className={styles.rawPreviewPre}>
-        {chunkSlice}
-        {chunkHasMore && <aside>...</aside>}
-      </pre>
+      <div className={styles.rawPreviewScroll}>
+        <pre className={styles.rawPreviewPre}>
+          {chunkSlice}
+          {chunkHasMore && <aside>...</aside>}
+        </pre>
+      </div>
+
+      {warning ? (
+        <div className={styles.errorWithButton}>
+          <span>{warning.message}: please check data formatting</span>
+          <Button size="small" variant="contained" onClick={onCancelClick}>
+            Go Back
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 });
@@ -196,6 +248,8 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
   );
 
   const [preview, setPreview] = useState<PreviewResults | null>(null);
+  const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
+  const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -207,6 +261,10 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
       if (oplock !== asyncLockRef.current) {
         return;
       }
+
+      // pre-open appropriate panel before rendering results
+      setPanelRawActive(!results.parseError && !!results.parseWarning);
+      setPanelDataActive(!results.parseError && !results.parseWarning);
 
       setPreview(results);
     });
@@ -224,37 +282,67 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
 
     if (preview.parseError) {
       return (
-        <div>
-          Parse error: <b>{preview.parseError.message}</b>
+        <div className={styles.mainResultBlock}>
+          <div className={styles.errorWithButton}>
+            <span>
+              Import error: <b>{preview.parseError.message}</b>
+            </span>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={cancelClickHandler}
+            >
+              Go Back
+            </Button>
+          </div>
         </div>
       );
     }
 
     return (
-      <>
-        <div className={styles.mainResultBlock}>
-          <Typography variant="overline" color="textSecondary">
-            Raw Data
-          </Typography>
-          <RawPreview chunk={preview.firstChunk} />
-        </div>
-        {preview.parseWarning ? (
-          <div className={styles.mainResultBlock}>
-            <div className={styles.mainError}>
-              {preview.parseWarning.message}: please check data formatting
-            </div>
-          </div>
-        ) : (
-          <div className={styles.mainResultBlock}>
-            <Typography variant="overline" color="textSecondary">
-              Preview Import
+      <div className={styles.mainResultBlock}>
+        <Accordion
+          expanded={panelRawActive}
+          onChange={() => setPanelRawActive(!panelRawActive)}
+        >
+          <AccordionSummary
+            className={styles.mainPanelSummary}
+            expandIcon={<ExpandMoreIcon />}
+          >
+            <Typography variant="subtitle1" color="textSecondary">
+              File Contents
             </Typography>
-            <DataRowPreview rows={preview.firstRows} />
-          </div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RawPreview
+              chunk={preview.firstChunk}
+              warning={preview.parseWarning}
+              onCancelClick={cancelClickHandler}
+            />
+          </AccordionDetails>
+        </Accordion>
+
+        {preview.parseWarning ? null : (
+          <Accordion
+            expanded={panelDataActive}
+            onChange={() => setPanelDataActive(!panelDataActive)}
+          >
+            <AccordionSummary
+              className={styles.mainPanelSummary}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography variant="subtitle1" color="textSecondary">
+                Preview Import
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <DataRowPreview rows={preview.firstRows} />
+            </AccordionDetails>
+          </Accordion>
         )}
-      </>
+      </div>
     );
-  }, [styles, preview]);
+  }, [styles, preview, panelRawActive, panelDataActive, cancelClickHandler]);
 
   return (
     <Card variant="outlined">
