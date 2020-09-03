@@ -22,6 +22,7 @@ import TableCell from '@material-ui/core/TableCell';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionActions from '@material-ui/core/AccordionActions';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -112,13 +113,16 @@ const useStyles = makeStyles((theme) => ({
 const MAX_ROWS = 5;
 const RAW_PREVIEW_SIZE = 500;
 
+export interface PreviewInfo {
+  parseWarning?: Papa.ParseError;
+  firstChunk: string;
+  firstRows: unknown[][];
+}
+
 type PreviewResults =
-  | {
+  | ({
       parseError: undefined;
-      parseWarning?: Papa.ParseError;
-      firstChunk: string;
-      firstRows: unknown[][];
-    }
+    } & PreviewInfo)
   | {
       parseError: Error | Papa.ParseError;
     };
@@ -231,25 +235,34 @@ const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
   }
 );
 
-export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
-  file,
-  onCancel
-}) => {
+export const FormatPreview: React.FC<{
+  file: File;
+  onAccept: (preview: PreviewInfo) => void;
+  onCancel: () => void;
+}> = ({ file, onAccept, onCancel }) => {
   const styles = useStyles();
 
   const onCancelRef = useRef(onCancel);
   onCancelRef.current = onCancel;
 
-  const cancelClickHandler = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      onCancelRef.current();
-    },
-    []
-  );
+  const cancelClickHandler = useCallback(() => {
+    onCancelRef.current();
+  }, []);
 
   const [preview, setPreview] = useState<PreviewResults | null>(null);
   const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
   const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
+
+  const onAcceptRef = useRef(onAccept);
+  onAcceptRef.current = onAccept;
+
+  const acceptClickHandler = useCallback(() => {
+    if (!preview || preview.parseError) {
+      throw new Error('unexpected missing preview info');
+    }
+
+    onAcceptRef.current(preview);
+  }, [preview]);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -310,7 +323,7 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
             expandIcon={<ExpandMoreIcon />}
           >
             <Typography variant="subtitle1" color="textSecondary">
-              File Contents
+              File Format
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -338,6 +351,16 @@ export const FormatPreview: React.FC<{ file: File; onCancel: () => void }> = ({
             <AccordionDetails>
               <DataRowPreview rows={preview.firstRows} />
             </AccordionDetails>
+            <AccordionActions>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                onClick={acceptClickHandler}
+              >
+                Next
+              </Button>
+            </AccordionActions>
           </Accordion>
         )}
       </div>
