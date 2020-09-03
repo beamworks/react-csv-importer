@@ -64,7 +64,12 @@ const useStyles = makeStyles((theme) => ({
   },
   columnTargetPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.grey.A100
+    background: theme.palette.grey.A100,
+
+    '&[data-dropped=true]': {
+      background: theme.palette.primary.light,
+      color: theme.palette.primary.contrastText
+    }
   },
   dragChip: {
     position: 'absolute',
@@ -80,7 +85,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: -4
   },
   dragChipPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    opacity: 0.75
   }
 }));
 
@@ -94,8 +100,10 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
   const [dragState, setDragState] = useState<{
     xy: number[];
     fieldIndex: number;
+    dropColumnIndex: number | null;
   } | null>(null);
 
+  // @todo wrap in a no-events overlay to clip against screen edges
   const dragChipRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal = dragState
     ? createPortal(
@@ -115,7 +123,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
       event.preventDefault();
 
       const fieldIndex = args[0] as number;
-      setDragState({ xy, fieldIndex });
+      setDragState({ xy, fieldIndex, dropColumnIndex: null });
     } else if (last) {
       setDragState(null);
     }
@@ -129,16 +137,15 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
   }, {});
 
   // set up initial position
+  const initialXY = dragState && dragState.xy;
   useLayoutEffect(() => {
-    if (!dragState || !dragChipRef.current) {
+    if (!initialXY || !dragChipRef.current) {
       return;
     }
 
-    const { xy } = dragState;
-
-    dragChipRef.current.style.left = `${xy[0]}px`;
-    dragChipRef.current.style.top = `${xy[1]}px`;
-  }, [dragState]);
+    dragChipRef.current.style.left = `${initialXY[0]}px`;
+    dragChipRef.current.style.top = `${initialXY[1]}px`;
+  }, [initialXY]);
 
   return (
     <Card variant="outlined">
@@ -179,14 +186,55 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {firstRow.map((column, columnIndex) => {
+            const mouseEnterHandler = dragState
+              ? () => {
+                  setDragState((prev) => {
+                    if (!prev) {
+                      return prev;
+                    }
+
+                    return {
+                      ...prev,
+                      dropColumnIndex: columnIndex
+                    };
+                  });
+                }
+              : undefined;
+
+            const mouseLeaveHandler = dragState
+              ? () => {
+                  setDragState((prev) => {
+                    if (!prev || prev.dropColumnIndex !== columnIndex) {
+                      return prev;
+                    }
+
+                    return {
+                      ...prev,
+                      dropColumnIndex: null
+                    };
+                  });
+                }
+              : undefined;
+
+            const dropField =
+              dragState && dragState.dropColumnIndex === columnIndex
+                ? fields[dragState.fieldIndex]
+                : null;
+
             return (
-              <div className={styles.columnChip} key={columnIndex}>
+              <div
+                className={styles.columnChip}
+                key={columnIndex}
+                onMouseEnter={mouseEnterHandler}
+                onMouseLeave={mouseLeaveHandler}
+              >
                 <Paper className={styles.columnChipPaper} variant="outlined">
                   <Paper
                     className={styles.columnTargetPaper}
                     variant="outlined"
+                    data-dropped={!!dropField}
                   >
-                    --
+                    {dropField ? dropField.label : '--'}
                   </Paper>
 
                   <div className={styles.columnLabel}>Col {columnIndex}</div>
