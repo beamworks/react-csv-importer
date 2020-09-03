@@ -30,5 +30,5 @@ export const Importer: React.FC = () => {
     );
   }
 
-  return <ColumnPicker />;
+  return <ColumnPicker preview={preview} />;
 };
