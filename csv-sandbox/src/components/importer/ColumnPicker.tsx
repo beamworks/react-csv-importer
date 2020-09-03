@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
@@ -61,6 +62,16 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
   const firstRow = preview.firstRows[0];
 
+  const bindDrag = useDrag(({ first, last, event }) => {
+    if (first && event) {
+      event.preventDefault();
+
+      console.log('start');
+    } else if (last) {
+      console.log('end');
+    }
+  }, {});
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -73,7 +84,11 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         <div>
           {fields.map((field, fieldIndex) => {
             return (
-              <div className={styles.fieldChip} key={fieldIndex}>
+              <div
+                className={styles.fieldChip}
+                key={fieldIndex}
+                {...bindDrag()}
+              >
                 <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
               </div>
             );

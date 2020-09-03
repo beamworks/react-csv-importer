@@ -32,6 +32,7 @@
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.0.3",
     "react-router-dom": "^5.2.0",
+    "react-use-gesture": "^7.0.16",
     "sass": "^1.26.10",
     "sass-loader": "^10.0.1",
     "style-loader": "^1.2.1",
