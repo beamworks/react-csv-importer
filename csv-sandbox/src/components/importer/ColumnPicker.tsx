@@ -42,6 +42,11 @@ const useStyles = makeStyles((theme) => ({
   fieldChipPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
   },
+  fieldChipPaperDragged: {
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    background: theme.palette.grey.A100,
+    color: theme.palette.grey.A100 // hide text
+  },
   columnChip: {
     display: 'inline-block',
     marginRight: theme.spacing(1),
@@ -65,9 +70,14 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: 0,
     left: 0,
+    height: 0,
+    pointerEvents: 'none'
+  },
+  dragChipOffset: {
+    position: 'absolute',
     width: 200,
-    marginLeft: -100,
-    marginTop: 4
+    left: -100,
+    bottom: -4
   },
   dragChipPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
@@ -81,23 +91,31 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
   const firstRow = preview.firstRows[0];
 
-  const [dragState, setDragState] = useState<{ xy: number[] } | null>(null);
+  const [dragState, setDragState] = useState<{
+    xy: number[];
+    fieldIndex: number;
+  } | null>(null);
 
   const dragChipRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal = dragState
     ? createPortal(
         <div className={styles.dragChip} ref={dragChipRef}>
-          <Paper className={styles.dragChipPaper}>Field</Paper>
+          <div className={styles.dragChipOffset}>
+            <Paper className={styles.dragChipPaper}>
+              {fields[dragState.fieldIndex].label}
+            </Paper>
+          </div>
         </div>,
         document.body
       )
     : null;
 
-  const bindDrag = useDrag(({ first, last, event, xy }) => {
+  const bindDrag = useDrag(({ first, last, event, xy, args }) => {
     if (first && event) {
       event.preventDefault();
 
-      setDragState({ xy });
+      const fieldIndex = args[0] as number;
+      setDragState({ xy, fieldIndex });
     } else if (last) {
       setDragState(null);
     }
@@ -105,6 +123,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     if (!dragChipRef.current) {
       return;
     }
+
     dragChipRef.current.style.left = `${xy[0]}px`;
     dragChipRef.current.style.top = `${xy[1]}px`;
   }, {});
@@ -134,13 +153,23 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {fields.map((field, fieldIndex) => {
+            const isDragged = dragState
+              ? fieldIndex === dragState.fieldIndex
+              : false;
+
             return (
               <div
                 className={styles.fieldChip}
                 key={fieldIndex}
-                {...bindDrag()}
+                {...bindDrag(fieldIndex)}
               >
-                <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
+                {isDragged ? (
+                  <Paper className={styles.fieldChipPaperDragged} elevation={0}>
+                    {field.label}
+                  </Paper>
+                ) : (
+                  <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
+                )}
               </div>
             );
           })}
