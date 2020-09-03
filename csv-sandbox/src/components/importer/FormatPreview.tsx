@@ -116,7 +116,7 @@ const RAW_PREVIEW_SIZE = 500;
 export interface PreviewInfo {
   parseWarning?: Papa.ParseError;
   firstChunk: string;
-  firstRows: unknown[][];
+  firstRows: string[][];
 }
 
 type PreviewResults =
@@ -132,7 +132,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
   return new Promise<PreviewResults>((resolve) => {
     let firstChunk: string | null = null;
     let firstWarning: Papa.ParseError | undefined = undefined;
-    const rowAccumulator: unknown[][] = [];
+    const rowAccumulator: string[][] = [];
 
     function reportSuccess() {
       resolve({
@@ -158,7 +158,11 @@ function parsePreview(file: File): Promise<PreviewResults> {
       },
       chunk: ({ data, errors }, parser) => {
         data.forEach((row) => {
-          rowAccumulator.push(row as unknown[]);
+          rowAccumulator.push(
+            (row as unknown[]).map((item) =>
+              typeof item === 'string' ? item : ''
+            )
+          );
         });
 
         if (errors.length > 0 && !firstWarning) {
@@ -211,7 +215,7 @@ const RawPreview: React.FC<{
   );
 });
 
-const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
+const DataRowPreview: React.FC<{ rows: string[][] }> = React.memo(
   ({ rows }) => {
     const styles = useStyles();
 
@@ -223,7 +227,7 @@ const DataRowPreview: React.FC<{ rows: unknown[][] }> = React.memo(
               <TableRow key={rowIndex}>
                 {row.map((item, itemIndex) => (
                   <TableCell key={itemIndex} className={styles.tableCell}>
-                    {typeof item !== 'string' ? null : item}
+                    {item}
                   </TableCell>
                 ))}
               </TableRow>
