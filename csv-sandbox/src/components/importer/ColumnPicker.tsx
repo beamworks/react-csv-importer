@@ -1,4 +1,12 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+  useEffect
+} from 'react';
+import { createPortal } from 'react-dom';
 import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -52,6 +60,17 @@ const useStyles = makeStyles((theme) => ({
   columnTargetPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     background: theme.palette.grey.A100
+  },
+  dragChip: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 200,
+    marginLeft: -100,
+    marginTop: 4
+  },
+  dragChipPaper: {
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
   }
 }));
 
@@ -62,20 +81,52 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
   const firstRow = preview.firstRows[0];
 
-  const bindDrag = useDrag(({ first, last, event }) => {
+  const [dragState, setDragState] = useState<{ xy: number[] } | null>(null);
+
+  const dragChipRef = useRef<HTMLDivElement | null>(null);
+  const dragObjectPortal = dragState
+    ? createPortal(
+        <div className={styles.dragChip} ref={dragChipRef}>
+          <Paper className={styles.dragChipPaper}>Field</Paper>
+        </div>,
+        document.body
+      )
+    : null;
+
+  const bindDrag = useDrag(({ first, last, event, xy }) => {
     if (first && event) {
       event.preventDefault();
 
-      console.log('start');
+      setDragState({ xy });
     } else if (last) {
-      console.log('end');
+      setDragState(null);
     }
+
+    if (!dragChipRef.current) {
+      return;
+    }
+    dragChipRef.current.style.left = `${xy[0]}px`;
+    dragChipRef.current.style.top = `${xy[1]}px`;
   }, {});
+
+  // set up initial position
+  useLayoutEffect(() => {
+    if (!dragState || !dragChipRef.current) {
+      return;
+    }
+
+    const { xy } = dragState;
+
+    dragChipRef.current.style.left = `${xy[0]}px`;
+    dragChipRef.current.style.top = `${xy[1]}px`;
+  }, [dragState]);
 
   return (
     <Card variant="outlined">
       <CardContent>
         <div className={styles.mainHeader}>
+          {dragObjectPortal}
+
           <Typography variant="subtitle1" color="textPrimary" noWrap>
             Choose Columns
           </Typography>
