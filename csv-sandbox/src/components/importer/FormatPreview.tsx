@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   mainFileName: {
-    fontWeight: 'bold',
+    fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
   }
 }));
