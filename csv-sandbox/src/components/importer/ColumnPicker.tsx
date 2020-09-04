@@ -48,8 +48,13 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative', // for action
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     zIndex: 0, // reset stacking context
+    cursor: 'default',
 
-    '&[data-dragged=true]': {
+    '&[data-draggable=true]': {
+      cursor: 'grab'
+    },
+
+    '&[data-shadow=true]': {
       background: theme.palette.grey.A100,
       color: theme.palette.grey.A200 // reduce text
     }
@@ -122,18 +127,21 @@ interface DragState {
   dropFieldIndex: number | null;
 }
 
+// @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   column: Column;
   action: React.ReactElement | null;
-  isShadow: boolean;
-}> = ({ column, action, isShadow }) => {
+  isShadow?: boolean;
+  isDraggable?: boolean;
+}> = ({ column, action, isShadow, isDraggable }) => {
   const styles = useStyles();
 
   return (
     <Paper
       key={isShadow ? 1 : 0} // force re-creation to avoid transition anim
       className={styles.columnCardPaper}
-      data-dragged={!!isShadow}
+      data-shadow={!!isShadow}
+      data-draggable={!!isDraggable}
       elevation={isShadow ? 0 : undefined}
     >
       Col {column.index}
@@ -159,11 +167,7 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragChip} ref={dragChipRef}>
           <div className={styles.dragChipHolder}>
-            <ColumnCard
-              isShadow={false}
-              column={dragState.column}
-              action={null}
-            />
+            <ColumnCard column={dragState.column} action={null} />
           </div>
         </div>,
         document.body
@@ -219,6 +223,7 @@ const SourceChip: React.FC<{
       <ColumnCard
         column={column}
         isShadow={isShadow || isAssigned}
+        isDraggable={!dragState && !isShadow && !isAssigned}
         action={
           isAssigned ? (
             <Button size="small" variant="contained" color="secondary">
