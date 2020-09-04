@@ -98,6 +98,11 @@ const useStyles = makeStyles((theme) => ({
     '&[data-dropped=true]': {
       background: theme.palette.primary.light,
       color: theme.palette.primary.contrastText
+    },
+
+    '& span[data-shadow=true]': {
+      background: theme.palette.grey.A100,
+      color: theme.palette.grey.A200 // reduce text
     }
   },
   dragChip: {
@@ -284,14 +289,15 @@ const TargetArea: React.FC<{
       ? dragState.column
       : null;
 
-  // if currently assigned column is being dragged, pretend it is no longer assigned
-  const activeAssignedColumn =
-    dragState && dragState.column === assignedColumn ? null : assignedColumn;
+  // see if currently assigned column is being dragged again
+  const isReDragged = dragState ? dragState.column === assignedColumn : false;
 
   const eventHandlers = useMemo(
     () =>
-      activeAssignedColumn ? eventBinder(activeAssignedColumn, fieldIndex) : {},
-    [eventBinder, activeAssignedColumn, fieldIndex]
+      assignedColumn && !isReDragged
+        ? eventBinder(assignedColumn, fieldIndex)
+        : {},
+    [eventBinder, assignedColumn, isReDragged, fieldIndex]
   );
 
   // @todo mouse cursor changes to reflect draggable state
@@ -310,8 +316,8 @@ const TargetArea: React.FC<{
         >
           {sourceColumn ? (
             <span>Col {sourceColumn.index}</span>
-          ) : activeAssignedColumn ? (
-            <span>Col {activeAssignedColumn.index}</span>
+          ) : assignedColumn ? (
+            <span data-shadow={!!isReDragged}>Col {assignedColumn.index}</span>
           ) : (
             <span>--</span>
           )}
@@ -384,7 +390,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
   }, {});
 
   const dragHoverHandler = useCallback((fieldIndex: number, isOn: boolean) => {
-    setDragState((prev) => {
+    setDragState((prev): DragState | null => {
       if (!prev) {
         return prev;
       }
@@ -399,7 +405,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         // clear drop target if we are still the current one
         return {
           ...prev,
-          dropColumnIndex: null
+          dropFieldIndex: null
         };
       }
 
