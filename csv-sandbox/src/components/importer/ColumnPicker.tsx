@@ -43,13 +43,21 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     width: 200
   },
-  sourceChipPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
-  },
-  sourceChipPaperDragged: {
+  columnCardPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.grey.A100,
-    color: theme.palette.grey.A100 // hide text
+
+    '&[data-dragged=true]': {
+      background: theme.palette.grey.A100,
+      color: theme.palette.grey.A200 // reduce text
+    }
+  },
+  columnCardValue: {
+    marginTop: theme.spacing(0.5),
+    fontSize: '0.75em',
+
+    '& + div': {
+      marginTop: 0
+    }
   },
   targetChip: {
     display: 'inline-block',
@@ -86,19 +94,45 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     width: 200,
     left: -100,
-    bottom: -4
-  },
-  dragChipPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    opacity: 0.75
+    bottom: -4,
+    opacity: 0.9
   }
 }));
 
+interface Column {
+  index: number;
+  values: string[];
+}
+
 interface DragState {
   initialXY: number[];
-  columnIndex: number;
+  column: Column;
   dropFieldIndex: number | null;
 }
+
+const ColumnCard: React.FC<{ column: Column; isShadow: boolean }> = ({
+  column,
+  isShadow
+}) => {
+  const styles = useStyles();
+
+  return (
+    <Paper
+      key={isShadow ? 1 : 0} // force re-creation to avoid transition anim
+      className={styles.columnCardPaper}
+      data-dragged={!!isShadow}
+      elevation={isShadow ? 0 : undefined}
+    >
+      Col {column.index}
+      <Divider />
+      {column.values.map((value, valueIndex) => (
+        <div key={valueIndex} className={styles.columnCardValue}>
+          {value || '\u00a0'}
+        </div>
+      ))}
+    </Paper>
+  );
+};
 
 function useDragObject(
   dragState: DragState | null
@@ -111,9 +145,7 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragChip} ref={dragChipRef}>
           <div className={styles.dragChipOffset}>
-            <Paper className={styles.dragChipPaper}>
-              Col {dragState.columnIndex}
-            </Paper>
+            <ColumnCard isShadow={false} column={dragState.column} />
           </div>
         </div>,
         document.body
@@ -145,23 +177,17 @@ function useDragObject(
 }
 
 const SourceChip: React.FC<{
-  columnIndex: number;
+  column: Column;
   dragState: DragState | null;
-  eventBinder: (columnIndex: number) => ReturnType<typeof useDrag>;
-}> = ({ columnIndex, dragState, eventBinder }) => {
+  eventBinder: (column: Column) => ReturnType<typeof useDrag>;
+}> = ({ column, dragState, eventBinder }) => {
   const styles = useStyles();
 
-  const isDragged = dragState ? columnIndex === dragState.columnIndex : false;
+  const isShadow = dragState ? column === dragState.column : false;
 
   return (
-    <div className={styles.sourceChip} {...eventBinder(columnIndex)}>
-      {isDragged ? (
-        <Paper className={styles.sourceChipPaperDragged} elevation={0}>
-          Col {columnIndex}
-        </Paper>
-      ) : (
-        <Paper className={styles.sourceChipPaper}>Col {columnIndex}</Paper>
-      )}
+    <div className={styles.sourceChip} {...eventBinder(column)}>
+      <ColumnCard column={column} isShadow={isShadow} />
     </div>
   );
 };
@@ -186,9 +212,9 @@ const TargetArea: React.FC<{
       }
     : undefined;
 
-  const sourceColumnIndex =
+  const sourceColumn =
     dragState && dragState.dropFieldIndex === fieldIndex
-      ? dragState.columnIndex
+      ? dragState.column
       : null;
 
   return (
@@ -201,10 +227,10 @@ const TargetArea: React.FC<{
         <Paper
           className={styles.targetChipIndicatorPaper}
           variant="outlined"
-          data-dropped={sourceColumnIndex !== null}
+          data-dropped={sourceColumn !== null}
         >
-          {sourceColumnIndex !== null ? (
-            <span>Col {sourceColumnIndex}</span>
+          {sourceColumn ? (
+            <span>Col {sourceColumn.index}</span>
           ) : (
             <span>--</span>
           )}
@@ -221,7 +247,14 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 }) => {
   const styles = useStyles();
 
-  const firstRow = preview.firstRows[0];
+  const columns = useMemo<Column[]>(() => {
+    return [...new Array(preview.firstRows[0].length)].map((empty, index) => {
+      return {
+        index,
+        values: preview.firstRows.map((row) => row[index] || '')
+      };
+    });
+  }, [preview]);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
 
@@ -231,8 +264,8 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     if (first && event) {
       event.preventDefault();
 
-      const columnIndex = args[0] as number;
-      setDragState({ initialXY: xy, columnIndex, dropFieldIndex: null });
+      const column = args[0] as Column;
+      setDragState({ initialXY: xy, column, dropFieldIndex: null });
     } else if (last) {
       setDragState(null);
     }
@@ -277,10 +310,10 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         </div>
 
         <div>
-          {firstRow.map((column, columnIndex) => (
+          {columns.map((column, columnIndex) => (
             <SourceChip
               key={columnIndex}
-              columnIndex={columnIndex}
+              column={column}
               dragState={dragState}
               eventBinder={bindDrag}
             />
