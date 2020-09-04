@@ -368,7 +368,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     } else if (last) {
       setDragState(null);
 
-      if (dragState && dragState.dropFieldIndex !== null) {
+      if (dragState) {
         const dropFieldIndex = dragState.dropFieldIndex;
         const droppedColumn = dragState.column;
 
