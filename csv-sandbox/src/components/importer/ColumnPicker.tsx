@@ -9,6 +9,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
@@ -44,12 +45,20 @@ const useStyles = makeStyles((theme) => ({
     width: 150
   },
   columnCardPaper: {
+    position: 'relative', // for action
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    zIndex: 0, // reset stacking context
 
     '&[data-dragged=true]': {
       background: theme.palette.grey.A100,
       color: theme.palette.grey.A200 // reduce text
     }
+  },
+  columnCardAction: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    zIndex: 1 // right above card content
   },
   columnCardValue: {
     marginTop: theme.spacing(0.5),
@@ -113,10 +122,11 @@ interface DragState {
   dropFieldIndex: number | null;
 }
 
-const ColumnCard: React.FC<{ column: Column; isShadow: boolean }> = ({
-  column,
-  isShadow
-}) => {
+const ColumnCard: React.FC<{
+  column: Column;
+  action: React.ReactElement | null;
+  isShadow: boolean;
+}> = ({ column, action, isShadow }) => {
   const styles = useStyles();
 
   return (
@@ -127,6 +137,7 @@ const ColumnCard: React.FC<{ column: Column; isShadow: boolean }> = ({
       elevation={isShadow ? 0 : undefined}
     >
       Col {column.index}
+      {action && <div className={styles.columnCardAction}>{action}</div>}
       <Divider />
       {column.values.map((value, valueIndex) => (
         <div key={valueIndex} className={styles.columnCardValue}>
@@ -148,7 +159,11 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragChip} ref={dragChipRef}>
           <div className={styles.dragChipHolder}>
-            <ColumnCard isShadow={false} column={dragState.column} />
+            <ColumnCard
+              isShadow={false}
+              column={dragState.column}
+              action={null}
+            />
           </div>
         </div>,
         document.body
@@ -200,8 +215,18 @@ const SourceChip: React.FC<{
   ]);
 
   return (
-    <div className={styles.sourceChip} {...eventHandlers}>
-      <ColumnCard column={column} isShadow={isShadow || isAssigned} />
+    <div className={styles.sourceChip} {...(isAssigned ? {} : eventHandlers)}>
+      <ColumnCard
+        column={column}
+        isShadow={isShadow || isAssigned}
+        action={
+          isAssigned ? (
+            <Button size="small" variant="contained" color="secondary">
+              Unassign
+            </Button>
+          ) : null
+        }
+      />
     </div>
   );
 };
