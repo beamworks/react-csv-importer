@@ -90,18 +90,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
-  preview
-}) => {
+interface DragState {
+  initialXY: number[];
+  fieldIndex: number;
+  dropColumnIndex: number | null;
+}
+
+function useDragObject(
+  dragState: DragState | null
+): [React.ReactElement | null, (xy: number[]) => void] {
   const styles = useStyles();
-
-  const firstRow = preview.firstRows[0];
-
-  const [dragState, setDragState] = useState<{
-    xy: number[];
-    fieldIndex: number;
-    dropColumnIndex: number | null;
-  } | null>(null);
 
   // @todo wrap in a no-events overlay to clip against screen edges
   const dragChipRef = useRef<HTMLDivElement | null>(null);
@@ -118,26 +116,8 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
       )
     : null;
 
-  const bindDrag = useDrag(({ first, last, event, xy, args }) => {
-    if (first && event) {
-      event.preventDefault();
-
-      const fieldIndex = args[0] as number;
-      setDragState({ xy, fieldIndex, dropColumnIndex: null });
-    } else if (last) {
-      setDragState(null);
-    }
-
-    if (!dragChipRef.current) {
-      return;
-    }
-
-    dragChipRef.current.style.left = `${xy[0]}px`;
-    dragChipRef.current.style.top = `${xy[1]}px`;
-  }, {});
-
   // set up initial position
-  const initialXY = dragState && dragState.xy;
+  const initialXY = dragState && dragState.initialXY;
   useLayoutEffect(() => {
     if (!initialXY || !dragChipRef.current) {
       return;
@@ -146,6 +126,136 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     dragChipRef.current.style.left = `${initialXY[0]}px`;
     dragChipRef.current.style.top = `${initialXY[1]}px`;
   }, [initialXY]);
+
+  // live position updates without state changes
+  const dragUpdateHandler = useCallback((xy: number[]) => {
+    if (!dragChipRef.current) {
+      return;
+    }
+
+    dragChipRef.current.style.left = `${xy[0]}px`;
+    dragChipRef.current.style.top = `${xy[1]}px`;
+  }, []);
+
+  return [dragObjectPortal, dragUpdateHandler];
+}
+
+const FieldChip: React.FC<{
+  fieldIndex: number;
+  dragState: DragState | null;
+  eventBinder: (fieldIndex: number) => ReturnType<typeof useDrag>;
+}> = ({ fieldIndex, dragState, eventBinder }) => {
+  const styles = useStyles();
+
+  const field = fields[fieldIndex];
+  const isDragged = dragState ? fieldIndex === dragState.fieldIndex : false;
+
+  return (
+    <div className={styles.fieldChip} {...eventBinder(fieldIndex)}>
+      {isDragged ? (
+        <Paper className={styles.fieldChipPaperDragged} elevation={0}>
+          {field.label}
+        </Paper>
+      ) : (
+        <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
+      )}
+    </div>
+  );
+};
+
+const ColumnArea: React.FC<{
+  columnIndex: number;
+  dragState: DragState | null;
+  onHover: (columnIndex: number, isOn: boolean) => void;
+}> = ({ columnIndex, dragState, onHover }) => {
+  const styles = useStyles();
+
+  const mouseEnterHandler = dragState
+    ? () => {
+        onHover(columnIndex, true);
+      }
+    : undefined;
+
+  const mouseLeaveHandler = dragState
+    ? () => {
+        onHover(columnIndex, false);
+      }
+    : undefined;
+
+  const dropField =
+    dragState && dragState.dropColumnIndex === columnIndex
+      ? fields[dragState.fieldIndex]
+      : null;
+
+  return (
+    <div
+      className={styles.columnChip}
+      onMouseEnter={mouseEnterHandler}
+      onMouseLeave={mouseLeaveHandler}
+    >
+      <Paper className={styles.columnChipPaper} variant="outlined">
+        <Paper
+          className={styles.columnTargetPaper}
+          variant="outlined"
+          data-dropped={!!dropField}
+        >
+          {dropField ? dropField.label : '--'}
+        </Paper>
+
+        <div className={styles.columnLabel}>Col {columnIndex}</div>
+      </Paper>
+    </div>
+  );
+};
+
+export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
+  preview
+}) => {
+  const styles = useStyles();
+
+  const firstRow = preview.firstRows[0];
+
+  const [dragState, setDragState] = useState<DragState | null>(null);
+
+  const [dragObjectPortal, dragUpdateHandler] = useDragObject(dragState);
+
+  const bindDrag = useDrag(({ first, last, event, xy, args }) => {
+    if (first && event) {
+      event.preventDefault();
+
+      const fieldIndex = args[0] as number;
+      setDragState({ initialXY: xy, fieldIndex, dropColumnIndex: null });
+    } else if (last) {
+      setDragState(null);
+    }
+
+    dragUpdateHandler(xy);
+  }, {});
+
+  const dragHoverHandler = useCallback((columnIndex: number, isOn: boolean) => {
+    setDragState((prev) => {
+      if (!prev) {
+        return prev;
+      }
+
+      if (isOn) {
+        // set the new drop target
+        return {
+          ...prev,
+          dropColumnIndex: columnIndex
+        };
+      } else if (prev.dropColumnIndex === columnIndex) {
+        // clear drop target if we are still the current one
+        return {
+          ...prev,
+          dropColumnIndex: null
+        };
+      }
+
+      // no changes by default
+      return prev;
+    });
+  }, []);
 
   return (
     <Card variant="outlined">
@@ -159,89 +269,27 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         </div>
 
         <div>
-          {fields.map((field, fieldIndex) => {
-            const isDragged = dragState
-              ? fieldIndex === dragState.fieldIndex
-              : false;
-
-            return (
-              <div
-                className={styles.fieldChip}
-                key={fieldIndex}
-                {...bindDrag(fieldIndex)}
-              >
-                {isDragged ? (
-                  <Paper className={styles.fieldChipPaperDragged} elevation={0}>
-                    {field.label}
-                  </Paper>
-                ) : (
-                  <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
-                )}
-              </div>
-            );
-          })}
+          {fields.map((field, fieldIndex) => (
+            <FieldChip
+              key={fieldIndex}
+              fieldIndex={fieldIndex}
+              dragState={dragState}
+              eventBinder={bindDrag}
+            />
+          ))}
         </div>
 
         <Divider />
 
         <div>
-          {firstRow.map((column, columnIndex) => {
-            const mouseEnterHandler = dragState
-              ? () => {
-                  setDragState((prev) => {
-                    if (!prev) {
-                      return prev;
-                    }
-
-                    return {
-                      ...prev,
-                      dropColumnIndex: columnIndex
-                    };
-                  });
-                }
-              : undefined;
-
-            const mouseLeaveHandler = dragState
-              ? () => {
-                  setDragState((prev) => {
-                    if (!prev || prev.dropColumnIndex !== columnIndex) {
-                      return prev;
-                    }
-
-                    return {
-                      ...prev,
-                      dropColumnIndex: null
-                    };
-                  });
-                }
-              : undefined;
-
-            const dropField =
-              dragState && dragState.dropColumnIndex === columnIndex
-                ? fields[dragState.fieldIndex]
-                : null;
-
-            return (
-              <div
-                className={styles.columnChip}
-                key={columnIndex}
-                onMouseEnter={mouseEnterHandler}
-                onMouseLeave={mouseLeaveHandler}
-              >
-                <Paper className={styles.columnChipPaper} variant="outlined">
-                  <Paper
-                    className={styles.columnTargetPaper}
-                    variant="outlined"
-                    data-dropped={!!dropField}
-                  >
-                    {dropField ? dropField.label : '--'}
-                  </Paper>
-
-                  <div className={styles.columnLabel}>Col {columnIndex}</div>
-                </Paper>
-              </div>
-            );
-          })}
+          {firstRow.map((column, columnIndex) => (
+            <ColumnArea
+              key={columnIndex}
+              columnIndex={columnIndex}
+              dragState={dragState}
+              onHover={dragHoverHandler}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>
