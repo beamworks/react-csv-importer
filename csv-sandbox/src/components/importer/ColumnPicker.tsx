@@ -188,7 +188,6 @@ function useDragObject(
     dragChipRef.current.style.left = `${initialXY[0]}px`;
     dragChipRef.current.style.top = `${initialXY[1]}px`;
     dragChipRef.current.style.width = `${initialWidth}px`;
-    console.log(initialWidth);
   }, [initialXY, initialWidth]);
 
   // live position updates without state changes
@@ -253,8 +252,19 @@ const TargetArea: React.FC<{
   field: Field;
   assignedColumn: Column | null;
   dragState: DragState | null;
+  eventBinder: (
+    column: Column,
+    startFieldIndex?: number
+  ) => ReturnType<typeof useDrag>;
   onHover: (fieldIndex: number, isOn: boolean) => void;
-}> = ({ fieldIndex, field, assignedColumn, dragState, onHover }) => {
+}> = ({
+  fieldIndex,
+  field,
+  assignedColumn,
+  dragState,
+  eventBinder,
+  onHover
+}) => {
   const styles = useStyles();
 
   const mouseEnterHandler = dragState
@@ -274,6 +284,17 @@ const TargetArea: React.FC<{
       ? dragState.column
       : null;
 
+  // if currently assigned column is being dragged, pretend it is no longer assigned
+  const activeAssignedColumn =
+    dragState && dragState.column === assignedColumn ? null : assignedColumn;
+
+  const eventHandlers = useMemo(
+    () =>
+      activeAssignedColumn ? eventBinder(activeAssignedColumn, fieldIndex) : {},
+    [eventBinder, activeAssignedColumn, fieldIndex]
+  );
+
+  // @todo mouse cursor changes to reflect draggable state
   return (
     <div
       className={styles.targetChip}
@@ -285,11 +306,12 @@ const TargetArea: React.FC<{
           className={styles.targetChipIndicatorPaper}
           variant="outlined"
           data-dropped={sourceColumn !== null}
+          {...eventHandlers}
         >
           {sourceColumn ? (
             <span>Col {sourceColumn.index}</span>
-          ) : assignedColumn ? (
-            <span>Col {assignedColumn.index}</span>
+          ) : activeAssignedColumn ? (
+            <span>Col {activeAssignedColumn.index}</span>
           ) : (
             <span>--</span>
           )}
@@ -326,7 +348,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     if (first && event) {
       event.preventDefault();
 
-      const [column] = args as [Column];
+      const [column, startFieldIndex] = args as [Column, number | undefined];
 
       setDragState({
         initialXY: xy,
@@ -335,7 +357,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
             ? event.currentTarget.offsetWidth
             : 0,
         column,
-        dropFieldIndex: null
+        dropFieldIndex: startFieldIndex !== undefined ? startFieldIndex : null
       });
     } else if (last) {
       setDragState(null);
@@ -428,6 +450,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
               field={field}
               assignedColumn={fieldAssignments[fieldIndex]}
               dragState={dragState}
+              eventBinder={bindDrag}
               onHover={dragHoverHandler}
             />
           ))}
