@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline-block',
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(1),
-    width: 200
+    width: 150
   },
   columnCardPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
   columnCardValue: {
     marginTop: theme.spacing(0.5),
     fontSize: '0.75em',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
 
     '& + div': {
       marginTop: 0
@@ -90,10 +93,10 @@ const useStyles = makeStyles((theme) => ({
     height: 0,
     pointerEvents: 'none'
   },
-  dragChipOffset: {
+  dragChipHolder: {
     position: 'absolute',
-    width: 200,
-    left: -100,
+    width: 150,
+    left: -75,
     bottom: -4,
     opacity: 0.9
   }
@@ -144,7 +147,7 @@ function useDragObject(
   const dragObjectPortal = dragState
     ? createPortal(
         <div className={styles.dragChip} ref={dragChipRef}>
-          <div className={styles.dragChipOffset}>
+          <div className={styles.dragChipHolder}>
             <ColumnCard isShadow={false} column={dragState.column} />
           </div>
         </div>,
