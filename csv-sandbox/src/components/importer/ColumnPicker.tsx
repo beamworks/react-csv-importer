@@ -194,8 +194,13 @@ const SourceChip: React.FC<{
     column
   ]);
 
+  const eventHandlers = useMemo(() => eventBinder(column), [
+    eventBinder,
+    column
+  ]);
+
   return (
-    <div className={styles.sourceChip} {...eventBinder(column)}>
+    <div className={styles.sourceChip} {...eventHandlers}>
       <ColumnCard column={column} isShadow={isShadow || isAssigned} />
     </div>
   );
