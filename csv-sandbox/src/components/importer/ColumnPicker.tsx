@@ -181,16 +181,22 @@ function useDragObject(
 
 const SourceChip: React.FC<{
   column: Column;
+  fieldAssignments: (Column | null)[];
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
-}> = ({ column, dragState, eventBinder }) => {
+}> = ({ column, fieldAssignments, dragState, eventBinder }) => {
   const styles = useStyles();
 
   const isShadow = dragState ? column === dragState.column : false;
 
+  const isAssigned = useMemo(() => fieldAssignments.indexOf(column) !== -1, [
+    fieldAssignments,
+    column
+  ]);
+
   return (
     <div className={styles.sourceChip} {...eventBinder(column)}>
-      <ColumnCard column={column} isShadow={isShadow} />
+      <ColumnCard column={column} isShadow={isShadow || isAssigned} />
     </div>
   );
 };
@@ -198,9 +204,10 @@ const SourceChip: React.FC<{
 const TargetArea: React.FC<{
   fieldIndex: number;
   field: Field;
+  assignedColumn: Column | null;
   dragState: DragState | null;
   onHover: (fieldIndex: number, isOn: boolean) => void;
-}> = ({ fieldIndex, field, dragState, onHover }) => {
+}> = ({ fieldIndex, field, assignedColumn, dragState, onHover }) => {
   const styles = useStyles();
 
   const mouseEnterHandler = dragState
@@ -234,6 +241,8 @@ const TargetArea: React.FC<{
         >
           {sourceColumn ? (
             <span>Col {sourceColumn.index}</span>
+          ) : assignedColumn ? (
+            <span>Col {assignedColumn.index}</span>
           ) : (
             <span>--</span>
           )}
@@ -259,8 +268,11 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     });
   }, [preview]);
 
-  const [dragState, setDragState] = useState<DragState | null>(null);
+  const [fieldAssignments, setFieldAssignments] = useState<(Column | null)[]>(
+    () => fields.map(() => null)
+  );
 
+  const [dragState, setDragState] = useState<DragState | null>(null);
   const [dragObjectPortal, dragUpdateHandler] = useDragObject(dragState);
 
   const bindDrag = useDrag(({ first, last, event, xy, args }) => {
@@ -271,6 +283,23 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
       setDragState({ initialXY: xy, column, dropFieldIndex: null });
     } else if (last) {
       setDragState(null);
+
+      if (dragState && dragState.dropFieldIndex !== null) {
+        const dropFieldIndex = dragState.dropFieldIndex;
+        const droppedColumn = dragState.column;
+
+        setFieldAssignments((prevAssignments) =>
+          prevAssignments.map((prevCol, fieldIndex) => {
+            // set new field column
+            if (dropFieldIndex === fieldIndex) {
+              return droppedColumn;
+            }
+
+            // otherwise, ensure dropped column does not show up elsewhere
+            return prevCol === droppedColumn ? null : prevCol;
+          })
+        );
+      }
     }
 
     dragUpdateHandler(xy);
@@ -317,6 +346,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
             <SourceChip
               key={columnIndex}
               column={column}
+              fieldAssignments={fieldAssignments}
               dragState={dragState}
               eventBinder={bindDrag}
             />
@@ -331,6 +361,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
               key={fieldIndex}
               fieldIndex={fieldIndex}
               field={field}
+              assignedColumn={fieldAssignments[fieldIndex]}
               dragState={dragState}
               onHover={dragHoverHandler}
             />
