@@ -33,36 +33,36 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center'
     // margin: -theme.spacing(2)
   },
-  fieldChip: {
+  sourceChip: {
     display: 'inline-block',
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(1),
     width: 200
   },
-  fieldChipPaper: {
+  sourceChipPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
   },
-  fieldChipPaperDragged: {
+  sourceChipPaperDragged: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     background: theme.palette.grey.A100,
     color: theme.palette.grey.A100 // hide text
   },
-  columnChip: {
+  targetChip: {
     display: 'inline-block',
     marginRight: theme.spacing(1),
     marginTop: theme.spacing(1),
     width: 200
   },
-  columnChipPaper: {
+  targetChipPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
   },
-  columnLabel: {
+  targetLabel: {
     display: 'inline-block',
     marginTop: theme.spacing(1),
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
   },
-  columnTargetPaper: {
+  targetChipIndicatorPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     background: theme.palette.grey.A100,
 
@@ -140,7 +140,7 @@ function useDragObject(
   return [dragObjectPortal, dragUpdateHandler];
 }
 
-const FieldChip: React.FC<{
+const SourceChip: React.FC<{
   fieldIndex: number;
   dragState: DragState | null;
   eventBinder: (fieldIndex: number) => ReturnType<typeof useDrag>;
@@ -151,19 +151,19 @@ const FieldChip: React.FC<{
   const isDragged = dragState ? fieldIndex === dragState.fieldIndex : false;
 
   return (
-    <div className={styles.fieldChip} {...eventBinder(fieldIndex)}>
+    <div className={styles.sourceChip} {...eventBinder(fieldIndex)}>
       {isDragged ? (
-        <Paper className={styles.fieldChipPaperDragged} elevation={0}>
+        <Paper className={styles.sourceChipPaperDragged} elevation={0}>
           {field.label}
         </Paper>
       ) : (
-        <Paper className={styles.fieldChipPaper}>{field.label}</Paper>
+        <Paper className={styles.sourceChipPaper}>{field.label}</Paper>
       )}
     </div>
   );
 };
 
-const ColumnArea: React.FC<{
+const TargetArea: React.FC<{
   columnIndex: number;
   dragState: DragState | null;
   onHover: (columnIndex: number, isOn: boolean) => void;
@@ -189,20 +189,20 @@ const ColumnArea: React.FC<{
 
   return (
     <div
-      className={styles.columnChip}
+      className={styles.targetChip}
       onMouseEnter={mouseEnterHandler}
       onMouseLeave={mouseLeaveHandler}
     >
-      <Paper className={styles.columnChipPaper} variant="outlined">
+      <Paper className={styles.targetChipPaper} variant="outlined">
         <Paper
-          className={styles.columnTargetPaper}
+          className={styles.targetChipIndicatorPaper}
           variant="outlined"
           data-dropped={!!dropField}
         >
           {dropField ? dropField.label : '--'}
         </Paper>
 
-        <div className={styles.columnLabel}>Col {columnIndex}</div>
+        <div className={styles.targetLabel}>Col {columnIndex}</div>
       </Paper>
     </div>
   );
@@ -270,7 +270,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {fields.map((field, fieldIndex) => (
-            <FieldChip
+            <SourceChip
               key={fieldIndex}
               fieldIndex={fieldIndex}
               dragState={dragState}
@@ -283,7 +283,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {firstRow.map((column, columnIndex) => (
-            <ColumnArea
+            <TargetArea
               key={columnIndex}
               columnIndex={columnIndex}
               dragState={dragState}
