@@ -17,7 +17,11 @@ import CardContent from '@material-ui/core/CardContent';
 
 import { PreviewInfo } from './FormatPreview';
 
-const fields = [
+interface Field {
+  label: string;
+}
+
+const fields: Field[] = [
   { label: 'Name' },
   { label: 'Email' },
   { label: 'DOB' },
@@ -92,8 +96,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface DragState {
   initialXY: number[];
-  fieldIndex: number;
-  dropColumnIndex: number | null;
+  columnIndex: number;
+  dropFieldIndex: number | null;
 }
 
 function useDragObject(
@@ -108,7 +112,7 @@ function useDragObject(
         <div className={styles.dragChip} ref={dragChipRef}>
           <div className={styles.dragChipOffset}>
             <Paper className={styles.dragChipPaper}>
-              {fields[dragState.fieldIndex].label}
+              Col {dragState.columnIndex}
             </Paper>
           </div>
         </div>,
@@ -141,50 +145,50 @@ function useDragObject(
 }
 
 const SourceChip: React.FC<{
-  fieldIndex: number;
+  columnIndex: number;
   dragState: DragState | null;
-  eventBinder: (fieldIndex: number) => ReturnType<typeof useDrag>;
-}> = ({ fieldIndex, dragState, eventBinder }) => {
+  eventBinder: (columnIndex: number) => ReturnType<typeof useDrag>;
+}> = ({ columnIndex, dragState, eventBinder }) => {
   const styles = useStyles();
 
-  const field = fields[fieldIndex];
-  const isDragged = dragState ? fieldIndex === dragState.fieldIndex : false;
+  const isDragged = dragState ? columnIndex === dragState.columnIndex : false;
 
   return (
-    <div className={styles.sourceChip} {...eventBinder(fieldIndex)}>
+    <div className={styles.sourceChip} {...eventBinder(columnIndex)}>
       {isDragged ? (
         <Paper className={styles.sourceChipPaperDragged} elevation={0}>
-          {field.label}
+          Col {columnIndex}
         </Paper>
       ) : (
-        <Paper className={styles.sourceChipPaper}>{field.label}</Paper>
+        <Paper className={styles.sourceChipPaper}>Col {columnIndex}</Paper>
       )}
     </div>
   );
 };
 
 const TargetArea: React.FC<{
-  columnIndex: number;
+  fieldIndex: number;
+  field: Field;
   dragState: DragState | null;
-  onHover: (columnIndex: number, isOn: boolean) => void;
-}> = ({ columnIndex, dragState, onHover }) => {
+  onHover: (fieldIndex: number, isOn: boolean) => void;
+}> = ({ fieldIndex, field, dragState, onHover }) => {
   const styles = useStyles();
 
   const mouseEnterHandler = dragState
     ? () => {
-        onHover(columnIndex, true);
+        onHover(fieldIndex, true);
       }
     : undefined;
 
   const mouseLeaveHandler = dragState
     ? () => {
-        onHover(columnIndex, false);
+        onHover(fieldIndex, false);
       }
     : undefined;
 
-  const dropField =
-    dragState && dragState.dropColumnIndex === columnIndex
-      ? fields[dragState.fieldIndex]
+  const sourceColumnIndex =
+    dragState && dragState.dropFieldIndex === fieldIndex
+      ? dragState.columnIndex
       : null;
 
   return (
@@ -197,12 +201,16 @@ const TargetArea: React.FC<{
         <Paper
           className={styles.targetChipIndicatorPaper}
           variant="outlined"
-          data-dropped={!!dropField}
+          data-dropped={sourceColumnIndex !== null}
         >
-          {dropField ? dropField.label : '--'}
+          {sourceColumnIndex !== null ? (
+            <span>Col {sourceColumnIndex}</span>
+          ) : (
+            <span>--</span>
+          )}
         </Paper>
 
-        <div className={styles.targetLabel}>Col {columnIndex}</div>
+        <div className={styles.targetLabel}>{field.label}</div>
       </Paper>
     </div>
   );
@@ -223,8 +231,8 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     if (first && event) {
       event.preventDefault();
 
-      const fieldIndex = args[0] as number;
-      setDragState({ initialXY: xy, fieldIndex, dropColumnIndex: null });
+      const columnIndex = args[0] as number;
+      setDragState({ initialXY: xy, columnIndex, dropFieldIndex: null });
     } else if (last) {
       setDragState(null);
     }
@@ -232,7 +240,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     dragUpdateHandler(xy);
   }, {});
 
-  const dragHoverHandler = useCallback((columnIndex: number, isOn: boolean) => {
+  const dragHoverHandler = useCallback((fieldIndex: number, isOn: boolean) => {
     setDragState((prev) => {
       if (!prev) {
         return prev;
@@ -242,9 +250,9 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         // set the new drop target
         return {
           ...prev,
-          dropColumnIndex: columnIndex
+          dropFieldIndex: fieldIndex
         };
-      } else if (prev.dropColumnIndex === columnIndex) {
+      } else if (prev.dropFieldIndex === fieldIndex) {
         // clear drop target if we are still the current one
         return {
           ...prev,
@@ -269,10 +277,10 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         </div>
 
         <div>
-          {fields.map((field, fieldIndex) => (
+          {firstRow.map((column, columnIndex) => (
             <SourceChip
-              key={fieldIndex}
-              fieldIndex={fieldIndex}
+              key={columnIndex}
+              columnIndex={columnIndex}
               dragState={dragState}
               eventBinder={bindDrag}
             />
@@ -282,10 +290,11 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         <Divider />
 
         <div>
-          {firstRow.map((column, columnIndex) => (
+          {fields.map((field, fieldIndex) => (
             <TargetArea
-              key={columnIndex}
-              columnIndex={columnIndex}
+              key={fieldIndex}
+              fieldIndex={fieldIndex}
+              field={field}
               dragState={dragState}
               onHover={dragHoverHandler}
             />
