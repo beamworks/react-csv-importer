@@ -209,7 +209,8 @@ const SourceChip: React.FC<{
   fieldAssignments: (Column | null)[];
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
-}> = ({ column, fieldAssignments, dragState, eventBinder }) => {
+  onUnassign: (column: Column) => void;
+}> = ({ column, fieldAssignments, dragState, eventBinder, onUnassign }) => {
   const styles = useStyles();
 
   const isShadow = dragState ? column === dragState.column : false;
@@ -232,7 +233,12 @@ const SourceChip: React.FC<{
         isDraggable={!dragState && !isShadow && !isAssigned}
         action={
           isAssigned ? (
-            <Button size="small" variant="contained" color="secondary">
+            <Button
+              size="small"
+              variant="contained"
+              color="secondary"
+              onClick={() => onUnassign(column)}
+            >
               Unassign
             </Button>
           ) : null
@@ -380,6 +386,14 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     });
   }, []);
 
+  const unassignHandler = useCallback((column: Column) => {
+    setFieldAssignments((prev) =>
+      prev.map((assignedColumn) =>
+        assignedColumn === column ? null : assignedColumn
+      )
+    );
+  }, []);
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -399,6 +413,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
               fieldAssignments={fieldAssignments}
               dragState={dragState}
               eventBinder={bindDrag}
+              onUnassign={unassignHandler}
             />
           ))}
         </div>
