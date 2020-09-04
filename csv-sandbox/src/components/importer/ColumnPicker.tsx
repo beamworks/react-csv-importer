@@ -104,13 +104,15 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: 0,
     left: 0,
+    width: 0, // dynamically set at drag start
     height: 0,
+    minWidth: 100, // in case could not compute
     pointerEvents: 'none'
   },
   dragChipHolder: {
     position: 'absolute',
-    width: 150,
-    left: -75,
+    width: '100%',
+    left: '-50%',
     bottom: -4,
     opacity: 0.9
   }
@@ -123,6 +125,7 @@ interface Column {
 
 interface DragState {
   initialXY: number[];
+  initialWidth: number;
   column: Column;
   dropFieldIndex: number | null;
 }
@@ -176,14 +179,17 @@ function useDragObject(
 
   // set up initial position
   const initialXY = dragState && dragState.initialXY;
+  const initialWidth = dragState && dragState.initialWidth;
   useLayoutEffect(() => {
-    if (!initialXY || !dragChipRef.current) {
+    if (!initialXY || initialWidth === null || !dragChipRef.current) {
       return;
     }
 
     dragChipRef.current.style.left = `${initialXY[0]}px`;
     dragChipRef.current.style.top = `${initialXY[1]}px`;
-  }, [initialXY]);
+    dragChipRef.current.style.width = `${initialWidth}px`;
+    console.log(initialWidth);
+  }, [initialXY, initialWidth]);
 
   // live position updates without state changes
   const dragUpdateHandler = useCallback((xy: number[]) => {
@@ -314,8 +320,17 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
     if (first && event) {
       event.preventDefault();
 
-      const column = args[0] as Column;
-      setDragState({ initialXY: xy, column, dropFieldIndex: null });
+      const [column] = args as [Column];
+
+      setDragState({
+        initialXY: xy,
+        initialWidth:
+          event.currentTarget instanceof HTMLElement
+            ? event.currentTarget.offsetWidth
+            : 0,
+        column,
+        dropFieldIndex: null
+      });
     } else if (last) {
       setDragState(null);
 
