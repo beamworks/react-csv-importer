@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
   columnCardPaper: {
     position: 'relative', // for action
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
     zIndex: 0, // reset stacking context
     cursor: 'default',
 
@@ -79,6 +79,11 @@ const useStyles = makeStyles((theme) => ({
     '&[data-shadow=true]': {
       background: theme.palette.grey.A100,
       color: theme.palette.grey.A200 // reduce text
+    },
+
+    '&[data-drop-indicator=true]': {
+      background: theme.palette.success.light,
+      color: theme.palette.success.contrastText
     }
   },
   columnCardAction: {
@@ -100,35 +105,22 @@ const useStyles = makeStyles((theme) => ({
   },
   targetBox: {
     display: 'inline-block',
-    marginRight: theme.spacing(1),
-    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(2),
+    marginTop: theme.spacing(2),
     width: 200
   },
-  targetBoxPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
-  },
-  targetLabel: {
-    display: 'inline-block',
-    marginTop: theme.spacing(1),
+  targetBoxLabel: {
+    marginBottom: theme.spacing(0.5),
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
   },
-  targetBoxIndicatorPaper: {
+  targetBoxValue: {},
+  targetBoxPlaceholderPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.grey.A100,
-
-    '&[data-dropped=true]': {
-      background: theme.palette.primary.light,
-      color: theme.palette.primary.contrastText
-    },
-
-    '& span[data-shadow=true]': {
-      background: theme.palette.grey.A100,
-      color: theme.palette.grey.A200 // reduce text
-    }
+    background: theme.palette.grey.A100
   },
   dragBox: {
-    position: 'absolute',
+    position: 'absolute', // @todo this is not working with scroll
     top: 0,
     left: 0,
     width: 0, // dynamically set at drag start
@@ -160,10 +152,11 @@ interface DragState {
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   column: Column;
-  action: React.ReactElement | null;
+  action?: React.ReactElement;
   isShadow?: boolean;
   isDraggable?: boolean;
-}> = ({ column, action, isShadow, isDraggable }) => {
+  isDropIndicator?: boolean;
+}> = ({ column, action, isShadow, isDraggable, isDropIndicator }) => {
   const styles = useStyles();
 
   return (
@@ -172,6 +165,7 @@ const ColumnCard: React.FC<{
       className={styles.columnCardPaper}
       data-shadow={!!isShadow}
       data-draggable={!!isDraggable}
+      data-drop-indicator={!!isDropIndicator}
       elevation={isShadow ? 0 : undefined}
     >
       Col {column.index}
@@ -197,7 +191,7 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragBox} ref={dragBoxRef}>
           <div className={styles.dragBoxHolder}>
-            <ColumnCard column={dragState.column} action={null} />
+            <ColumnCard column={dragState.column} />
           </div>
         </div>,
         document.body
@@ -267,7 +261,7 @@ const SourceBox: React.FC<{
             >
               Unassign
             </Button>
-          ) : null
+          ) : undefined
         }
       />
     </div>
@@ -354,17 +348,12 @@ const TargetBox: React.FC<{
 }) => {
   const styles = useStyles();
 
-  const mouseEnterHandler = dragState
-    ? () => {
-        onHover(fieldIndex, true);
+  const mouseHoverHandlers = dragState
+    ? {
+        onMouseEnter: () => onHover(fieldIndex, true),
+        onMouseLeave: () => onHover(fieldIndex, false)
       }
-    : undefined;
-
-  const mouseLeaveHandler = dragState
-    ? () => {
-        onHover(fieldIndex, false);
-      }
-    : undefined;
+    : {};
 
   const sourceColumn =
     dragState && dragState.dropFieldIndex === fieldIndex
@@ -374,7 +363,7 @@ const TargetBox: React.FC<{
   // see if currently assigned column is being dragged again
   const isReDragged = dragState ? dragState.column === assignedColumn : false;
 
-  const eventHandlers = useMemo(
+  const dragHandlers = useMemo(
     () =>
       assignedColumn && !isReDragged
         ? eventBinder(assignedColumn, fieldIndex)
@@ -382,31 +371,36 @@ const TargetBox: React.FC<{
     [eventBinder, assignedColumn, isReDragged, fieldIndex]
   );
 
+  const valueContents = useMemo(() => {
+    if (sourceColumn) {
+      return <ColumnCard column={sourceColumn} isDropIndicator />;
+    }
+
+    if (assignedColumn) {
+      return (
+        <ColumnCard
+          column={assignedColumn}
+          isShadow={isReDragged}
+          isDraggable={!isReDragged}
+        />
+      );
+    }
+
+    return (
+      <Paper className={styles.targetBoxPlaceholderPaper} variant="outlined">
+        <span>--</span>
+      </Paper>
+    );
+  }, [assignedColumn, sourceColumn, isReDragged]);
+
   // @todo mouse cursor changes to reflect draggable state
   return (
-    <div
-      className={styles.targetBox}
-      onMouseEnter={mouseEnterHandler}
-      onMouseLeave={mouseLeaveHandler}
-    >
-      <Paper className={styles.targetBoxPaper} variant="outlined">
-        <Paper
-          className={styles.targetBoxIndicatorPaper}
-          variant="outlined"
-          data-dropped={sourceColumn !== null}
-          {...eventHandlers}
-        >
-          {sourceColumn ? (
-            <span>Col {sourceColumn.index}</span>
-          ) : assignedColumn ? (
-            <span data-shadow={!!isReDragged}>Col {assignedColumn.index}</span>
-          ) : (
-            <span>--</span>
-          )}
-        </Paper>
+    <div className={styles.targetBox} {...mouseHoverHandlers}>
+      <div className={styles.targetBoxLabel}>{field.label}</div>
 
-        <div className={styles.targetLabel}>{field.label}</div>
-      </Paper>
+      <div className={styles.targetBoxValue} {...dragHandlers}>
+        {valueContents}
+      </div>
     </div>
   );
 };
