@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MAX_ROWS = 5;
+export const MAX_PREVIEW_ROWS = 5;
 const RAW_PREVIEW_SIZE = 500;
 
 export interface PreviewInfo {
@@ -146,7 +146,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
       chunkSize: 20000,
-      preview: MAX_ROWS,
+      preview: MAX_PREVIEW_ROWS,
       skipEmptyLines: true,
       error: (error) => {
         resolve({
@@ -170,7 +170,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
         }
 
         // finish parsing after first chunk
-        if (rowAccumulator.length < MAX_ROWS) {
+        if (rowAccumulator.length < MAX_PREVIEW_ROWS) {
           parser.abort();
         }
 

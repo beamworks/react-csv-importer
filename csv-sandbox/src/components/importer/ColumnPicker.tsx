@@ -19,7 +19,7 @@ import CardContent from '@material-ui/core/CardContent';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
-import { PreviewInfo } from './FormatPreview';
+import { PreviewInfo, MAX_PREVIEW_ROWS } from './FormatPreview';
 
 interface Field {
   label: string;
@@ -76,14 +76,18 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'grab'
     },
 
+    '&[data-dummy=true]': {
+      background: 'transparent',
+      color: 'transparent'
+    },
+
     '&[data-shadow=true]': {
       background: theme.palette.grey.A100,
       color: theme.palette.grey.A200 // reduce text
     },
 
     '&[data-drop-indicator=true]': {
-      background: theme.palette.success.light,
-      color: theme.palette.success.contrastText
+      color: theme.palette.text.primary
     }
   },
   columnCardAction: {
@@ -103,11 +107,18 @@ const useStyles = makeStyles((theme) => ({
       marginTop: 0
     }
   },
+  targetArea: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap'
+  },
   targetBox: {
-    display: 'inline-block',
-    marginRight: theme.spacing(2),
-    marginTop: theme.spacing(2),
-    width: 200
+    flexShrink: 1,
+    flexGrow: 0,
+    flexBasis: '25%',
+    width: 0, // avoid interference from internal width
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(2)
   },
   targetBoxLabel: {
     marginBottom: theme.spacing(0.5),
@@ -142,6 +153,11 @@ interface Column {
   values: string[];
 }
 
+const DUMMY_COLUMN = {
+  index: -1,
+  values: [...new Array(MAX_PREVIEW_ROWS)].map(() => '')
+};
+
 interface DragState {
   initialXY: number[];
   initialWidth: number;
@@ -149,6 +165,7 @@ interface DragState {
   dropFieldIndex: number | null;
 }
 
+// @todo sort out cases with fewer-than-max preview rows
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   column: Column;
@@ -158,19 +175,24 @@ const ColumnCard: React.FC<{
   isDropIndicator?: boolean;
 }> = ({ column, action, isShadow, isDraggable, isDropIndicator }) => {
   const styles = useStyles();
+  const isDummy = column.index === DUMMY_COLUMN.index;
 
   return (
     <Paper
-      key={isShadow ? 1 : 0} // force re-creation to avoid transition anim
+      key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
       className={styles.columnCardPaper}
+      data-dummy={!!isDummy}
       data-shadow={!!isShadow}
       data-draggable={!!isDraggable}
       data-drop-indicator={!!isDropIndicator}
-      elevation={isShadow ? 0 : undefined}
+      elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
+      variant={isDummy ? 'outlined' : 'elevation'}
     >
-      Col {column.index}
+      {isDummy ? '\u00a0' : `Col ${column.index}`}
       {action && <div className={styles.columnCardAction}>{action}</div>}
+
       <Divider />
+
       {column.values.map((value, valueIndex) => (
         <div key={valueIndex} className={styles.columnCardValue}>
           {value || '\u00a0'}
@@ -386,11 +408,7 @@ const TargetBox: React.FC<{
       );
     }
 
-    return (
-      <Paper className={styles.targetBoxPlaceholderPaper} variant="outlined">
-        <span>--</span>
-      </Paper>
-    );
+    return <ColumnCard column={DUMMY_COLUMN} />;
   }, [assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
@@ -519,7 +537,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <Divider />
 
-        <div>
+        <div className={styles.targetArea}>
           {fields.map((field, fieldIndex) => (
             <TargetBox
               key={fieldIndex}
