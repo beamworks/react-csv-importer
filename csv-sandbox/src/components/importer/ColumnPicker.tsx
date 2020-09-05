@@ -163,11 +163,6 @@ interface Column {
   values: string[];
 }
 
-const DUMMY_COLUMN = {
-  index: -1,
-  values: [...new Array(MAX_PREVIEW_ROWS)].map(() => '')
-};
-
 interface DragState {
   initialXY: number[];
   initialWidth: number;
@@ -178,14 +173,14 @@ interface DragState {
 // @todo sort out cases with fewer-than-max preview rows
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
-  column: Column;
+  column?: Column;
   action?: React.ReactElement;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
-  column,
+  column: optionalColumn,
   action,
   isShadow,
   isDraggable,
@@ -193,7 +188,16 @@ const ColumnCard: React.FC<{
   isDropIndicator
 }) => {
   const styles = useStyles();
-  const isDummy = column.index === DUMMY_COLUMN.index;
+  const isDummy = !optionalColumn;
+
+  const column = useMemo<Column>(
+    () =>
+      optionalColumn || {
+        index: -1,
+        values: [...new Array(MAX_PREVIEW_ROWS)].map(() => '')
+      },
+    [optionalColumn]
+  );
 
   return (
     // not changing variant dynamically because it causes a height jump
@@ -429,7 +433,7 @@ const TargetBox: React.FC<{
       );
     }
 
-    return <ColumnCard column={DUMMY_COLUMN} />;
+    return <ColumnCard />;
   }, [assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
