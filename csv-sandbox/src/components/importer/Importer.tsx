@@ -30,5 +30,12 @@ export const Importer: React.FC = () => {
     );
   }
 
-  return <ColumnPicker preview={preview} />;
+  return (
+    <ColumnPicker
+      preview={preview}
+      onCancel={() => {
+        setPreview(null);
+      }}
+    />
+  );
 };

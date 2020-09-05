@@ -114,6 +114,7 @@ export const MAX_PREVIEW_ROWS = 5;
 const RAW_PREVIEW_SIZE = 500;
 
 export interface PreviewInfo {
+  file: File;
   parseWarning?: Papa.ParseError;
   firstChunk: string;
   firstRows: string[][];
@@ -136,6 +137,7 @@ function parsePreview(file: File): Promise<PreviewResults> {
 
     function reportSuccess() {
       resolve({
+        file,
         parseError: undefined,
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',

@@ -16,6 +16,7 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
@@ -43,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   mainHeader: {
     display: 'flex',
     alignItems: 'center',
+    marginTop: -theme.spacing(2),
+    marginLeft: -theme.spacing(2),
+    marginRight: -theme.spacing(2),
     marginBottom: theme.spacing(2)
   },
   sourceArea: {
@@ -476,10 +480,18 @@ const TargetBox: React.FC<{
   );
 };
 
-export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
-  preview
-}) => {
+export const ColumnPicker: React.FC<{
+  preview: PreviewInfo;
+  onCancel: () => void;
+}> = ({ preview, onCancel }) => {
   const styles = useStyles();
+
+  const onCancelRef = useRef(onCancel);
+  onCancelRef.current = onCancel;
+
+  const cancelClickHandler = useCallback(() => {
+    onCancelRef.current();
+  }, []);
 
   const columns = useMemo<Column[]>(() => {
     return [...new Array(preview.firstRows[0].length)].map((empty, index) => {
@@ -575,8 +587,11 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
         <div className={styles.mainHeader}>
           {dragObjectPortal}
 
+          <IconButton onClick={cancelClickHandler}>
+            <ChevronLeftIcon />
+          </IconButton>
           <Typography variant="subtitle1" color="textPrimary" noWrap>
-            Choose Columns
+            {preview.file.name}
           </Typography>
         </div>
 
