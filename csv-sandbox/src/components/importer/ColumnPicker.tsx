@@ -62,12 +62,18 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1)
   },
   sourceBox: {
+    position: 'relative', // for action
     flex: '1 1 0',
     marginRight: theme.spacing(1),
     width: 0 // prevent internal sizing from affecting placement
   },
+  sourceBoxAction: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    zIndex: 1 // right above content
+  },
   columnCardPaper: {
-    position: 'relative', // for action
     padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
     zIndex: 0, // reset stacking context
     cursor: 'default',
@@ -78,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
 
     '&[data-dummy=true]': {
       background: theme.palette.divider,
-      opacity: 0.25,
+      opacity: 0.5,
       userSelect: 'none'
     },
 
@@ -90,12 +96,6 @@ const useStyles = makeStyles((theme) => ({
     '&[data-drop-indicator=true]': {
       color: theme.palette.text.primary
     }
-  },
-  columnCardAction: {
-    position: 'absolute',
-    top: theme.spacing(0.5),
-    right: theme.spacing(0.5),
-    zIndex: 1 // right above card content
   },
   columnCardHeader: {
     marginBottom: theme.spacing(0.5),
@@ -135,10 +135,26 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
   },
-  targetBoxValue: {},
-  targetBoxPlaceholderPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.grey.A100
+  targetBoxValue: {
+    position: 'relative' // for action
+  },
+  targetBoxValueAction: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    zIndex: 1 // right above content
+  },
+  targetBoxPlaceholderHelp: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '95%', // nudge up a bit
+    zIndex: 1, // right above content
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: theme.palette.text.secondary
   },
   dragBox: {
     position: 'absolute', // @todo this is not working with scroll
@@ -174,14 +190,12 @@ interface DragState {
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   column?: Column;
-  action?: React.ReactElement;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
   column: optionalColumn,
-  action,
   isShadow,
   isDraggable,
   isDragged,
@@ -212,8 +226,6 @@ const ColumnCard: React.FC<{
       elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
       square={isDummy}
     >
-      {action && <div className={styles.columnCardAction}>{action}</div>}
-
       <div className={styles.columnCardHeader}>
         {isDummy ? '\u00a0' : `Col ${column.index}`}
       </div>
@@ -293,24 +305,27 @@ const SourceBox: React.FC<{
   ]);
 
   return (
-    <div className={styles.sourceBox} {...(isAssigned ? {} : eventHandlers)}>
-      <ColumnCard
-        column={column}
-        isShadow={isShadow || isAssigned}
-        isDraggable={!dragState && !isShadow && !isAssigned}
-        action={
-          isAssigned ? (
-            <Button
-              size="small"
-              variant="contained"
-              color="secondary"
-              onClick={() => onUnassign(column)}
-            >
-              Unassign
-            </Button>
-          ) : undefined
-        }
-      />
+    <div className={styles.sourceBox}>
+      {isAssigned ? (
+        <div className={styles.sourceBoxAction}>
+          <Button
+            size="small"
+            variant="contained"
+            color="secondary"
+            onClick={() => onUnassign(column)}
+          >
+            Unassign
+          </Button>
+        </div>
+      ) : undefined}
+
+      <div {...(isAssigned ? {} : eventHandlers)}>
+        <ColumnCard
+          column={column}
+          isShadow={isShadow || isAssigned}
+          isDraggable={!dragState && !isShadow && !isAssigned}
+        />
+      </div>
     </div>
   );
 };
@@ -385,13 +400,15 @@ const TargetBox: React.FC<{
     startFieldIndex?: number
   ) => ReturnType<typeof useDrag>;
   onHover: (fieldIndex: number, isOn: boolean) => void;
+  onUnassign: (column: Column) => void;
 }> = ({
   fieldIndex,
   field,
   assignedColumn,
   dragState,
   eventBinder,
-  onHover
+  onHover,
+  onUnassign
 }) => {
   const styles = useStyles();
 
@@ -441,8 +458,27 @@ const TargetBox: React.FC<{
     <div className={styles.targetBox} {...mouseHoverHandlers}>
       <div className={styles.targetBoxLabel}>{field.label}</div>
 
-      <div className={styles.targetBoxValue} {...dragHandlers}>
-        {valueContents}
+      <div className={styles.targetBoxValue}>
+        {!sourceColumn && assignedColumn && (
+          <div className={styles.targetBoxValueAction}>
+            <Button
+              size="small"
+              variant="contained"
+              color="secondary"
+              onClick={() => onUnassign(assignedColumn)}
+            >
+              Unassign
+            </Button>
+          </div>
+        )}
+
+        {!sourceColumn && !assignedColumn && (
+          <div className={styles.targetBoxPlaceholderHelp}>
+            Drag column here
+          </div>
+        )}
+
+        <div {...dragHandlers}>{valueContents}</div>
       </div>
     </div>
   );
@@ -572,6 +608,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
               dragState={dragState}
               eventBinder={bindDrag}
               onHover={dragHoverHandler}
+              onUnassign={unassignHandler}
             />
           ))}
         </div>
