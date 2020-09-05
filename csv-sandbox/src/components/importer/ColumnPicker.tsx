@@ -95,6 +95,15 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(0.5),
     zIndex: 1 // right above card content
   },
+  columnCardHeader: {
+    marginBottom: theme.spacing(0.5),
+    fontWeight: theme.typography.fontWeightBold,
+    color: theme.palette.text.secondary,
+
+    '$columnCardPaper[data-draggable=true]:hover &, $columnCardPaper[data-dragged=true] &': {
+      color: theme.palette.text.primary
+    }
+  },
   columnCardValue: {
     marginTop: theme.spacing(0.5),
     fontSize: '0.75em',
@@ -171,8 +180,16 @@ const ColumnCard: React.FC<{
   action?: React.ReactElement;
   isShadow?: boolean;
   isDraggable?: boolean;
+  isDragged?: boolean;
   isDropIndicator?: boolean;
-}> = ({ column, action, isShadow, isDraggable, isDropIndicator }) => {
+}> = ({
+  column,
+  action,
+  isShadow,
+  isDraggable,
+  isDragged,
+  isDropIndicator
+}) => {
   const styles = useStyles();
   const isDummy = column.index === DUMMY_COLUMN.index;
 
@@ -183,15 +200,17 @@ const ColumnCard: React.FC<{
       data-dummy={!!isDummy}
       data-shadow={!!isShadow}
       data-draggable={!!isDraggable}
+      data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
       elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
       variant={isDummy ? 'outlined' : 'elevation'}
       square={isDummy}
     >
-      {isDummy ? '\u00a0' : `Col ${column.index}`}
       {action && <div className={styles.columnCardAction}>{action}</div>}
 
-      <Divider />
+      <div className={styles.columnCardHeader}>
+        {isDummy ? '\u00a0' : `Col ${column.index}`}
+      </div>
 
       {column.values.map((value, valueIndex) => (
         <div key={valueIndex} className={styles.columnCardValue}>
@@ -213,7 +232,7 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragBox} ref={dragBoxRef}>
           <div className={styles.dragBoxHolder}>
-            <ColumnCard column={dragState.column} />
+            <ColumnCard column={dragState.column} isDragged />
           </div>
         </div>,
         document.body
