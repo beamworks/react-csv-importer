@@ -10,11 +10,14 @@ import { createPortal } from 'react-dom';
 import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { PreviewInfo } from './FormatPreview';
 
@@ -35,14 +38,27 @@ const fields: Field[] = [
 const useStyles = makeStyles((theme) => ({
   mainHeader: {
     display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2)
+  },
+  sourceArea: {
+    display: 'flex',
+    marginBottom: theme.spacing(2)
+  },
+  sourceAreaControl: {
+    flex: 'none',
+    display: 'flex',
     alignItems: 'center'
-    // margin: -theme.spacing(2)
+  },
+  sourceAreaPage: {
+    flex: '1 1 0',
+    display: 'flex',
+    paddingLeft: theme.spacing(1) // match interior box spacing
   },
   sourceBox: {
-    display: 'inline-block',
+    flex: '1 1 0',
     marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: 150
+    width: 0 // prevent internal sizing from affecting placement
   },
   columnCardPaper: {
     position: 'relative', // for action
@@ -252,6 +268,43 @@ const SourceBox: React.FC<{
   );
 };
 
+const SourceArea: React.FC<{
+  columns: Column[];
+  fieldAssignments: (Column | null)[];
+  dragState: DragState | null;
+  eventBinder: (column: Column) => ReturnType<typeof useDrag>;
+  onUnassign: (column: Column) => void;
+}> = ({ columns, fieldAssignments, dragState, eventBinder, onUnassign }) => {
+  const styles = useStyles();
+
+  return (
+    <div className={styles.sourceArea}>
+      <div className={styles.sourceAreaControl}>
+        <IconButton disabled>
+          <ArrowBackIcon />
+        </IconButton>
+      </div>
+      <div className={styles.sourceAreaPage}>
+        {columns.map((column, columnIndex) => (
+          <SourceBox
+            key={columnIndex}
+            column={column}
+            fieldAssignments={fieldAssignments}
+            dragState={dragState}
+            eventBinder={eventBinder}
+            onUnassign={onUnassign}
+          />
+        ))}
+      </div>
+      <div className={styles.sourceAreaControl}>
+        <IconButton disabled>
+          <ArrowForwardIcon />
+        </IconButton>
+      </div>
+    </div>
+  );
+};
+
 const TargetBox: React.FC<{
   fieldIndex: number;
   field: Field;
@@ -433,18 +486,13 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
           </Typography>
         </div>
 
-        <div>
-          {columns.map((column, columnIndex) => (
-            <SourceBox
-              key={columnIndex}
-              column={column}
-              fieldAssignments={fieldAssignments}
-              dragState={dragState}
-              eventBinder={bindDrag}
-              onUnassign={unassignHandler}
-            />
-          ))}
-        </div>
+        <SourceArea
+          columns={columns}
+          fieldAssignments={fieldAssignments}
+          dragState={dragState}
+          eventBinder={bindDrag}
+          onUnassign={unassignHandler}
+        />
 
         <Divider />
 
