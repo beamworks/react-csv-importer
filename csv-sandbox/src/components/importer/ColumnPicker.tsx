@@ -18,6 +18,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ReplayIcon from '@material-ui/icons/Replay';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { PreviewInfo, MAX_PREVIEW_ROWS } from './FormatPreview';
 
@@ -308,14 +310,9 @@ const SourceBox: React.FC<{
     <div className={styles.sourceBox}>
       {isAssigned ? (
         <div className={styles.sourceBoxAction}>
-          <Button
-            size="small"
-            variant="contained"
-            color="secondary"
-            onClick={() => onUnassign(column)}
-          >
-            Unassign
-          </Button>
+          <IconButton size="small" onClick={() => onUnassign(column)}>
+            <ReplayIcon fontSize="inherit" />
+          </IconButton>
         </div>
       ) : undefined}
 
@@ -461,14 +458,9 @@ const TargetBox: React.FC<{
       <div className={styles.targetBoxValue}>
         {!sourceColumn && assignedColumn && (
           <div className={styles.targetBoxValueAction}>
-            <Button
-              size="small"
-              variant="contained"
-              color="secondary"
-              onClick={() => onUnassign(assignedColumn)}
-            >
-              Unassign
-            </Button>
+            <IconButton size="small" onClick={() => onUnassign(assignedColumn)}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
           </div>
         )}
 
