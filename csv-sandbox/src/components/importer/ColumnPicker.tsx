@@ -35,6 +35,8 @@ const fields: Field[] = [
   { label: 'Bees?' }
 ];
 
+const SOURCES_PAGE_SIZE = 6;
+
 const useStyles = makeStyles((theme) => ({
   mainHeader: {
     display: 'flex',
@@ -54,6 +56,10 @@ const useStyles = makeStyles((theme) => ({
     flex: '1 1 0',
     display: 'flex',
     paddingLeft: theme.spacing(1) // match interior box spacing
+  },
+  sourceAreaPageFiller: {
+    flex: '1 1 0',
+    marginRight: theme.spacing(1)
   },
   sourceBox: {
     flex: '1 1 0',
@@ -268,6 +274,7 @@ const SourceBox: React.FC<{
   );
 };
 
+// @todo current page indicator (dots)
 const SourceArea: React.FC<{
   columns: Column[];
   fieldAssignments: (Column | null)[];
@@ -277,27 +284,47 @@ const SourceArea: React.FC<{
 }> = ({ columns, fieldAssignments, dragState, eventBinder, onUnassign }) => {
   const styles = useStyles();
 
+  const [page, setPage] = useState<number>(0);
+  const pageCount = Math.ceil(columns.length / SOURCES_PAGE_SIZE);
+
+  const start = page * SOURCES_PAGE_SIZE;
+  const pageContents = columns
+    .slice(start, start + SOURCES_PAGE_SIZE)
+    .map((column, columnIndex) => (
+      <SourceBox
+        key={columnIndex}
+        column={column}
+        fieldAssignments={fieldAssignments}
+        dragState={dragState}
+        eventBinder={eventBinder}
+        onUnassign={onUnassign}
+      />
+    ));
+
+  while (pageContents.length < SOURCES_PAGE_SIZE) {
+    pageContents.push(<div className={styles.sourceAreaPageFiller} />);
+  }
+
   return (
     <div className={styles.sourceArea}>
       <div className={styles.sourceAreaControl}>
-        <IconButton disabled>
+        <IconButton
+          disabled={page === 0}
+          onClick={() => {
+            setPage((prev) => Math.max(0, prev - 1));
+          }}
+        >
           <ArrowBackIcon />
         </IconButton>
       </div>
-      <div className={styles.sourceAreaPage}>
-        {columns.map((column, columnIndex) => (
-          <SourceBox
-            key={columnIndex}
-            column={column}
-            fieldAssignments={fieldAssignments}
-            dragState={dragState}
-            eventBinder={eventBinder}
-            onUnassign={onUnassign}
-          />
-        ))}
-      </div>
+      <div className={styles.sourceAreaPage}>{pageContents}</div>
       <div className={styles.sourceAreaControl}>
-        <IconButton disabled>
+        <IconButton
+          disabled={page === pageCount - 1}
+          onClick={() => {
+            setPage((prev) => Math.min(pageCount - 1, prev + 1));
+          }}
+        >
           <ArrowForwardIcon />
         </IconButton>
       </div>
