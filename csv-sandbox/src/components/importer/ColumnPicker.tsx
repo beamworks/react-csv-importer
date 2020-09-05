@@ -302,7 +302,9 @@ const SourceArea: React.FC<{
     ));
 
   while (pageContents.length < SOURCES_PAGE_SIZE) {
-    pageContents.push(<div className={styles.sourceAreaPageFiller} />);
+    pageContents.push(
+      <div key={pageContents.length} className={styles.sourceAreaPageFiller} />
+    );
   }
 
   return (
