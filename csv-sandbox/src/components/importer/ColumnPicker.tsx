@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center'
     // margin: -theme.spacing(2)
   },
-  sourceChip: {
+  sourceBox: {
     display: 'inline-block',
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -76,13 +76,13 @@ const useStyles = makeStyles((theme) => ({
       marginTop: 0
     }
   },
-  targetChip: {
+  targetBox: {
     display: 'inline-block',
     marginRight: theme.spacing(1),
     marginTop: theme.spacing(1),
     width: 200
   },
-  targetChipPaper: {
+  targetBoxPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
   },
   targetLabel: {
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
   },
-  targetChipIndicatorPaper: {
+  targetBoxIndicatorPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     background: theme.palette.grey.A100,
 
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.grey.A200 // reduce text
     }
   },
-  dragChip: {
+  dragBox: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 100, // in case could not compute
     pointerEvents: 'none'
   },
-  dragChipHolder: {
+  dragBoxHolder: {
     position: 'absolute',
     width: '100%',
     left: '-50%',
@@ -170,11 +170,11 @@ function useDragObject(
   const styles = useStyles();
 
   // @todo wrap in a no-events overlay to clip against screen edges
-  const dragChipRef = useRef<HTMLDivElement | null>(null);
+  const dragBoxRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal = dragState
     ? createPortal(
-        <div className={styles.dragChip} ref={dragChipRef}>
-          <div className={styles.dragChipHolder}>
+        <div className={styles.dragBox} ref={dragBoxRef}>
+          <div className={styles.dragBoxHolder}>
             <ColumnCard column={dragState.column} action={null} />
           </div>
         </div>,
@@ -186,29 +186,29 @@ function useDragObject(
   const initialXY = dragState && dragState.initialXY;
   const initialWidth = dragState && dragState.initialWidth;
   useLayoutEffect(() => {
-    if (!initialXY || initialWidth === null || !dragChipRef.current) {
+    if (!initialXY || initialWidth === null || !dragBoxRef.current) {
       return;
     }
 
-    dragChipRef.current.style.left = `${initialXY[0]}px`;
-    dragChipRef.current.style.top = `${initialXY[1]}px`;
-    dragChipRef.current.style.width = `${initialWidth}px`;
+    dragBoxRef.current.style.left = `${initialXY[0]}px`;
+    dragBoxRef.current.style.top = `${initialXY[1]}px`;
+    dragBoxRef.current.style.width = `${initialWidth}px`;
   }, [initialXY, initialWidth]);
 
   // live position updates without state changes
   const dragUpdateHandler = useCallback((xy: number[]) => {
-    if (!dragChipRef.current) {
+    if (!dragBoxRef.current) {
       return;
     }
 
-    dragChipRef.current.style.left = `${xy[0]}px`;
-    dragChipRef.current.style.top = `${xy[1]}px`;
+    dragBoxRef.current.style.left = `${xy[0]}px`;
+    dragBoxRef.current.style.top = `${xy[1]}px`;
   }, []);
 
   return [dragObjectPortal, dragUpdateHandler];
 }
 
-const SourceChip: React.FC<{
+const SourceBox: React.FC<{
   column: Column;
   fieldAssignments: (Column | null)[];
   dragState: DragState | null;
@@ -230,7 +230,7 @@ const SourceChip: React.FC<{
   ]);
 
   return (
-    <div className={styles.sourceChip} {...(isAssigned ? {} : eventHandlers)}>
+    <div className={styles.sourceBox} {...(isAssigned ? {} : eventHandlers)}>
       <ColumnCard
         column={column}
         isShadow={isShadow || isAssigned}
@@ -252,7 +252,7 @@ const SourceChip: React.FC<{
   );
 };
 
-const TargetArea: React.FC<{
+const TargetBox: React.FC<{
   fieldIndex: number;
   field: Field;
   assignedColumn: Column | null;
@@ -303,13 +303,13 @@ const TargetArea: React.FC<{
   // @todo mouse cursor changes to reflect draggable state
   return (
     <div
-      className={styles.targetChip}
+      className={styles.targetBox}
       onMouseEnter={mouseEnterHandler}
       onMouseLeave={mouseLeaveHandler}
     >
-      <Paper className={styles.targetChipPaper} variant="outlined">
+      <Paper className={styles.targetBoxPaper} variant="outlined">
         <Paper
-          className={styles.targetChipIndicatorPaper}
+          className={styles.targetBoxIndicatorPaper}
           variant="outlined"
           data-dropped={sourceColumn !== null}
           {...eventHandlers}
@@ -435,7 +435,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {columns.map((column, columnIndex) => (
-            <SourceChip
+            <SourceBox
               key={columnIndex}
               column={column}
               fieldAssignments={fieldAssignments}
@@ -450,7 +450,7 @@ export const ColumnPicker: React.FC<{ preview: PreviewInfo }> = ({
 
         <div>
           {fields.map((field, fieldIndex) => (
-            <TargetArea
+            <TargetBox
               key={fieldIndex}
               fieldIndex={fieldIndex}
               field={field}
