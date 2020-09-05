@@ -77,8 +77,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     '&[data-dummy=true]': {
-      background: 'transparent',
-      color: 'transparent'
+      userSelect: 'none'
     },
 
     '&[data-shadow=true]': {
@@ -187,6 +186,7 @@ const ColumnCard: React.FC<{
       data-drop-indicator={!!isDropIndicator}
       elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
       variant={isDummy ? 'outlined' : 'elevation'}
+      square={isDummy}
     >
       {isDummy ? '\u00a0' : `Col ${column.index}`}
       {action && <div className={styles.columnCardAction}>{action}</div>}
