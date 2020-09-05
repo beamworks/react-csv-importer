@@ -81,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
   mainHeader: {
     display: 'flex',
     alignItems: 'center',
-    margin: -theme.spacing(2)
+    marginTop: -theme.spacing(2), // cancel out button padding
+    marginBottom: -theme.spacing(2)
   },
   mainResultBlock: {
     marginTop: theme.spacing(2)
@@ -377,7 +378,7 @@ export const FormatPreview: React.FC<{
     <Card variant="outlined">
       <CardContent>
         <div className={styles.mainHeader}>
-          <IconButton onClick={cancelClickHandler}>
+          <IconButton onClick={cancelClickHandler} edge="start">
             <ChevronLeftIcon />
           </IconButton>
           <Typography variant="subtitle1" color="textPrimary" noWrap>

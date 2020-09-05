@@ -17,6 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
@@ -44,10 +45,18 @@ const useStyles = makeStyles((theme) => ({
   mainHeader: {
     display: 'flex',
     alignItems: 'center',
-    marginTop: -theme.spacing(2),
-    marginLeft: -theme.spacing(2),
-    marginRight: -theme.spacing(2),
+    marginTop: -theme.spacing(2), // cancel out button padding
     marginBottom: theme.spacing(2)
+  },
+  mainHeaderCrumbSeparator: {
+    flex: 'none',
+    display: 'flex', // for correct icon alignment
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    color: theme.palette.text.disabled
+  },
+  mainHeaderSubtitle: {
+    flex: 'none'
   },
   sourceArea: {
     display: 'flex',
@@ -581,18 +590,27 @@ export const ColumnPicker: React.FC<{
     );
   }, []);
 
+  // @todo breadcrumb display
   return (
     <Card variant="outlined">
       <CardContent>
         <div className={styles.mainHeader}>
           {dragObjectPortal}
 
-          <IconButton onClick={cancelClickHandler}>
+          <IconButton onClick={cancelClickHandler} edge="start">
             <ChevronLeftIcon />
           </IconButton>
           <Typography variant="subtitle1" color="textPrimary" noWrap>
             {preview.file.name}
           </Typography>
+          <div className={styles.mainHeaderCrumbSeparator}>
+            <ChevronRightIcon fontSize="inherit" />
+          </div>
+          <div className={styles.mainHeaderSubtitle}>
+            <Typography variant="subtitle1" color="textPrimary" noWrap>
+              Choose Columns
+            </Typography>
+          </div>
         </div>
 
         <SourceArea
