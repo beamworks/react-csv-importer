@@ -77,6 +77,8 @@ const useStyles = makeStyles((theme) => ({
     },
 
     '&[data-dummy=true]': {
+      background: theme.palette.divider,
+      opacity: 0.25,
       userSelect: 'none'
     },
 
@@ -194,6 +196,7 @@ const ColumnCard: React.FC<{
   const isDummy = column.index === DUMMY_COLUMN.index;
 
   return (
+    // not changing variant dynamically because it causes a height jump
     <Paper
       key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
       className={styles.columnCardPaper}
@@ -203,7 +206,6 @@ const ColumnCard: React.FC<{
       data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
       elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
-      variant={isDummy ? 'outlined' : 'elevation'}
       square={isDummy}
     >
       {action && <div className={styles.columnCardAction}>{action}</div>}
