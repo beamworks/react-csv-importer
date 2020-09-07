@@ -21,6 +21,7 @@ import { PreviewInfo, MAX_PREVIEW_ROWS } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 export interface Field {
+  name: string;
   label: string;
 }
 

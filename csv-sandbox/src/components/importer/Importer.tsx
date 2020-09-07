@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
 
 import { PreviewInfo } from './parser';
 import { FileSelector } from './FileSelector';
@@ -6,17 +6,32 @@ import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 
-const fields: Field[] = [
-  { label: 'Name' },
-  { label: 'Email' },
-  { label: 'DOB' },
-  { label: 'Postal Code' },
-  { label: 'Snack Preference' },
-  { label: 'Country' },
-  { label: 'Bees?' }
-];
+type FieldListSetter = (prev: Field[]) => Field[];
 
-export const Importer: React.FC = () => {
+const FieldDefinitionContext = React.createContext<
+  ((setter: FieldListSetter) => void) | null
+>(null);
+
+export const ImporterField: React.FC<Field> = ({ name, label }) => {
+  const fieldSetter = useContext(FieldDefinitionContext);
+
+  // update central list as needed
+  useEffect(() => {
+    if (!fieldSetter) {
+      console.error('importer field must be a child of importer'); // @todo
+      return;
+    }
+
+    fieldSetter((prev) => [
+      ...prev.filter((item) => item.name !== name),
+      { name, label }
+    ]);
+  }, [name, label]);
+
+  return null;
+};
+
+const ImporterCore: React.FC<{ fields: Field[] }> = ({ fields }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewInfo | null>(null);
   const [fieldAssignments, setFieldAssignments] = useState<
@@ -67,5 +82,19 @@ export const Importer: React.FC = () => {
         return new Promise((resolve) => setTimeout(resolve, 1500));
       }}
     />
+  );
+};
+
+export const Importer: React.FC = ({ children }) => {
+  const [fields, setFields] = useState<Field[]>([]);
+
+  return (
+    <>
+      <ImporterCore fields={fields} />
+
+      <FieldDefinitionContext.Provider value={setFields}>
+        {children}
+      </FieldDefinitionContext.Provider>
+    </>
   );
 };

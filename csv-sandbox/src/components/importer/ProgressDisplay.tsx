@@ -73,7 +73,7 @@ export const ProgressDisplay: React.FC<{
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Progress"
-      nextDisabled
+      nextDisabled={!isComplete}
       nextLabel="Finish"
       onNext={() => {
         // @todo
