@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { processFile, PreviewInfo } from './parser';
+import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,10 +14,15 @@ const useStyles = makeStyles((theme) => ({
 
 const estimatedTotal = 100; // @todo compute based on file size
 
-export const ProgressDisplay: React.FC<{
+export function ProgressDisplay<Row extends { [name: string]: unknown }>({
+  preview,
+  fieldAssignments,
+  callback
+}: React.PropsWithChildren<{
   preview: PreviewInfo;
-  callback: (rows: string[][]) => void | Promise<void>;
-}> = ({ preview, callback }) => {
+  fieldAssignments: FieldAssignmentMap;
+  callback: (rows: Row[]) => void | Promise<void>;
+}>) {
   const styles = useStyles();
 
   const [progressCount, setProgressCount] = useState(0);
@@ -30,6 +35,7 @@ export const ProgressDisplay: React.FC<{
 
     processFile(
       preview.file,
+      fieldAssignments,
       (deltaCount) => {
         // ignore if stale
         if (oplock !== asyncLockRef.current) {
@@ -52,7 +58,7 @@ export const ProgressDisplay: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [preview]);
+  }, [preview, fieldAssignments]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {
@@ -87,4 +93,4 @@ export const ProgressDisplay: React.FC<{
       </div>
     </ImporterFrame>
   );
-};
+}

@@ -17,6 +17,8 @@ export type PreviewResults =
 
 export const MAX_PREVIEW_ROWS = 5;
 
+export type FieldAssignmentMap = { [name: string]: number | undefined };
+
 export function parsePreview(file: File): Promise<PreviewResults> {
   // wrap synchronous errors in promise
   return new Promise<PreviewResults>((resolve) => {
@@ -76,11 +78,14 @@ export function parsePreview(file: File): Promise<PreviewResults> {
   });
 }
 
-export function processFile(
+export function processFile<Row extends { [name: string]: unknown }>(
   file: File,
+  fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
-  callback: (rows: string[][]) => void | Promise<void>
+  callback: (rows: Row[]) => void | Promise<void>
 ): Promise<void> {
+  const fieldNames = Object.keys(fieldAssignments);
+
   // wrap synchronous errors in promise
   return new Promise<void>((resolve, reject) => {
     // @todo true streaming support for local files (use worker?)
@@ -94,11 +99,22 @@ export function processFile(
         // pause to wait until the rows are consumed
         parser.pause();
 
-        const rows = data.map((row) =>
-          (row as unknown[]).map((item) =>
+        const rows = data.map((row) => {
+          const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
-          )
-        );
+          );
+
+          const record = {} as { [name: string]: string | undefined };
+
+          fieldNames.forEach((fieldName) => {
+            const columnIndex = fieldAssignments[fieldName];
+            if (columnIndex !== undefined) {
+              record[fieldName] = stringRow[columnIndex];
+            }
+          });
+
+          return record as Row; // @todo look into a more precise setup
+        });
 
         // @todo collect errors
         reportProgress(rows.length);

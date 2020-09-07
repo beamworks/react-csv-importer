@@ -17,15 +17,13 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { PreviewInfo, MAX_PREVIEW_ROWS } from './parser';
+import { PreviewInfo, FieldAssignmentMap, MAX_PREVIEW_ROWS } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 export interface Field {
   name: string;
   label: string;
 }
-
-export type FieldAssignmentMap = { [name: string]: number | undefined };
 
 const SOURCES_PAGE_SIZE = 6;
 

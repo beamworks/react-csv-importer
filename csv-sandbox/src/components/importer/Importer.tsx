@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import { PreviewInfo } from './parser';
+import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
-import { ColumnPicker, Field, FieldAssignmentMap } from './ColumnPicker';
+import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 
 type FieldListSetter = (prev: Field[]) => Field[];
@@ -79,7 +79,9 @@ const ImporterCore: React.FC<{ fields: Field[] }> = ({ fields }) => {
   return (
     <ProgressDisplay
       preview={preview}
-      callback={() => {
+      fieldAssignments={fieldAssignments}
+      callback={(rows: { country: string }[]) => {
+        console.log(rows);
         return new Promise((resolve) => setTimeout(resolve, 1500));
       }}
     />
