@@ -152,7 +152,8 @@ const useStyles = makeStyles((theme) => ({
   targetBoxLabel: {
     marginBottom: theme.spacing(0.5),
     fontWeight: theme.typography.fontWeightBold,
-    color: theme.palette.text.primary
+    color: theme.palette.text.primary,
+    wordBreak: 'break-word'
   },
   targetBoxValue: {
     position: 'relative' // for action
@@ -168,7 +169,7 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     left: 0,
     width: '100%',
-    height: '95%', // nudge up a bit
+    height: '98%', // nudge up a bit
     zIndex: 1, // right above content
     display: 'flex',
     justifyContent: 'center',
@@ -209,12 +210,14 @@ interface DragState {
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   column?: Column;
+  rowCount?: number;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
   column: optionalColumn,
+  rowCount = MAX_PREVIEW_ROWS,
   isShadow,
   isDraggable,
   isDragged,
@@ -249,7 +252,7 @@ const ColumnCard: React.FC<{
         {isDummy ? '\u00a0' : `Col ${column.index}`}
       </div>
 
-      {column.values.map((value, valueIndex) => (
+      {column.values.slice(0, rowCount).map((value, valueIndex) => (
         <div key={valueIndex} className={styles.columnCardValue}>
           {value || '\u00a0'}
         </div>
@@ -451,12 +454,13 @@ const TargetBox: React.FC<{
 
   const valueContents = useMemo(() => {
     if (sourceColumn) {
-      return <ColumnCard column={sourceColumn} isDropIndicator />;
+      return <ColumnCard rowCount={3} column={sourceColumn} isDropIndicator />;
     }
 
     if (assignedColumn) {
       return (
         <ColumnCard
+          rowCount={3}
           column={assignedColumn}
           isShadow={isReDragged}
           isDraggable={!isReDragged}
@@ -464,7 +468,7 @@ const TargetBox: React.FC<{
       );
     }
 
-    return <ColumnCard />;
+    return <ColumnCard rowCount={3} />;
   }, [assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
