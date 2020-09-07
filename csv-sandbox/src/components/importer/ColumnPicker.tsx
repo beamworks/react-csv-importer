@@ -16,6 +16,7 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
   },
   mainHeaderSubtitle: {
     flex: 'none'
+  },
+  mainFooterFill: {
+    flex: '1 1 0'
   },
   sourceArea: {
     display: 'flex',
@@ -638,6 +642,12 @@ export const ColumnPicker: React.FC<{
           ))}
         </div>
       </CardContent>
+      <CardActions>
+        <div className={styles.mainFooterFill} />
+        <Button variant="contained" color="primary">
+          Next
+        </Button>
+      </CardActions>
     </Card>
   );
 };

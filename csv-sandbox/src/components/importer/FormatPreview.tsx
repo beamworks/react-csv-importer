@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -108,6 +109,9 @@ const useStyles = makeStyles((theme) => ({
   mainFileName: {
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary
+  },
+  mainFooterFill: {
+    flex: '1 1 0'
   }
 }));
 
@@ -358,16 +362,6 @@ export const FormatPreview: React.FC<{
             <AccordionDetails>
               <DataRowPreview rows={preview.firstRows} />
             </AccordionDetails>
-            <AccordionActions>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={acceptClickHandler}
-              >
-                Next
-              </Button>
-            </AccordionActions>
           </Accordion>
         )}
       </div>
@@ -390,6 +384,17 @@ export const FormatPreview: React.FC<{
           <div className={styles.mainPendingBlock}>Loading preview...</div>
         )}
       </CardContent>
+      <CardActions>
+        <div className={styles.mainFooterFill} />
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={!preview || !!preview.parseError || !!preview.parseWarning}
+          onClick={acceptClickHandler}
+        >
+          Next
+        </Button>
+      </CardActions>
     </Card>
   );
 };
