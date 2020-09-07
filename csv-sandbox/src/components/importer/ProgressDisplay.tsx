@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { PreviewInfo } from './parser';
+import { processFile, PreviewInfo } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,34 +12,62 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const estimatedTotal = 100;
+const estimatedTotal = 100; // @todo compute based on file size
 
 export const ProgressDisplay: React.FC<{
   preview: PreviewInfo;
-}> = ({ preview }) => {
+  callback: (rows: string[][]) => void | Promise<void>;
+}> = ({ preview, callback }) => {
   const styles = useStyles();
 
   const [progressCount, setProgressCount] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
 
+  // perform main async parse
+  const asyncLockRef = useRef<number>(0);
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setProgressCount((prev) => prev + 10);
-    }, 400);
+    const oplock = asyncLockRef.current;
+
+    processFile(
+      preview.file,
+      (deltaCount) => {
+        // ignore if stale
+        if (oplock !== asyncLockRef.current) {
+          return; // @todo signal abort
+        }
+
+        setProgressCount((prev) => prev + deltaCount);
+      },
+      callback
+    ).then(() => {
+      // ignore if stale
+      if (oplock !== asyncLockRef.current) {
+        return;
+      }
+
+      setIsComplete(true);
+    });
 
     return () => {
-      clearInterval(intervalId);
+      // invalidate current oplock on change or unmount
+      asyncLockRef.current += 1;
     };
-  }, []);
+  }, [preview]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {
+    if (isComplete) {
+      return 100;
+    }
+
     // inputs hand-picked so that correctly estimated total is about 65% of the bar
+    // @todo tweak to be at ~80%?
     const progressPower = 1.5 * (progressCount / estimatedTotal);
     const progressLeft = 0.5 ** progressPower;
 
     // convert to .1 percent precision for smoother bar display
     return Math.floor(1000 - 1000 * progressLeft) / 10;
-  }, [progressCount]);
+  }, [progressCount, isComplete]);
 
   return (
     <ImporterFrame

@@ -75,3 +75,53 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     };
   });
 }
+
+export function processFile(
+  file: File,
+  reportProgress: (deltaCount: number) => void,
+  callback: (rows: string[][]) => void | Promise<void>
+): Promise<void> {
+  // wrap synchronous errors in promise
+  return new Promise<void>((resolve, reject) => {
+    // @todo true streaming support for local files (use worker?)
+    Papa.parse(file, {
+      chunkSize: 100,
+      skipEmptyLines: true,
+      error: (error) => {
+        reject(error);
+      },
+      chunk: ({ data, errors }, parser) => {
+        // pause to wait until the rows are consumed
+        parser.pause();
+
+        const rows = data.map((row) =>
+          (row as unknown[]).map((item) =>
+            typeof item === 'string' ? item : ''
+          )
+        );
+
+        // @todo collect errors
+        reportProgress(rows.length);
+
+        // wrap sync errors in promise
+        const whenConsumed = new Promise<void>((resolve) =>
+          resolve(callback(rows))
+        );
+
+        // unpause parsing when done
+        whenConsumed.then(
+          () => {
+            parser.resume();
+          },
+          () => {
+            // @todo collect errors
+            parser.resume();
+          }
+        );
+      },
+      complete: () => {
+        resolve();
+      }
+    });
+  });
+}

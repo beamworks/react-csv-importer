@@ -60,5 +60,12 @@ export const Importer: React.FC = () => {
     );
   }
 
-  return <ProgressDisplay preview={preview} />;
+  return (
+    <ProgressDisplay
+      preview={preview}
+      callback={() => {
+        return new Promise((resolve) => setTimeout(resolve, 1500));
+      }}
+    />
+  );
 };
