@@ -10,10 +10,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -24,8 +20,9 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionActions from '@material-ui/core/AccordionActions';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import { ImporterFrame } from './ImporterFrame';
 
 const useStyles = makeStyles((theme) => ({
   rawPreview: {
@@ -79,20 +76,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.75em',
     whiteSpace: 'nowrap'
   },
-  mainHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: -theme.spacing(2), // cancel out button padding
-    marginBottom: -theme.spacing(2)
-  },
-  mainResultBlock: {
-    marginTop: theme.spacing(2)
-  },
+  mainResultBlock: {},
   mainPendingBlock: {
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    marginTop: theme.spacing(2),
     padding: theme.spacing(4),
     color: theme.palette.text.secondary
   },
@@ -105,13 +93,6 @@ const useStyles = makeStyles((theme) => ({
     '& > div:first-child': {
       margin: 0 // condensed appearance
     }
-  },
-  mainFileName: {
-    fontWeight: theme.typography.fontWeightBold,
-    color: theme.palette.text.primary
-  },
-  mainFooterFill: {
-    flex: '1 1 0'
   }
 }));
 
@@ -369,32 +350,15 @@ export const FormatPreview: React.FC<{
   }, [styles, preview, panelRawActive, panelDataActive, cancelClickHandler]);
 
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <div className={styles.mainHeader}>
-          <IconButton onClick={cancelClickHandler} edge="start">
-            <ChevronLeftIcon />
-          </IconButton>
-          <Typography variant="subtitle1" color="textPrimary" noWrap>
-            {file.name}
-          </Typography>
-        </div>
-
-        {report || (
-          <div className={styles.mainPendingBlock}>Loading preview...</div>
-        )}
-      </CardContent>
-      <CardActions>
-        <div className={styles.mainFooterFill} />
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={!preview || !!preview.parseError || !!preview.parseWarning}
-          onClick={acceptClickHandler}
-        >
-          Next
-        </Button>
-      </CardActions>
-    </Card>
+    <ImporterFrame
+      fileName={file.name}
+      nextDisabled={!preview || !!preview.parseError || !!preview.parseWarning}
+      onNext={acceptClickHandler}
+      onCancel={cancelClickHandler}
+    >
+      {report || (
+        <div className={styles.mainPendingBlock}>Loading preview...</div>
+      )}
+    </ImporterFrame>
   );
 };

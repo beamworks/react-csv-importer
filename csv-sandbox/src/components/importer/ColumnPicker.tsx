@@ -9,22 +9,16 @@ import React, {
 import { createPortal } from 'react-dom';
 import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { PreviewInfo, MAX_PREVIEW_ROWS } from './FormatPreview';
+import { ImporterFrame } from './ImporterFrame';
 
 interface Field {
   label: string;
@@ -43,27 +37,9 @@ const fields: Field[] = [
 const SOURCES_PAGE_SIZE = 6;
 
 const useStyles = makeStyles((theme) => ({
-  mainHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: -theme.spacing(2), // cancel out button padding
-    marginBottom: theme.spacing(2)
-  },
-  mainHeaderCrumbSeparator: {
-    flex: 'none',
-    display: 'flex', // for correct icon alignment
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    color: theme.palette.text.disabled
-  },
-  mainHeaderSubtitle: {
-    flex: 'none'
-  },
-  mainFooterFill: {
-    flex: '1 1 0'
-  },
   sourceArea: {
     display: 'flex',
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2)
   },
   sourceAreaControl: {
@@ -598,60 +574,41 @@ export const ColumnPicker: React.FC<{
     );
   }, []);
 
-  // @todo breadcrumb display
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <div className={styles.mainHeader}>
-          {dragObjectPortal}
+    <ImporterFrame
+      fileName={preview.file.name}
+      subtitle="Select Columns"
+      onCancel={cancelClickHandler}
+      onNext={() => {
+        // @todo
+      }}
+    >
+      {dragObjectPortal}
 
-          <IconButton onClick={cancelClickHandler} edge="start">
-            <ChevronLeftIcon />
-          </IconButton>
-          <Typography variant="subtitle1" color="textPrimary" noWrap>
-            {preview.file.name}
-          </Typography>
-          <div className={styles.mainHeaderCrumbSeparator}>
-            <ChevronRightIcon fontSize="inherit" />
-          </div>
-          <div className={styles.mainHeaderSubtitle}>
-            <Typography variant="subtitle1" color="textPrimary" noWrap>
-              Choose Columns
-            </Typography>
-          </div>
-        </div>
+      <SourceArea
+        columns={columns}
+        fieldAssignments={fieldAssignments}
+        dragState={dragState}
+        eventBinder={bindDrag}
+        onUnassign={unassignHandler}
+      />
 
-        <SourceArea
-          columns={columns}
-          fieldAssignments={fieldAssignments}
-          dragState={dragState}
-          eventBinder={bindDrag}
-          onUnassign={unassignHandler}
-        />
+      <Divider />
 
-        <Divider />
-
-        <div className={styles.targetArea}>
-          {fields.map((field, fieldIndex) => (
-            <TargetBox
-              key={fieldIndex}
-              fieldIndex={fieldIndex}
-              field={field}
-              assignedColumn={fieldAssignments[fieldIndex]}
-              dragState={dragState}
-              eventBinder={bindDrag}
-              onHover={dragHoverHandler}
-              onUnassign={unassignHandler}
-            />
-          ))}
-        </div>
-      </CardContent>
-      <CardActions>
-        <div className={styles.mainFooterFill} />
-        <Button variant="contained" color="primary">
-          Next
-        </Button>
-      </CardActions>
-    </Card>
+      <div className={styles.targetArea}>
+        {fields.map((field, fieldIndex) => (
+          <TargetBox
+            key={fieldIndex}
+            fieldIndex={fieldIndex}
+            field={field}
+            assignedColumn={fieldAssignments[fieldIndex]}
+            dragState={dragState}
+            eventBinder={bindDrag}
+            onHover={dragHoverHandler}
+            onUnassign={unassignHandler}
+          />
+        ))}
+      </div>
+    </ImporterFrame>
   );
 };
