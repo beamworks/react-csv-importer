@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import { PreviewInfo, FieldAssignmentMap } from './parser';
+import {
+  PreviewInfo,
+  FieldAssignmentMap,
+  ParseCallback,
+  BaseRow
+} from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
@@ -31,7 +36,13 @@ export const ImporterField: React.FC<Field> = ({ name, label }) => {
   return null;
 };
 
-const ImporterCore: React.FC<{ fields: Field[] }> = ({ fields }) => {
+function ImporterCore<Row extends BaseRow>({
+  fields,
+  callback
+}: React.PropsWithChildren<{
+  fields: Field[];
+  callback: ParseCallback<Row>;
+}>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewInfo | null>(null);
   const [
@@ -80,24 +91,24 @@ const ImporterCore: React.FC<{ fields: Field[] }> = ({ fields }) => {
     <ProgressDisplay
       preview={preview}
       fieldAssignments={fieldAssignments}
-      callback={(rows: { country: string }[]) => {
-        console.log(rows);
-        return new Promise((resolve) => setTimeout(resolve, 1500));
-      }}
+      callback={callback}
     />
   );
-};
+}
 
-export const Importer: React.FC = ({ children }) => {
+export function Importer<Row extends BaseRow>({
+  callback,
+  children
+}: React.PropsWithChildren<{ callback: ParseCallback<Row> }>) {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (
     <>
-      <ImporterCore fields={fields} />
+      <ImporterCore fields={fields} callback={callback} />
 
       <FieldDefinitionContext.Provider value={setFields}>
         {children}
       </FieldDefinitionContext.Provider>
     </>
   );
-};
+}

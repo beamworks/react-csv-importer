@@ -7,7 +7,12 @@ export const ImportPage: React.FC = () => {
     <div>
       <p>Import interface page.</p>
 
-      <Importer>
+      <Importer<{ country: string }>
+        callback={(rows) => {
+          console.log(rows);
+          return new Promise((resolve) => setTimeout(resolve, 1500));
+        }}
+      >
         <ImporterField name="name" label="Name" />
         <ImporterField name="email" label="Email" />
         <ImporterField name="dob" label="DOB" />

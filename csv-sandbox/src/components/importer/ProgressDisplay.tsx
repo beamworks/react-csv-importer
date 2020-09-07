@@ -3,7 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
+import {
+  processFile,
+  PreviewInfo,
+  FieldAssignmentMap,
+  ParseCallback,
+  BaseRow
+} from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,14 +20,14 @@ const useStyles = makeStyles((theme) => ({
 
 const estimatedTotal = 100; // @todo compute based on file size
 
-export function ProgressDisplay<Row extends { [name: string]: unknown }>({
+export function ProgressDisplay<Row extends BaseRow>({
   preview,
   fieldAssignments,
   callback
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   fieldAssignments: FieldAssignmentMap;
-  callback: (rows: Row[]) => void | Promise<void>;
+  callback: ParseCallback<Row>;
 }>) {
   const styles = useStyles();
 

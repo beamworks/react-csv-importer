@@ -19,6 +19,11 @@ export const MAX_PREVIEW_ROWS = 5;
 
 export type FieldAssignmentMap = { [name: string]: number | undefined };
 
+export type BaseRow = { [name: string]: unknown };
+export type ParseCallback<Row extends BaseRow> = (
+  rows: Row[]
+) => void | Promise<void>;
+
 export function parsePreview(file: File): Promise<PreviewResults> {
   // wrap synchronous errors in promise
   return new Promise<PreviewResults>((resolve) => {
@@ -78,7 +83,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
   });
 }
 
-export function processFile<Row extends { [name: string]: unknown }>(
+export function processFile<Row extends BaseRow>(
   file: File,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
