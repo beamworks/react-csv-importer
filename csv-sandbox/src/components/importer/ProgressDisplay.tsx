@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { PreviewInfo } from './FormatPreview';
+import { PreviewInfo } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 const useStyles = makeStyles((theme) => ({

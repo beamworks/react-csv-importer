@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
+import { PreviewInfo } from './parser';
 import { FileSelector } from './FileSelector';
-import { FormatPreview, PreviewInfo } from './FormatPreview';
+import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 

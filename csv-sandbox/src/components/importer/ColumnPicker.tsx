@@ -17,7 +17,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { PreviewInfo, MAX_PREVIEW_ROWS } from './FormatPreview';
+import { PreviewInfo, MAX_PREVIEW_ROWS } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 export interface Field {
