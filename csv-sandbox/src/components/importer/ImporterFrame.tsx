@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -14,6 +15,12 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     marginTop: -theme.spacing(2) // cancel out button padding
+  },
+  mainHeaderSpinner: {
+    display: 'flex', // correct inline content placement
+    marginLeft: -theme.spacing(1.5),
+    padding: theme.spacing(1.5),
+    fontSize: theme.spacing(3)
   },
   mainHeaderCrumbSeparator: {
     flex: 'none',
@@ -34,18 +41,33 @@ export const ImporterFrame: React.FC<{
   fileName: string;
   subtitle?: string; // @todo allow multiple crumbs
   nextDisabled?: boolean;
+  nextLabel?: string;
   onNext: () => void;
-  onCancel: () => void;
-}> = ({ fileName, subtitle, nextDisabled, onNext, onCancel, children }) => {
+  onCancel?: () => void;
+}> = ({
+  fileName,
+  subtitle,
+  nextDisabled,
+  nextLabel,
+  onNext,
+  onCancel,
+  children
+}) => {
   const styles = useStyles();
 
   return (
     <Card variant="outlined">
       <CardContent>
         <div className={styles.mainHeader}>
-          <IconButton onClick={onCancel} edge="start">
-            <ChevronLeftIcon />
-          </IconButton>
+          {onCancel ? (
+            <IconButton onClick={onCancel} edge="start">
+              <ChevronLeftIcon />
+            </IconButton>
+          ) : (
+            <div className={styles.mainHeaderSpinner}>
+              <CircularProgress size="1em" />
+            </div>
+          )}
 
           <Typography variant="subtitle1" color="textPrimary" noWrap>
             {fileName}
@@ -75,7 +97,7 @@ export const ImporterFrame: React.FC<{
           disabled={!!nextDisabled}
           onClick={onNext}
         >
-          Next
+          {nextLabel || 'Next'}
         </Button>
       </CardActions>
     </Card>

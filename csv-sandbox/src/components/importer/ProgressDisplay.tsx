@@ -8,15 +8,15 @@ const useStyles = makeStyles((theme) => ({}));
 
 export const ProgressDisplay: React.FC<{
   preview: PreviewInfo;
-  onCancel: () => void;
-}> = ({ preview, onCancel }) => {
+}> = ({ preview }) => {
   const styles = useStyles();
 
   return (
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Progress"
-      onCancel={onCancel}
+      nextDisabled
+      nextLabel="Finish"
       onNext={() => {
         // @todo
       }}

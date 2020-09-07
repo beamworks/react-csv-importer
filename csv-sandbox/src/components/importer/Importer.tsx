@@ -59,12 +59,5 @@ export const Importer: React.FC = () => {
     );
   }
 
-  return (
-    <ProgressDisplay
-      preview={preview}
-      onCancel={() => {
-        setFieldAssignments(null);
-      }}
-    />
-  );
+  return <ProgressDisplay preview={preview} />;
 };
