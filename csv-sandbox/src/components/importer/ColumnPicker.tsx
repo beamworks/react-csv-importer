@@ -575,8 +575,6 @@ export const ColumnPicker: React.FC<{
         onAccept(fieldAssignments.map((column) => column && column.index));
       }}
     >
-      {dragObjectPortal}
-
       <SourceArea
         columns={columns}
         fieldAssignments={fieldAssignments}
@@ -588,6 +586,8 @@ export const ColumnPicker: React.FC<{
       <Divider />
 
       <div className={styles.targetArea}>
+        {dragObjectPortal}
+
         {fields.map((field, fieldIndex) => (
           <TargetBox
             key={fieldIndex}
