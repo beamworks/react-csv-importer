@@ -25,6 +25,8 @@ export interface Field {
   label: string;
 }
 
+export type FieldAssignmentMap = { [name: string]: number | undefined };
+
 const SOURCES_PAGE_SIZE = 6;
 
 const useStyles = makeStyles((theme) => ({
@@ -170,7 +172,7 @@ interface DragState {
   initialXY: number[];
   initialWidth: number;
   column: Column;
-  dropFieldIndex: number | null;
+  dropFieldName: string | null;
 }
 
 // @todo sort out cases with fewer-than-max preview rows
@@ -274,7 +276,7 @@ function useDragObject(
 
 const SourceBox: React.FC<{
   column: Column;
-  fieldAssignments: (Column | null)[];
+  fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
   onUnassign: (column: Column) => void;
@@ -283,10 +285,13 @@ const SourceBox: React.FC<{
 
   const isShadow = dragState ? column === dragState.column : false;
 
-  const isAssigned = useMemo(() => fieldAssignments.indexOf(column) !== -1, [
-    fieldAssignments,
-    column
-  ]);
+  const isAssigned = useMemo(
+    () =>
+      Object.keys(fieldAssignments).some(
+        (fieldName) => fieldAssignments[fieldName] === column.index
+      ),
+    [fieldAssignments, column]
+  );
 
   const eventHandlers = useMemo(() => eventBinder(column), [
     eventBinder,
@@ -317,7 +322,7 @@ const SourceBox: React.FC<{
 // @todo current page indicator (dots)
 const SourceArea: React.FC<{
   columns: Column[];
-  fieldAssignments: (Column | null)[];
+  fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
   onUnassign: (column: Column) => void;
@@ -375,18 +380,16 @@ const SourceArea: React.FC<{
 };
 
 const TargetBox: React.FC<{
-  fieldIndex: number;
   field: Field;
   assignedColumn: Column | null;
   dragState: DragState | null;
   eventBinder: (
     column: Column,
-    startFieldIndex?: number
+    startFieldName?: string
   ) => ReturnType<typeof useDrag>;
-  onHover: (fieldIndex: number, isOn: boolean) => void;
+  onHover: (fieldName: string, isOn: boolean) => void;
   onUnassign: (column: Column) => void;
 }> = ({
-  fieldIndex,
   field,
   assignedColumn,
   dragState,
@@ -398,13 +401,13 @@ const TargetBox: React.FC<{
 
   const mouseHoverHandlers = dragState
     ? {
-        onMouseEnter: () => onHover(fieldIndex, true),
-        onMouseLeave: () => onHover(fieldIndex, false)
+        onMouseEnter: () => onHover(field.name, true),
+        onMouseLeave: () => onHover(field.name, false)
       }
     : {};
 
   const sourceColumn =
-    dragState && dragState.dropFieldIndex === fieldIndex
+    dragState && dragState.dropFieldName === field.name
       ? dragState.column
       : null;
 
@@ -414,9 +417,9 @@ const TargetBox: React.FC<{
   const dragHandlers = useMemo(
     () =>
       assignedColumn && !isReDragged
-        ? eventBinder(assignedColumn, fieldIndex)
+        ? eventBinder(assignedColumn, field.name)
         : {},
-    [eventBinder, assignedColumn, isReDragged, fieldIndex]
+    [eventBinder, assignedColumn, isReDragged, field.name]
   );
 
   const valueContents = useMemo(() => {
@@ -467,7 +470,7 @@ const TargetBox: React.FC<{
 export const ColumnPicker: React.FC<{
   fields: Field[];
   preview: PreviewInfo;
-  onAccept: (fieldAssignments: (number | null)[]) => void;
+  onAccept: (fieldAssignments: FieldAssignmentMap) => void;
   onCancel: () => void;
 }> = ({ fields, preview, onAccept, onCancel }) => {
   const styles = useStyles();
@@ -481,14 +484,27 @@ export const ColumnPicker: React.FC<{
     });
   }, [preview]);
 
-  const [fieldAssignments, setFieldAssignments] = useState<(Column | null)[]>(
-    () => fields.map(() => null)
+  const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
+    {}
   );
 
+  // make sure there are no extra fields
   useEffect(() => {
-    // make sure field assignments can store all the fields in case latter change
-    while (fields.length > fieldAssignments.length) {
-      fieldAssignments.push(null);
+    const removedFieldNames = Object.keys(fieldAssignments).filter(
+      (existingFieldName) =>
+        !fields.some((field) => field.name === existingFieldName)
+    );
+
+    if (removedFieldNames.length > 0) {
+      setFieldAssignments((prev) => {
+        const copy = { ...prev };
+
+        removedFieldNames.forEach((fieldName) => {
+          delete copy[fieldName];
+        });
+
+        return copy;
+      });
     }
   }, [fields]);
 
@@ -499,7 +515,7 @@ export const ColumnPicker: React.FC<{
     if (first && event) {
       event.preventDefault();
 
-      const [column, startFieldIndex] = args as [Column, number | undefined];
+      const [column, startFieldName] = args as [Column, string | undefined];
 
       setDragState({
         initialXY: xy,
@@ -508,33 +524,39 @@ export const ColumnPicker: React.FC<{
             ? event.currentTarget.offsetWidth
             : 0,
         column,
-        dropFieldIndex: startFieldIndex !== undefined ? startFieldIndex : null
+        dropFieldName: startFieldName !== undefined ? startFieldName : null
       });
     } else if (last) {
       setDragState(null);
 
       if (dragState) {
-        const dropFieldIndex = dragState.dropFieldIndex;
+        const dropFieldName = dragState.dropFieldName;
         const droppedColumn = dragState.column;
 
-        setFieldAssignments((prevAssignments) =>
-          prevAssignments.map((prevCol, fieldIndex) => {
-            // set new field column
-            if (dropFieldIndex === fieldIndex) {
-              return droppedColumn;
-            }
+        setFieldAssignments((prevAssignments) => {
+          const copy = { ...prevAssignments };
 
-            // otherwise, ensure dropped column does not show up elsewhere
-            return prevCol === droppedColumn ? null : prevCol;
-          })
-        );
+          // ensure dropped column does not show up elsewhere
+          Object.keys(prevAssignments).forEach((name) => {
+            if (copy[name] === droppedColumn.index) {
+              delete copy[name];
+            }
+          });
+
+          // set new field column
+          if (dropFieldName !== null) {
+            copy[dropFieldName] = droppedColumn.index;
+          }
+
+          return copy;
+        });
       }
     }
 
     dragUpdateHandler(xy);
   }, {});
 
-  const dragHoverHandler = useCallback((fieldIndex: number, isOn: boolean) => {
+  const dragHoverHandler = useCallback((fieldName: string, isOn: boolean) => {
     setDragState((prev): DragState | null => {
       if (!prev) {
         return prev;
@@ -544,13 +566,13 @@ export const ColumnPicker: React.FC<{
         // set the new drop target
         return {
           ...prev,
-          dropFieldIndex: fieldIndex
+          dropFieldName: fieldName
         };
-      } else if (prev.dropFieldIndex === fieldIndex) {
+      } else if (prev.dropFieldName === fieldName) {
         // clear drop target if we are still the current one
         return {
           ...prev,
-          dropFieldIndex: null
+          dropFieldName: null
         };
       }
 
@@ -560,11 +582,19 @@ export const ColumnPicker: React.FC<{
   }, []);
 
   const unassignHandler = useCallback((column: Column) => {
-    setFieldAssignments((prev) =>
-      prev.map((assignedColumn) =>
-        assignedColumn === column ? null : assignedColumn
-      )
-    );
+    setFieldAssignments((prev) => {
+      const assignedFieldName = Object.keys(prev).find(
+        (fieldName) => prev[fieldName] === column.index
+      );
+
+      if (assignedFieldName === undefined) {
+        return prev;
+      }
+
+      const copy = { ...prev };
+      delete copy[assignedFieldName];
+      return copy;
+    });
   }, []);
 
   return (
@@ -573,7 +603,7 @@ export const ColumnPicker: React.FC<{
       subtitle="Select Columns"
       onCancel={onCancel}
       onNext={() => {
-        onAccept(fieldAssignments.map((column) => column && column.index));
+        onAccept({ ...fieldAssignments });
       }}
     >
       <SourceArea
@@ -589,18 +619,25 @@ export const ColumnPicker: React.FC<{
       <div className={styles.targetArea}>
         {dragObjectPortal}
 
-        {fields.map((field, fieldIndex) => (
-          <TargetBox
-            key={fieldIndex}
-            fieldIndex={fieldIndex}
-            field={field}
-            assignedColumn={fieldAssignments[fieldIndex]}
-            dragState={dragState}
-            eventBinder={bindDrag}
-            onHover={dragHoverHandler}
-            onUnassign={unassignHandler}
-          />
-        ))}
+        {fields.map((field) => {
+          const assignedColumnIndex = fieldAssignments[field.name];
+
+          return (
+            <TargetBox
+              key={field.name}
+              field={field}
+              assignedColumn={
+                assignedColumnIndex !== undefined
+                  ? columns[assignedColumnIndex]
+                  : null
+              }
+              dragState={dragState}
+              eventBinder={bindDrag}
+              onHover={dragHoverHandler}
+              onUnassign={unassignHandler}
+            />
+          );
+        })}
       </div>
     </ImporterFrame>
   );

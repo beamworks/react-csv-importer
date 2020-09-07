@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { PreviewInfo } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
-import { ColumnPicker, Field } from './ColumnPicker';
+import { ColumnPicker, Field, FieldAssignmentMap } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 
 type FieldListSetter = (prev: Field[]) => Field[];
@@ -34,9 +34,10 @@ export const ImporterField: React.FC<Field> = ({ name, label }) => {
 const ImporterCore: React.FC<{ fields: Field[] }> = ({ fields }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewInfo | null>(null);
-  const [fieldAssignments, setFieldAssignments] = useState<
-    (number | null)[] | null
-  >(null);
+  const [
+    fieldAssignments,
+    setFieldAssignments
+  ] = useState<FieldAssignmentMap | null>(null);
 
   const fileHandler = useCallback((file: File) => {
     setSelectedFile(file);
