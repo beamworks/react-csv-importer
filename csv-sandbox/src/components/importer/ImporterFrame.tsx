@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ImporterFrame: React.FC<{
   fileName: string;
-  subtitle?: string;
+  subtitle?: string; // @todo allow multiple crumbs
   nextDisabled?: boolean;
   onNext: () => void;
   onCancel: () => void;

@@ -479,13 +479,6 @@ export const ColumnPicker: React.FC<{
 }> = ({ preview, onCancel }) => {
   const styles = useStyles();
 
-  const onCancelRef = useRef(onCancel);
-  onCancelRef.current = onCancel;
-
-  const cancelClickHandler = useCallback(() => {
-    onCancelRef.current();
-  }, []);
-
   const columns = useMemo<Column[]>(() => {
     return [...new Array(preview.firstRows[0].length)].map((empty, index) => {
       return {
@@ -578,7 +571,7 @@ export const ColumnPicker: React.FC<{
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Select Columns"
-      onCancel={cancelClickHandler}
+      onCancel={onCancel}
       onNext={() => {
         // @todo
       }}

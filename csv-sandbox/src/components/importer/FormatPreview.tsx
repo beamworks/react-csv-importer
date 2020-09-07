@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useMemo,
-  useRef,
-  useEffect,
-  useState
-} from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -234,27 +228,9 @@ export const FormatPreview: React.FC<{
 }> = ({ file, onAccept, onCancel }) => {
   const styles = useStyles();
 
-  const onCancelRef = useRef(onCancel);
-  onCancelRef.current = onCancel;
-
-  const cancelClickHandler = useCallback(() => {
-    onCancelRef.current();
-  }, []);
-
   const [preview, setPreview] = useState<PreviewResults | null>(null);
   const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
   const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
-
-  const onAcceptRef = useRef(onAccept);
-  onAcceptRef.current = onAccept;
-
-  const acceptClickHandler = useCallback(() => {
-    if (!preview || preview.parseError) {
-      throw new Error('unexpected missing preview info');
-    }
-
-    onAcceptRef.current(preview);
-  }, [preview]);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -292,11 +268,7 @@ export const FormatPreview: React.FC<{
             <span>
               Import error: <b>{preview.parseError.message}</b>
             </span>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={cancelClickHandler}
-            >
+            <Button size="small" variant="contained" onClick={onCancel}>
               Go Back
             </Button>
           </div>
@@ -322,7 +294,7 @@ export const FormatPreview: React.FC<{
             <RawPreview
               chunk={preview.firstChunk}
               warning={preview.parseWarning}
-              onCancelClick={cancelClickHandler}
+              onCancelClick={onCancel}
             />
           </AccordionDetails>
         </Accordion>
@@ -347,14 +319,20 @@ export const FormatPreview: React.FC<{
         )}
       </div>
     );
-  }, [styles, preview, panelRawActive, panelDataActive, cancelClickHandler]);
+  }, [styles, preview, panelRawActive, panelDataActive, onCancel]);
 
   return (
     <ImporterFrame
       fileName={file.name}
       nextDisabled={!preview || !!preview.parseError || !!preview.parseWarning}
-      onNext={acceptClickHandler}
-      onCancel={cancelClickHandler}
+      onNext={() => {
+        if (!preview || preview.parseError) {
+          throw new Error('unexpected missing preview info');
+        }
+
+        onAccept(preview);
+      }}
+      onCancel={onCancel}
     >
       {report || (
         <div className={styles.mainPendingBlock}>Loading preview...</div>
