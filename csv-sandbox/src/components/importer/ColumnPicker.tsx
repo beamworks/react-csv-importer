@@ -20,19 +20,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import { PreviewInfo, MAX_PREVIEW_ROWS } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
 
-interface Field {
+export interface Field {
   label: string;
 }
-
-const fields: Field[] = [
-  { label: 'Name' },
-  { label: 'Email' },
-  { label: 'DOB' },
-  { label: 'Postal Code' },
-  { label: 'Snack Preference' },
-  { label: 'Country' },
-  { label: 'Bees?' }
-];
 
 const SOURCES_PAGE_SIZE = 6;
 
@@ -474,9 +464,11 @@ const TargetBox: React.FC<{
 };
 
 export const ColumnPicker: React.FC<{
+  fields: Field[];
   preview: PreviewInfo;
+  onAccept: (fieldAssignments: (number | null)[]) => void;
   onCancel: () => void;
-}> = ({ preview, onCancel }) => {
+}> = ({ fields, preview, onAccept, onCancel }) => {
   const styles = useStyles();
 
   const columns = useMemo<Column[]>(() => {
@@ -491,6 +483,13 @@ export const ColumnPicker: React.FC<{
   const [fieldAssignments, setFieldAssignments] = useState<(Column | null)[]>(
     () => fields.map(() => null)
   );
+
+  useEffect(() => {
+    // make sure field assignments can store all the fields in case latter change
+    while (fields.length > fieldAssignments.length) {
+      fieldAssignments.push(null);
+    }
+  }, [fields]);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [dragObjectPortal, dragUpdateHandler] = useDragObject(dragState);
@@ -573,7 +572,7 @@ export const ColumnPicker: React.FC<{
       subtitle="Select Columns"
       onCancel={onCancel}
       onNext={() => {
-        // @todo
+        onAccept(fieldAssignments.map((column) => column && column.index));
       }}
     >
       {dragObjectPortal}
