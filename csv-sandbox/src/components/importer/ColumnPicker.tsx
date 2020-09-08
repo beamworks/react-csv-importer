@@ -25,7 +25,7 @@ export interface Field {
   label: string;
 }
 
-const SOURCES_PAGE_SIZE = 6;
+const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
 const useStyles = makeStyles((theme) => ({
   sourceArea: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sourceBoxAction: {
     position: 'absolute',
-    top: theme.spacing(0.5),
+    top: theme.spacing(0.5), // matches up with column card header sizing
     right: theme.spacing(0.5),
     zIndex: 1 // right above content
   },
@@ -84,9 +84,21 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   columnCardHeader: {
+    marginTop: theme.spacing(-0.5),
+    marginLeft: theme.spacing(-1),
+    marginRight: theme.spacing(-1),
     marginBottom: theme.spacing(0.5),
+    height: theme.spacing(3),
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.secondary,
+
+    '& > b': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      background: theme.palette.divider
+    },
 
     '$columnCardPaper[data-draggable=true]:hover &, $columnCardPaper[data-dragged=true] &': {
       color: theme.palette.text.primary
@@ -127,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
   },
   targetBoxValueAction: {
     position: 'absolute',
-    top: theme.spacing(0.5),
+    top: theme.spacing(0.5), // matches up with column card header sizing
     right: theme.spacing(0.5),
     zIndex: 1 // right above content
   },
@@ -202,6 +214,42 @@ const ColumnCard: React.FC<{
     [optionalColumn]
   );
 
+  // spreadsheet-style column code computation (A, B, ..., Z, AA, AB, ..., etc)
+  const columnCode = useMemo(() => {
+    const value = column.index;
+
+    // ignore dummy index
+    if (value < 0) {
+      return '';
+    }
+
+    // first, determine how many base-26 letters there should be
+    // (because the notation is not purely positional)
+    let digitCount = 1;
+    let base = 0;
+    let next = 26;
+
+    while (next <= value) {
+      digitCount += 1;
+      base = next;
+      next = next * 26 + 26;
+    }
+
+    // then, apply normal positional digit computation on remainder above base
+    let remainder = value - base;
+
+    const digits = [];
+    while (digits.length < digitCount) {
+      const lastDigit = remainder % 26;
+      remainder = Math.floor((remainder - lastDigit) / 26); // applying floor just in case
+
+      // store ASCII code, with A as 0
+      digits.unshift(65 + lastDigit);
+    }
+
+    return String.fromCharCode.apply(null, digits);
+  }, [column]);
+
   return (
     // not changing variant dynamically because it causes a height jump
     <Paper
@@ -216,7 +264,7 @@ const ColumnCard: React.FC<{
       square={isDummy}
     >
       <div className={styles.columnCardHeader}>
-        {isDummy ? '\u00a0' : `Col ${column.index}`}
+        {isDummy ? '\u00a0' : <b>{columnCode}</b>}
       </div>
 
       {column.values.slice(0, rowCount).map((value, valueIndex) => (
