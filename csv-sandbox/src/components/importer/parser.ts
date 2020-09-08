@@ -138,9 +138,9 @@ export function processFile<Row extends BaseRow>(
         reportProgress(rows.length);
 
         // wrap sync errors in promise
-        // @todo don't call callback with zero rows
+        // (avoid invoking callback if there are no rows to consume)
         const whenConsumed = new Promise<void>((resolve) =>
-          resolve(callback(rows))
+          resolve(rows.length ? callback(rows) : undefined)
         );
 
         // unpause parsing when done
