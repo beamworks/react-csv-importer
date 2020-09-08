@@ -87,6 +87,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
 
 export function processFile<Row extends BaseRow>(
   file: File,
+  hasHeaders: boolean,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
   callback: (rows: Row[]) => void | Promise<void>
@@ -95,6 +96,9 @@ export function processFile<Row extends BaseRow>(
 
   // wrap synchronous errors in promise
   return new Promise<void>((resolve, reject) => {
+    // skip first line if needed
+    let skipLine = hasHeaders;
+
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
       chunkSize: 100,
@@ -106,7 +110,9 @@ export function processFile<Row extends BaseRow>(
         // pause to wait until the rows are consumed
         parser.pause();
 
-        const rows = data.map((row) => {
+        const skipped = skipLine && data.length > 0;
+
+        const rows = (skipped ? data.slice(1) : data).map((row) => {
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
@@ -123,10 +129,16 @@ export function processFile<Row extends BaseRow>(
           return record as Row; // @todo look into a more precise setup
         });
 
+        // clear line skip flag if there was anything to skip
+        if (skipped) {
+          skipLine = false;
+        }
+
         // @todo collect errors
         reportProgress(rows.length);
 
         // wrap sync errors in promise
+        // @todo don't call callback with zero rows
         const whenConsumed = new Promise<void>((resolve) =>
           resolve(callback(rows))
         );

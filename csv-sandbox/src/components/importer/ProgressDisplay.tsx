@@ -41,6 +41,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
     processFile(
       preview.file,
+      preview.hasHeaders,
       fieldAssignments,
       (deltaCount) => {
         // ignore if stale
