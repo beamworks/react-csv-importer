@@ -6,9 +6,12 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -66,9 +69,23 @@ const useStyles = makeStyles((theme) => ({
       flex: 'none'
     }
   },
+  headerToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: theme.spacing(3),
+    marginTop: theme.spacing(-1),
+    marginBottom: theme.spacing(-1),
+    color: theme.palette.text.primary
+  },
   tableCell: {
     fontSize: '0.75em',
-    whiteSpace: 'nowrap'
+    lineHeight: 1,
+    whiteSpace: 'nowrap',
+
+    '&[data-head=true]': {
+      fontStyle: 'italic',
+      color: theme.palette.text.secondary
+    }
   },
   mainResultBlock: {},
   mainPendingBlock: {
@@ -122,29 +139,49 @@ const RawPreview: React.FC<{
   );
 });
 
-const DataRowPreview: React.FC<{ rows: string[][] }> = React.memo(
-  ({ rows }) => {
-    const styles = useStyles();
+const DataRowPreview: React.FC<{
+  hasHeaders: boolean;
+  rows: string[][];
+}> = React.memo(({ hasHeaders, rows }) => {
+  const styles = useStyles();
 
-    return (
-      <TableContainer component={Paper}>
-        <Table size="small">
-          <TableBody>
-            {rows.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {row.map((item, itemIndex) => (
-                  <TableCell key={itemIndex} className={styles.tableCell}>
-                    {item}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-);
+  const headerRow = hasHeaders ? rows[0] : null;
+  const bodyRows = hasHeaders ? rows.slice(1) : rows;
+
+  return (
+    <TableContainer component={Paper}>
+      <Table size="small">
+        {headerRow && (
+          <TableHead>
+            <TableRow>
+              {headerRow.map((item, itemIndex) => (
+                <TableCell
+                  key={itemIndex}
+                  className={styles.tableCell}
+                  data-head="true"
+                >
+                  {item}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+        )}
+
+        <TableBody>
+          {bodyRows.map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {row.map((item, itemIndex) => (
+                <TableCell key={itemIndex} className={styles.tableCell}>
+                  {item}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+});
 
 export const FormatPreview: React.FC<{
   file: File;
@@ -161,6 +198,7 @@ export const FormatPreview: React.FC<{
         ...currentPreview
       }
   );
+
   const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
   const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
 
@@ -243,9 +281,38 @@ export const FormatPreview: React.FC<{
               <Typography variant="subtitle1" color="textSecondary">
                 Preview Import
               </Typography>
+
+              <div
+                className={styles.headerToggle}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+              >
+                <FormControlLabel
+                  control={
+                    <Switch
+                      value={preview.hasHeaders}
+                      onChange={() => {
+                        setPreview((prev) =>
+                          prev && !prev.parseError // appease type safety
+                            ? {
+                                ...prev,
+                                hasHeaders: !prev.hasHeaders
+                              }
+                            : prev
+                        );
+                      }}
+                    />
+                  }
+                  label="Data has headers"
+                />
+              </div>
             </AccordionSummary>
             <AccordionDetails>
-              <DataRowPreview rows={preview.firstRows} />
+              <DataRowPreview
+                hasHeaders={preview.hasHeaders}
+                rows={preview.firstRows}
+              />
             </AccordionDetails>
           </Accordion>
         )}

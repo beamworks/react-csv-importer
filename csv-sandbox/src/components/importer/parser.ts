@@ -2,14 +2,15 @@ import Papa from 'papaparse';
 
 export interface PreviewInfo {
   file: File;
-  parseWarning?: Papa.ParseError;
   firstChunk: string;
   firstRows: string[][];
+  hasHeaders: boolean;
 }
 
 export type PreviewResults =
   | ({
       parseError: undefined;
+      parseWarning?: Papa.ParseError;
     } & PreviewInfo)
   | {
       parseError: Error | Papa.ParseError;
@@ -37,7 +38,8 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         parseError: undefined,
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',
-        firstRows: rowAccumulator
+        firstRows: rowAccumulator,
+        hasHeaders: false // placeholder to modify downstream
       });
     }
 
