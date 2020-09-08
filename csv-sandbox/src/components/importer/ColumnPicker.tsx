@@ -111,6 +111,12 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
 
+    '&[data-header="true"]': {
+      textAlign: 'center',
+      fontStyle: 'italic',
+      color: theme.palette.text.secondary
+    },
+
     '& + div': {
       marginTop: 0
     }
@@ -188,6 +194,7 @@ interface DragState {
 // @todo sort out cases with fewer-than-max preview rows
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
+  hasHeaders: boolean;
   column?: Column;
   rowCount?: number;
   isShadow?: boolean;
@@ -195,6 +202,7 @@ const ColumnCard: React.FC<{
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
+  hasHeaders,
   column: optionalColumn,
   rowCount = MAX_PREVIEW_ROWS,
   isShadow,
@@ -268,7 +276,11 @@ const ColumnCard: React.FC<{
       </div>
 
       {column.values.slice(0, rowCount).map((value, valueIndex) => (
-        <div key={valueIndex} className={styles.columnCardValue}>
+        <div
+          key={valueIndex}
+          className={styles.columnCardValue}
+          data-header={hasHeaders && valueIndex === 0}
+        >
           {value || '\u00a0'}
         </div>
       ))}
@@ -277,6 +289,7 @@ const ColumnCard: React.FC<{
 };
 
 function useDragObject(
+  hasHeaders: boolean,
   dragState: DragState | null
 ): [React.ReactElement | null, (xy: number[]) => void] {
   const styles = useStyles();
@@ -287,7 +300,11 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragBox} ref={dragBoxRef}>
           <div className={styles.dragBoxHolder}>
-            <ColumnCard column={dragState.column} isDragged />
+            <ColumnCard
+              hasHeaders={hasHeaders}
+              column={dragState.column}
+              isDragged
+            />
           </div>
         </div>,
         document.body
@@ -321,12 +338,20 @@ function useDragObject(
 }
 
 const SourceBox: React.FC<{
+  hasHeaders: boolean;
   column: Column;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
   onUnassign: (column: Column) => void;
-}> = ({ column, fieldAssignments, dragState, eventBinder, onUnassign }) => {
+}> = ({
+  hasHeaders,
+  column,
+  fieldAssignments,
+  dragState,
+  eventBinder,
+  onUnassign
+}) => {
   const styles = useStyles();
 
   const isShadow = dragState ? column === dragState.column : false;
@@ -356,6 +381,7 @@ const SourceBox: React.FC<{
 
       <div {...(isAssigned ? {} : eventHandlers)}>
         <ColumnCard
+          hasHeaders={hasHeaders}
           column={column}
           isShadow={isShadow || isAssigned}
           isDraggable={!dragState && !isShadow && !isAssigned}
@@ -367,12 +393,20 @@ const SourceBox: React.FC<{
 
 // @todo current page indicator (dots)
 const SourceArea: React.FC<{
+  hasHeaders: boolean;
   columns: Column[];
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
   onUnassign: (column: Column) => void;
-}> = ({ columns, fieldAssignments, dragState, eventBinder, onUnassign }) => {
+}> = ({
+  hasHeaders,
+  columns,
+  fieldAssignments,
+  dragState,
+  eventBinder,
+  onUnassign
+}) => {
   const styles = useStyles();
 
   const [page, setPage] = useState<number>(0);
@@ -384,6 +418,7 @@ const SourceArea: React.FC<{
     .map((column, columnIndex) => (
       <SourceBox
         key={columnIndex}
+        hasHeaders={hasHeaders}
         column={column}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
@@ -426,6 +461,7 @@ const SourceArea: React.FC<{
 };
 
 const TargetBox: React.FC<{
+  hasHeaders: boolean;
   field: Field;
   assignedColumn: Column | null;
   dragState: DragState | null;
@@ -436,6 +472,7 @@ const TargetBox: React.FC<{
   onHover: (fieldName: string, isOn: boolean) => void;
   onUnassign: (column: Column) => void;
 }> = ({
+  hasHeaders,
   field,
   assignedColumn,
   dragState,
@@ -470,12 +507,20 @@ const TargetBox: React.FC<{
 
   const valueContents = useMemo(() => {
     if (sourceColumn) {
-      return <ColumnCard rowCount={3} column={sourceColumn} isDropIndicator />;
+      return (
+        <ColumnCard
+          hasHeaders={hasHeaders}
+          rowCount={3}
+          column={sourceColumn}
+          isDropIndicator
+        />
+      );
     }
 
     if (assignedColumn) {
       return (
         <ColumnCard
+          hasHeaders={hasHeaders}
           rowCount={3}
           column={assignedColumn}
           isShadow={isReDragged}
@@ -484,7 +529,7 @@ const TargetBox: React.FC<{
       );
     }
 
-    return <ColumnCard rowCount={3} />;
+    return <ColumnCard hasHeaders={hasHeaders} rowCount={3} />;
   }, [assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
@@ -555,7 +600,10 @@ export const ColumnPicker: React.FC<{
   }, [fields]);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
-  const [dragObjectPortal, dragUpdateHandler] = useDragObject(dragState);
+  const [dragObjectPortal, dragUpdateHandler] = useDragObject(
+    preview.hasHeaders,
+    dragState
+  );
 
   const bindDrag = useDrag(({ first, last, event, xy, args }) => {
     if (first && event) {
@@ -653,6 +701,7 @@ export const ColumnPicker: React.FC<{
       }}
     >
       <SourceArea
+        hasHeaders={preview.hasHeaders}
         columns={columns}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
@@ -671,6 +720,7 @@ export const ColumnPicker: React.FC<{
           return (
             <TargetBox
               key={field.name}
+              hasHeaders={preview.hasHeaders}
               field={field}
               assignedColumn={
                 assignedColumnIndex !== undefined
