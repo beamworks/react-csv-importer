@@ -8,7 +8,7 @@
     "watch": "webpack-dev-server --mode development"
   },
   "author": "Nick Matantsev <nick.matantsev@gmail.com>",
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "husky": "^4.2.5",
     "prettier": "^2.1.1",
