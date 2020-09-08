@@ -148,12 +148,19 @@ const DataRowPreview: React.FC<{ rows: string[][] }> = React.memo(
 
 export const FormatPreview: React.FC<{
   file: File;
+  currentPreview: PreviewInfo | null;
   onAccept: (preview: PreviewInfo) => void;
   onCancel: () => void;
-}> = ({ file, onAccept, onCancel }) => {
+}> = ({ file, currentPreview, onAccept, onCancel }) => {
   const styles = useStyles();
 
-  const [preview, setPreview] = useState<PreviewResults | null>(null);
+  const [preview, setPreview] = useState<PreviewResults | null>(
+    () =>
+      currentPreview && {
+        parseError: undefined,
+        ...currentPreview
+      }
+  );
   const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
   const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
 

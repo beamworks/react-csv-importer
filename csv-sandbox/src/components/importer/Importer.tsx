@@ -45,6 +45,7 @@ function ImporterCore<Row extends BaseRow>({
 }>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewInfo | null>(null);
+  const [editPreview, setEditPreview] = useState<boolean>(false);
   const [
     fieldAssignments,
     setFieldAssignments
@@ -58,12 +59,14 @@ function ImporterCore<Row extends BaseRow>({
     return <FileSelector onSelected={fileHandler} />;
   }
 
-  if (preview === null) {
+  if (preview === null || editPreview) {
     return (
       <FormatPreview
         file={selectedFile}
+        currentPreview={preview}
         onAccept={(parsedPreview) => {
           setPreview(parsedPreview);
+          setEditPreview(false);
         }}
         onCancel={() => {
           setSelectedFile(null);
@@ -81,7 +84,8 @@ function ImporterCore<Row extends BaseRow>({
           setFieldAssignments(assignments);
         }}
         onCancel={() => {
-          setPreview(null);
+          // keep existing preview data
+          setEditPreview(true);
         }}
       />
     );
