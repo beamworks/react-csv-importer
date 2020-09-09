@@ -1,74 +1,20 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionActions from '@material-ui/core/AccordionActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { parsePreview, PreviewResults, PreviewInfo } from './parser';
 import { ImporterFrame } from './ImporterFrame';
+import { FormatRawPreview } from './FormatRawPreview';
+import { FormatDataRowPreview } from './FormatDataRowPreview';
+import { FormatErrorMessage } from './FormatErrorMessage';
 
 const useStyles = makeStyles((theme) => ({
-  rawPreview: {
-    flex: '1 1 0', // avoid stretching to internal width
-    width: 0
-  },
-  rawPreviewScroll: {
-    marginBottom: theme.spacing(2),
-    height: theme.spacing(12),
-    borderRadius: theme.shape.borderRadius,
-    background: theme.palette.primary.dark,
-    color: theme.palette.primary.contrastText,
-    overflow: 'auto'
-  },
-  rawPreviewPre: {
-    margin: 0, // override default
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    fontSize: theme.typography.fontSize,
-
-    '& > aside': {
-      display: 'inline-block',
-      marginLeft: theme.spacing(0.5),
-      padding: `0 0.25em`,
-      borderRadius: theme.shape.borderRadius / 2,
-      background: theme.palette.primary.contrastText,
-      color: theme.palette.primary.dark,
-      fontSize: '0.75em',
-      opacity: 0.75
-    }
-  },
-  errorWithButton: {
-    display: 'flex',
-    alignItems: 'center',
-    borderRadius: theme.shape.borderRadius,
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    background: theme.palette.error.main,
-    fontSize: theme.typography.fontSize,
-    color: theme.palette.error.contrastText,
-
-    '& > span': {
-      flex: '1 1 0',
-      marginRight: theme.spacing(2),
-      wordBreak: 'break-word'
-    },
-
-    '& > button': {
-      flex: 'none'
-    }
-  },
   headerToggle: {
     display: 'flex',
     alignItems: 'center',
@@ -76,16 +22,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-1),
     marginBottom: theme.spacing(-1),
     color: theme.palette.text.primary
-  },
-  tableCell: {
-    fontSize: '0.75em',
-    lineHeight: 1,
-    whiteSpace: 'nowrap',
-
-    '&[data-head=true]': {
-      fontStyle: 'italic',
-      color: theme.palette.text.secondary
-    }
   },
   mainResultBlock: {},
   mainPendingBlock: {
@@ -106,82 +42,6 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }));
-
-const RAW_PREVIEW_SIZE = 500;
-
-const RawPreview: React.FC<{
-  chunk: string;
-  warning?: Papa.ParseError;
-  onCancelClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-}> = React.memo(({ chunk, warning, onCancelClick }) => {
-  const styles = useStyles();
-  const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
-  const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
-
-  return (
-    <div className={styles.rawPreview}>
-      <div className={styles.rawPreviewScroll}>
-        <pre className={styles.rawPreviewPre}>
-          {chunkSlice}
-          {chunkHasMore && <aside>...</aside>}
-        </pre>
-      </div>
-
-      {warning ? (
-        <div className={styles.errorWithButton}>
-          <span>{warning.message}: please check data formatting</span>
-          <Button size="small" variant="contained" onClick={onCancelClick}>
-            Go Back
-          </Button>
-        </div>
-      ) : null}
-    </div>
-  );
-});
-
-const DataRowPreview: React.FC<{
-  hasHeaders: boolean;
-  rows: string[][];
-}> = React.memo(({ hasHeaders, rows }) => {
-  const styles = useStyles();
-
-  const headerRow = hasHeaders ? rows[0] : null;
-  const bodyRows = hasHeaders ? rows.slice(1) : rows;
-
-  return (
-    <TableContainer component={Paper}>
-      <Table size="small">
-        {headerRow && (
-          <TableHead>
-            <TableRow>
-              {headerRow.map((item, itemIndex) => (
-                <TableCell
-                  key={itemIndex}
-                  className={styles.tableCell}
-                  data-head="true"
-                >
-                  {item}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-        )}
-
-        <TableBody>
-          {bodyRows.map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
-              {row.map((item, itemIndex) => (
-                <TableCell key={itemIndex} className={styles.tableCell}>
-                  {item}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-});
 
 export const FormatPreview: React.FC<{
   file: File;
@@ -234,14 +94,9 @@ export const FormatPreview: React.FC<{
     if (preview.parseError) {
       return (
         <div className={styles.mainResultBlock}>
-          <div className={styles.errorWithButton}>
-            <span>
-              Import error: <b>{preview.parseError.message}</b>
-            </span>
-            <Button size="small" variant="contained" onClick={onCancel}>
-              Go Back
-            </Button>
-          </div>
+          <FormatErrorMessage onCancelClick={onCancel}>
+            Import error: <b>{preview.parseError.message}</b>
+          </FormatErrorMessage>
         </div>
       );
     }
@@ -261,7 +116,7 @@ export const FormatPreview: React.FC<{
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <RawPreview
+            <FormatRawPreview
               chunk={preview.firstChunk}
               warning={preview.parseWarning}
               onCancelClick={onCancel}
@@ -309,7 +164,7 @@ export const FormatPreview: React.FC<{
               </div>
             </AccordionSummary>
             <AccordionDetails>
-              <DataRowPreview
+              <FormatDataRowPreview
                 hasHeaders={preview.hasHeaders}
                 rows={preview.firstRows}
               />
