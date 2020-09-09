@@ -12,6 +12,9 @@ export const ImportPage: React.FC = () => {
           console.log(rows);
           return new Promise((resolve) => setTimeout(resolve, 1500));
         }}
+        onFinish={() => {
+          console.log('dismissed!');
+        }}
       >
         <ImporterField name="name" label="Name" />
         <ImporterField name="email" label="Email" />

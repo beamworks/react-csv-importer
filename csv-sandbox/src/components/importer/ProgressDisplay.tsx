@@ -23,16 +23,19 @@ const estimatedTotal = 100; // @todo compute based on file size
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
   fieldAssignments,
-  callback
+  callback,
+  onFinish
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   fieldAssignments: FieldAssignmentMap;
   callback: ParseCallback<Row>;
+  onFinish: () => void;
 }>) {
   const styles = useStyles();
 
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
 
   // perform main async parse
   const asyncLockRef = useRef<number>(0);
@@ -86,10 +89,11 @@ export function ProgressDisplay<Row extends BaseRow>({
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Progress"
-      nextDisabled={!isComplete}
+      nextDisabled={!isComplete || isDismissed}
       nextLabel="Finish"
       onNext={() => {
-        // @todo
+        setIsDismissed(true);
+        onFinish();
       }}
     >
       <div className={styles.progressFrame}>

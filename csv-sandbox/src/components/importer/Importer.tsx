@@ -38,10 +38,12 @@ export const ImporterField: React.FC<Field> = ({ name, label }) => {
 
 function ImporterCore<Row extends BaseRow>({
   fields,
-  callback
+  callback,
+  onFinish
 }: React.PropsWithChildren<{
   fields: Field[];
   callback: ParseCallback<Row>;
+  onFinish: () => void;
 }>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -98,19 +100,24 @@ function ImporterCore<Row extends BaseRow>({
       preview={preview}
       fieldAssignments={fieldAssignments}
       callback={callback}
+      onFinish={onFinish}
     />
   );
 }
 
 export function Importer<Row extends BaseRow>({
   callback,
+  onFinish,
   children
-}: React.PropsWithChildren<{ callback: ParseCallback<Row> }>) {
+}: React.PropsWithChildren<{
+  callback: ParseCallback<Row>;
+  onFinish: () => void;
+}>) {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (
     <>
-      <ImporterCore fields={fields} callback={callback} />
+      <ImporterCore fields={fields} callback={callback} onFinish={onFinish} />
 
       <FieldDefinitionContext.Provider value={setFields}>
         {children}
