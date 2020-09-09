@@ -32,11 +32,11 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     let firstWarning: Papa.ParseError | undefined = undefined;
     const rowAccumulator: string[][] = [];
 
-    while (rowAccumulator.length < PREVIEW_ROW_COUNT) {
-      rowAccumulator.push([]);
-    }
-
     function reportSuccess() {
+      while (rowAccumulator.length < PREVIEW_ROW_COUNT) {
+        rowAccumulator.push([]);
+      }
+
       resolve({
         file,
         parseError: undefined,
@@ -110,7 +110,7 @@ export function processFile<Row extends BaseRow>(
       error: (error) => {
         reject(error);
       },
-      chunk: ({ data, errors }, parser) => {
+      chunk: ({ data }, parser) => {
         // pause to wait until the rows are consumed
         parser.pause();
 
