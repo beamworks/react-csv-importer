@@ -37,10 +37,21 @@ export const ImporterField: React.FC<FieldProps> = ({
       return;
     }
 
-    fieldSetter((prev) => [
-      ...prev.filter((item) => item.name !== name),
-      { name, label, isOptional: !!optional }
-    ]);
+    fieldSetter((prev) => {
+      const newField = { name, label, isOptional: !!optional };
+
+      const copy = [...prev];
+      const existingIndex = copy.findIndex((item) => item.name === name);
+
+      // preserve existing array position if possible
+      if (existingIndex === -1) {
+        copy.push(newField);
+      } else {
+        copy[existingIndex] = newField;
+      }
+
+      return copy;
+    });
   }, [name, label, optional]);
 
   return null;
