@@ -17,7 +17,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { PreviewInfo, FieldAssignmentMap, MAX_PREVIEW_ROWS } from './parser';
+import { PreviewInfo, FieldAssignmentMap, PREVIEW_ROW_COUNT } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 export interface Field {
@@ -202,7 +202,6 @@ interface DragState {
   dropFieldName: string | null;
 }
 
-// @todo sort out cases with fewer-than-max preview rows
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 const ColumnCard: React.FC<{
   hasHeaders: boolean;
@@ -216,7 +215,7 @@ const ColumnCard: React.FC<{
 }> = ({
   hasHeaders,
   column: optionalColumn,
-  rowCount = MAX_PREVIEW_ROWS,
+  rowCount = PREVIEW_ROW_COUNT,
   hasError,
   isShadow,
   isDraggable,
@@ -230,7 +229,7 @@ const ColumnCard: React.FC<{
     () =>
       optionalColumn || {
         index: -1,
-        values: [...new Array(MAX_PREVIEW_ROWS)].map(() => '')
+        values: [...new Array(PREVIEW_ROW_COUNT)].map(() => '')
       },
     [optionalColumn]
   );

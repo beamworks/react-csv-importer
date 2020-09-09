@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 export interface PreviewInfo {
   file: File;
   firstChunk: string;
-  firstRows: string[][];
+  firstRows: string[][]; // always PREVIEW_ROWS count
   hasHeaders: boolean;
 }
 
@@ -16,7 +16,7 @@ export type PreviewResults =
       parseError: Error | Papa.ParseError;
     };
 
-export const MAX_PREVIEW_ROWS = 5;
+export const PREVIEW_ROW_COUNT = 5;
 
 export type FieldAssignmentMap = { [name: string]: number | undefined };
 
@@ -32,6 +32,10 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     let firstWarning: Papa.ParseError | undefined = undefined;
     const rowAccumulator: string[][] = [];
 
+    while (rowAccumulator.length < PREVIEW_ROW_COUNT) {
+      rowAccumulator.push([]);
+    }
+
     function reportSuccess() {
       resolve({
         file,
@@ -46,7 +50,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
       chunkSize: 20000,
-      preview: MAX_PREVIEW_ROWS,
+      preview: PREVIEW_ROW_COUNT,
       skipEmptyLines: true,
       error: (error) => {
         resolve({
@@ -70,7 +74,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         }
 
         // finish parsing after first chunk
-        if (rowAccumulator.length < MAX_PREVIEW_ROWS) {
+        if (rowAccumulator.length < PREVIEW_ROW_COUNT) {
           parser.abort();
         }
 
