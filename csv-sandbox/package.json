@@ -6,6 +6,8 @@
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
+    "stylelint": "stylelint \"src/**/*.scss\"",
+    "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
     "dist": "webpack --mode production",
     "watch": "webpack-dev-server --mode development"
   },
@@ -21,6 +23,9 @@
     "eslint-plugin-react-hooks": "^4.1.0",
     "husky": "^4.2.5",
     "prettier": "^2.1.1",
+    "stylelint": "^13.7.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.1.0",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
