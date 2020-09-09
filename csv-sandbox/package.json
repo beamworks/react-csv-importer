@@ -13,6 +13,15 @@
   },
   "author": "Nick Matantsev <nick.matantsev@gmail.com>",
   "license": "GPL-3.0-only",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "eslint --max-warnings=0",
+    "src/**/*.{scss}": "stylelint"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
@@ -22,6 +31,7 @@
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.0",
     "husky": "^4.2.5",
+    "lint-staged": "^10.3.0",
     "prettier": "^2.1.1",
     "stylelint": "^13.7.0",
     "stylelint-config-standard": "^20.0.0",
