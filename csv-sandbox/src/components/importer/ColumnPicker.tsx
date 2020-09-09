@@ -11,14 +11,14 @@ import { useDrag } from 'react-use-gesture';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ReplayIcon from '@material-ui/icons/Replay';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { PreviewInfo, FieldAssignmentMap, PREVIEW_ROW_COUNT } from './parser';
+import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
+import { ColumnDragCard, Column } from './ColumnDragCard';
 
 export interface Field {
   name: string;
@@ -59,73 +59,6 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(0.5), // matches up with column card header sizing
     right: theme.spacing(0.5),
     zIndex: 1 // right above content
-  },
-  columnCardPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
-    zIndex: 0, // reset stacking context
-    cursor: 'default',
-
-    '&[data-draggable=true]': {
-      cursor: 'grab'
-    },
-
-    '&[data-dummy=true]': {
-      background: theme.palette.divider,
-      opacity: 0.5,
-      userSelect: 'none'
-    },
-
-    '&[data-error=true]': {
-      background: theme.palette.error.main,
-      color: theme.palette.error.contrastText
-    },
-
-    '&[data-shadow=true]': {
-      background: theme.palette.grey.A100,
-      color: theme.palette.grey.A200 // reduce text
-    },
-
-    '&[data-drop-indicator=true]': {
-      color: theme.palette.text.primary
-    }
-  },
-  columnCardHeader: {
-    marginTop: theme.spacing(-0.5),
-    marginLeft: theme.spacing(-1),
-    marginRight: theme.spacing(-1),
-    marginBottom: theme.spacing(0.5),
-    height: theme.spacing(3),
-    fontWeight: theme.typography.fontWeightBold,
-    color: theme.palette.text.secondary,
-
-    '& > b': {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
-      background: theme.palette.divider
-    },
-
-    '$columnCardPaper[data-draggable=true]:hover &, $columnCardPaper[data-dragged=true] &': {
-      color: theme.palette.text.primary
-    }
-  },
-  columnCardValue: {
-    marginTop: theme.spacing(0.5),
-    fontSize: '0.75em',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-
-    '&[data-header="true"]': {
-      textAlign: 'center',
-      fontStyle: 'italic',
-      color: theme.palette.text.secondary
-    },
-
-    '& + div': {
-      marginTop: 0
-    }
   },
   targetArea: {
     display: 'flex',
@@ -190,116 +123,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface Column {
-  index: number;
-  values: string[];
-}
-
 interface DragState {
   initialXY: number[];
   initialWidth: number;
   column: Column;
   dropFieldName: string | null;
 }
-
-// @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
-const ColumnCard: React.FC<{
-  hasHeaders: boolean;
-  column?: Column;
-  rowCount?: number;
-  hasError?: boolean;
-  isShadow?: boolean;
-  isDraggable?: boolean;
-  isDragged?: boolean;
-  isDropIndicator?: boolean;
-}> = ({
-  hasHeaders,
-  column: optionalColumn,
-  rowCount = PREVIEW_ROW_COUNT,
-  hasError,
-  isShadow,
-  isDraggable,
-  isDragged,
-  isDropIndicator
-}) => {
-  const styles = useStyles();
-  const isDummy = !optionalColumn;
-
-  const column = useMemo<Column>(
-    () =>
-      optionalColumn || {
-        index: -1,
-        values: [...new Array(PREVIEW_ROW_COUNT)].map(() => '')
-      },
-    [optionalColumn]
-  );
-
-  // spreadsheet-style column code computation (A, B, ..., Z, AA, AB, ..., etc)
-  const columnCode = useMemo(() => {
-    const value = column.index;
-
-    // ignore dummy index
-    if (value < 0) {
-      return '';
-    }
-
-    // first, determine how many base-26 letters there should be
-    // (because the notation is not purely positional)
-    let digitCount = 1;
-    let base = 0;
-    let next = 26;
-
-    while (next <= value) {
-      digitCount += 1;
-      base = next;
-      next = next * 26 + 26;
-    }
-
-    // then, apply normal positional digit computation on remainder above base
-    let remainder = value - base;
-
-    const digits = [];
-    while (digits.length < digitCount) {
-      const lastDigit = remainder % 26;
-      remainder = Math.floor((remainder - lastDigit) / 26); // applying floor just in case
-
-      // store ASCII code, with A as 0
-      digits.unshift(65 + lastDigit);
-    }
-
-    return String.fromCharCode.apply(null, digits);
-  }, [column]);
-
-  return (
-    // not changing variant dynamically because it causes a height jump
-    <Paper
-      key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
-      className={styles.columnCardPaper}
-      data-dummy={!!isDummy}
-      data-error={!!hasError}
-      data-shadow={!!isShadow}
-      data-draggable={!!isDraggable}
-      data-dragged={!!isDragged}
-      data-drop-indicator={!!isDropIndicator}
-      elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
-      square={isDummy}
-    >
-      <div className={styles.columnCardHeader}>
-        {isDummy ? '\u00a0' : <b>{columnCode}</b>}
-      </div>
-
-      {column.values.slice(0, rowCount).map((value, valueIndex) => (
-        <div
-          key={valueIndex}
-          className={styles.columnCardValue}
-          data-header={hasHeaders && valueIndex === 0}
-        >
-          {value || '\u00a0'}
-        </div>
-      ))}
-    </Paper>
-  );
-};
 
 function useDragObject(
   hasHeaders: boolean,
@@ -313,7 +142,7 @@ function useDragObject(
     ? createPortal(
         <div className={styles.dragBox} ref={dragBoxRef}>
           <div className={styles.dragBoxHolder}>
-            <ColumnCard
+            <ColumnDragCard
               hasHeaders={hasHeaders}
               column={dragState.column}
               isDragged
@@ -393,7 +222,7 @@ const SourceBox: React.FC<{
       ) : undefined}
 
       <div {...(isAssigned ? {} : eventHandlers)}>
-        <ColumnCard
+        <ColumnDragCard
           hasHeaders={hasHeaders}
           column={column}
           isShadow={isShadow || isAssigned}
@@ -523,7 +352,7 @@ const TargetBox: React.FC<{
   const valueContents = useMemo(() => {
     if (sourceColumn) {
       return (
-        <ColumnCard
+        <ColumnDragCard
           hasHeaders={hasHeaders}
           rowCount={3}
           column={sourceColumn}
@@ -534,7 +363,7 @@ const TargetBox: React.FC<{
 
     if (assignedColumn) {
       return (
-        <ColumnCard
+        <ColumnDragCard
           hasHeaders={hasHeaders}
           rowCount={3}
           column={assignedColumn}
@@ -546,9 +375,13 @@ const TargetBox: React.FC<{
 
     const hasError = touched && !field.isOptional;
     return (
-      <ColumnCard hasHeaders={hasHeaders} rowCount={3} hasError={hasError} />
+      <ColumnDragCard
+        hasHeaders={hasHeaders}
+        rowCount={3}
+        hasError={hasError}
+      />
     );
-  }, [field, touched, assignedColumn, sourceColumn, isReDragged]);
+  }, [field, hasHeaders, touched, assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
   return (
@@ -614,6 +447,7 @@ export const ColumnPicker: React.FC<{
     );
 
     if (removedFieldNames.length > 0) {
+      // @todo put everything inside this setter
       setFieldAssignments((prev) => {
         const copy = { ...prev };
 
@@ -624,7 +458,7 @@ export const ColumnPicker: React.FC<{
         return copy;
       });
     }
-  }, [fields]);
+  }, [fields, fieldAssignments]);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [dragObjectPortal, dragUpdateHandler] = useDragObject(
