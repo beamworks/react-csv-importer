@@ -17,7 +17,17 @@ const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
 
-export const ImporterField: React.FC<Field> = ({ name, label }) => {
+export interface FieldProps {
+  name: string;
+  label: string;
+  optional?: boolean;
+}
+
+export const ImporterField: React.FC<FieldProps> = ({
+  name,
+  label,
+  optional
+}) => {
   const fieldSetter = useContext(FieldDefinitionContext);
 
   // update central list as needed
@@ -29,9 +39,9 @@ export const ImporterField: React.FC<Field> = ({ name, label }) => {
 
     fieldSetter((prev) => [
       ...prev.filter((item) => item.name !== name),
-      { name, label }
+      { name, label, isOptional: !!optional }
     ]);
-  }, [name, label]);
+  }, [name, label, optional]);
 
   return null;
 };

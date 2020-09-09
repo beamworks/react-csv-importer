@@ -23,6 +23,7 @@ import { ImporterFrame } from './ImporterFrame';
 export interface Field {
   name: string;
   label: string;
+  isOptional: boolean;
 }
 
 const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
@@ -72,6 +73,11 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.divider,
       opacity: 0.5,
       userSelect: 'none'
+    },
+
+    '&[data-error=true]': {
+      background: theme.palette.error.main,
+      color: theme.palette.error.contrastText
     },
 
     '&[data-shadow=true]': {
@@ -138,7 +144,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(0.5),
     fontWeight: theme.typography.fontWeightBold,
     color: theme.palette.text.primary,
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
+
+    '& > b': {
+      marginLeft: theme.spacing(0.5),
+      color: theme.palette.error.dark
+    }
   },
   targetBoxValue: {
     position: 'relative' // for action
@@ -197,6 +208,7 @@ const ColumnCard: React.FC<{
   hasHeaders: boolean;
   column?: Column;
   rowCount?: number;
+  hasError?: boolean;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
@@ -205,6 +217,7 @@ const ColumnCard: React.FC<{
   hasHeaders,
   column: optionalColumn,
   rowCount = MAX_PREVIEW_ROWS,
+  hasError,
   isShadow,
   isDraggable,
   isDragged,
@@ -264,6 +277,7 @@ const ColumnCard: React.FC<{
       key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
       className={styles.columnCardPaper}
       data-dummy={!!isDummy}
+      data-error={!!hasError}
       data-shadow={!!isShadow}
       data-draggable={!!isDraggable}
       data-dragged={!!isDragged}
@@ -463,6 +477,7 @@ const SourceArea: React.FC<{
 const TargetBox: React.FC<{
   hasHeaders: boolean;
   field: Field;
+  touched?: boolean;
   assignedColumn: Column | null;
   dragState: DragState | null;
   eventBinder: (
@@ -474,6 +489,7 @@ const TargetBox: React.FC<{
 }> = ({
   hasHeaders,
   field,
+  touched,
   assignedColumn,
   dragState,
   eventBinder,
@@ -529,13 +545,19 @@ const TargetBox: React.FC<{
       );
     }
 
-    return <ColumnCard hasHeaders={hasHeaders} rowCount={3} />;
-  }, [assignedColumn, sourceColumn, isReDragged]);
+    const hasError = touched && !field.isOptional;
+    return (
+      <ColumnCard hasHeaders={hasHeaders} rowCount={3} hasError={hasError} />
+    );
+  }, [field, touched, assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
   return (
     <div className={styles.targetBox} {...mouseHoverHandlers}>
-      <div className={styles.targetBoxLabel}>{field.label}</div>
+      <div className={styles.targetBoxLabel}>
+        {field.label}
+        {field.isOptional ? null : <b>*</b>}
+      </div>
 
       <div className={styles.targetBoxValue}>
         {!sourceColumn && assignedColumn && (
@@ -578,6 +600,12 @@ export const ColumnPicker: React.FC<{
   const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
     {}
   );
+
+  // track which fields need to show validation warning
+  const [fieldTouched, setFieldTouched] = useState<{
+    [name: string]: boolean | undefined;
+  }>({});
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // make sure there are no extra fields
   useEffect(() => {
@@ -644,6 +672,19 @@ export const ColumnPicker: React.FC<{
 
           return copy;
         });
+
+        // mark for validation display
+        if (dropFieldName) {
+          setFieldTouched((prev) => {
+            if (prev[dropFieldName]) {
+              return prev;
+            }
+
+            const copy = { ...prev };
+            copy[dropFieldName] = true;
+            return copy;
+          });
+        }
       }
     }
 
@@ -695,9 +736,27 @@ export const ColumnPicker: React.FC<{
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Select Columns"
+      error={validationError}
       onCancel={onCancel}
       onNext={() => {
-        onAccept({ ...fieldAssignments });
+        // mark all fields as touched
+        const fullTouchedMap: typeof fieldTouched = {};
+        fields.some((field) => {
+          fullTouchedMap[field.name] = true;
+        });
+        setFieldTouched(fullTouchedMap);
+
+        // submit if validation succeeds
+        const hasUnassignedRequired = fields.some(
+          (field) =>
+            !field.isOptional && fieldAssignments[field.name] === undefined
+        );
+
+        if (!hasUnassignedRequired) {
+          onAccept({ ...fieldAssignments });
+        } else {
+          setValidationError('Please assign all required fields');
+        }
       }}
     >
       <SourceArea
@@ -722,6 +781,7 @@ export const ColumnPicker: React.FC<{
               key={field.name}
               hasHeaders={preview.hasHeaders}
               field={field}
+              touched={fieldTouched[field.name]}
               assignedColumn={
                 assignedColumnIndex !== undefined
                   ? columns[assignedColumnIndex]

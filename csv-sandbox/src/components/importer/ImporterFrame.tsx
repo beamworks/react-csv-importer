@@ -34,6 +34,13 @@ const useStyles = makeStyles((theme) => ({
   },
   mainFooterFill: {
     flex: '1 1 0'
+  },
+  mainFooterError: {
+    flex: 'none',
+    marginRight: theme.spacing(2),
+    lineHeight: 0.8, // in case of line break
+    color: theme.palette.error.dark,
+    wordBreak: 'break-word'
   }
 }));
 
@@ -42,6 +49,7 @@ export const ImporterFrame: React.FC<{
   subtitle?: string; // @todo allow multiple crumbs
   nextDisabled?: boolean;
   nextLabel?: string;
+  error?: string | null;
   onNext: () => void;
   onCancel?: () => void;
 }> = ({
@@ -49,6 +57,7 @@ export const ImporterFrame: React.FC<{
   subtitle,
   nextDisabled,
   nextLabel,
+  error,
   onNext,
   onCancel,
   children
@@ -91,6 +100,7 @@ export const ImporterFrame: React.FC<{
       </CardContent>
       <CardActions>
         <div className={styles.mainFooterFill} />
+        {error ? <div className={styles.mainFooterError}>{error}</div> : null}
         <Button
           variant="contained"
           color="primary"

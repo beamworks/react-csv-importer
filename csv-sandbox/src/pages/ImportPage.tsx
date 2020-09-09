@@ -20,8 +20,8 @@ export const ImportPage: React.FC = () => {
         <ImporterField name="email" label="Email" />
         <ImporterField name="dob" label="DOB" />
         <ImporterField name="postalCode" label="Postal Code" />
-        <ImporterField name="snack" label="Snack Preference" />
-        <ImporterField name="country" label="Country" />
+        <ImporterField name="snack" label="Snack Preference" optional />
+        <ImporterField name="country" label="Country" optional />
         <ImporterField name="bees" label="Bees?" />
       </Importer>
     </div>
