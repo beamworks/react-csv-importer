@@ -11,6 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 import { useColumnDragState, DragState } from './ColumnDragState';
+import { useDragObject } from './ColumnDragObject';
 import { ColumnDragCard, Column } from './ColumnDragCard';
 
 export interface Field {
@@ -358,12 +359,11 @@ export const ColumnPicker: React.FC<{
 
   const {
     fieldAssignments,
-    dragObjectPortal,
     dragState,
     dragEventBinder,
     dragHoverHandler,
     unassignHandler
-  } = useColumnDragState(fields, preview.hasHeaders, (fieldName) => {
+  } = useColumnDragState(fields, (fieldName) => {
     setFieldTouched((prev) => {
       if (prev[fieldName]) {
         return prev;
@@ -374,6 +374,8 @@ export const ColumnPicker: React.FC<{
       return copy;
     });
   });
+
+  const dragObjectPortal = useDragObject(preview.hasHeaders, dragState);
 
   return (
     <ImporterFrame

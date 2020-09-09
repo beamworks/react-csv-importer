@@ -1,16 +1,8 @@
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  useLayoutEffect,
-  useEffect
-} from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useCallback, useEffect } from 'react';
 import { useDrag } from 'react-use-gesture';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { FieldAssignmentMap } from './parser';
-import { ColumnDragCard, Column } from './ColumnDragCard';
+import { Column } from './ColumnDragCard';
 
 export interface Field {
   name: string;
@@ -18,84 +10,16 @@ export interface Field {
   isOptional: boolean;
 }
 
-const useStyles = makeStyles(() => ({
-  dragBox: {
-    position: 'absolute', // @todo this is not working with scroll
-    top: 0,
-    left: 0,
-    width: 0, // dynamically set at drag start
-    height: 0,
-    minWidth: 100, // in case could not compute
-    pointerEvents: 'none'
-  },
-  dragBoxHolder: {
-    position: 'absolute',
-    width: '100%',
-    left: '-50%',
-    bottom: -4,
-    opacity: 0.9
-  }
-}));
-
 export interface DragState {
   initialXY: number[];
   initialWidth: number;
   column: Column;
   dropFieldName: string | null;
-}
-
-function useDragObject(
-  hasHeaders: boolean,
-  dragState: DragState | null
-): [React.ReactElement | null, (xy: number[]) => void] {
-  const styles = useStyles();
-
-  // @todo wrap in a no-events overlay to clip against screen edges
-  const dragBoxRef = useRef<HTMLDivElement | null>(null);
-  const dragObjectPortal = dragState
-    ? createPortal(
-        <div className={styles.dragBox} ref={dragBoxRef}>
-          <div className={styles.dragBoxHolder}>
-            <ColumnDragCard
-              hasHeaders={hasHeaders}
-              column={dragState.column}
-              isDragged
-            />
-          </div>
-        </div>,
-        document.body
-      )
-    : null;
-
-  // set up initial position
-  const initialXY = dragState && dragState.initialXY;
-  const initialWidth = dragState && dragState.initialWidth;
-  useLayoutEffect(() => {
-    if (!initialXY || initialWidth === null || !dragBoxRef.current) {
-      return;
-    }
-
-    dragBoxRef.current.style.left = `${initialXY[0]}px`;
-    dragBoxRef.current.style.top = `${initialXY[1]}px`;
-    dragBoxRef.current.style.width = `${initialWidth}px`;
-  }, [initialXY, initialWidth]);
-
-  // live position updates without state changes
-  const dragUpdateHandler = useCallback((xy: number[]) => {
-    if (!dragBoxRef.current) {
-      return;
-    }
-
-    dragBoxRef.current.style.left = `${xy[0]}px`;
-    dragBoxRef.current.style.top = `${xy[1]}px`;
-  }, []);
-
-  return [dragObjectPortal, dragUpdateHandler];
+  updateListener: ((xy: number[]) => void) | null;
 }
 
 export interface DragInfo {
   fieldAssignments: FieldAssignmentMap;
-  dragObjectPortal: React.ReactElement | null;
   dragState: DragState | null;
   dragEventBinder: ReturnType<typeof useDrag>;
   dragHoverHandler: (fieldName: string, isOn: boolean) => void;
@@ -104,14 +28,9 @@ export interface DragInfo {
 
 export function useColumnDragState(
   fields: Field[],
-  hasHeaders: boolean,
   onTouched: (fieldName: string) => void
 ): DragInfo {
   const [dragState, setDragState] = useState<DragState | null>(null);
-  const [dragObjectPortal, dragUpdateHandler] = useDragObject(
-    hasHeaders,
-    dragState
-  );
 
   const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
     {}
@@ -151,7 +70,8 @@ export function useColumnDragState(
             ? event.currentTarget.offsetWidth
             : 0,
         column,
-        dropFieldName: startFieldName !== undefined ? startFieldName : null
+        dropFieldName: startFieldName !== undefined ? startFieldName : null,
+        updateListener: null
       });
     } else if (last) {
       setDragState(null);
@@ -185,7 +105,10 @@ export function useColumnDragState(
       }
     }
 
-    dragUpdateHandler(xy);
+    // @todo figure out a cleaner event stream solution
+    if (dragState && dragState.updateListener) {
+      dragState.updateListener(xy);
+    }
   }, {});
 
   const dragHoverHandler = useCallback((fieldName: string, isOn: boolean) => {
@@ -232,7 +155,6 @@ export function useColumnDragState(
   return {
     fieldAssignments,
     dragState,
-    dragObjectPortal,
     dragEventBinder: bindDrag,
     dragHoverHandler,
     unassignHandler
