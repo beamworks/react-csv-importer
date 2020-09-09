@@ -90,7 +90,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   return (
     <ImporterFrame
       fileName={preview.file.name}
-      subtitle="Progress"
+      subtitle="Import"
       nextDisabled={!isComplete || isDismissed}
       nextLabel={onFinish ? 'Finish' : 'Upload More'}
       onNext={() => {
@@ -104,6 +104,15 @@ export function ProgressDisplay<Row extends BaseRow>({
       }}
     >
       <div className={styles.progressFrame}>
+        {isComplete ? (
+          <Typography variant="subtitle1" color="textPrimary" align="center">
+            Complete
+          </Typography>
+        ) : (
+          <Typography variant="subtitle1" color="textSecondary" align="center">
+            Importing...
+          </Typography>
+        )}
         <Typography variant="body2" color="textSecondary" align="right">
           {progressCount}
         </Typography>
