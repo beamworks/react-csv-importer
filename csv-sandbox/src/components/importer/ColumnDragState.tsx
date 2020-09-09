@@ -4,6 +4,7 @@ import { useDrag } from 'react-use-gesture';
 import { FieldAssignmentMap } from './parser';
 import { Column } from './ColumnDragCard';
 
+// @todo this is duplicated
 export interface Field {
   name: string;
   label: string;
