@@ -24,12 +24,14 @@ export function ProgressDisplay<Row extends BaseRow>({
   preview,
   fieldAssignments,
   callback,
+  onRestart,
   onFinish
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   fieldAssignments: FieldAssignmentMap;
   callback: ParseCallback<Row>;
-  onFinish: () => void;
+  onRestart: () => void;
+  onFinish?: () => void;
 }>) {
   const styles = useStyles();
 
@@ -90,10 +92,15 @@ export function ProgressDisplay<Row extends BaseRow>({
       fileName={preview.file.name}
       subtitle="Progress"
       nextDisabled={!isComplete || isDismissed}
-      nextLabel="Finish"
+      nextLabel={onFinish ? 'Finish' : 'Upload More'}
       onNext={() => {
         setIsDismissed(true);
-        onFinish();
+
+        if (onFinish) {
+          onFinish();
+        } else {
+          onRestart();
+        }
       }}
     >
       <div className={styles.progressFrame}>

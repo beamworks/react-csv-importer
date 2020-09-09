@@ -43,7 +43,7 @@ function ImporterCore<Row extends BaseRow>({
 }: React.PropsWithChildren<{
   fields: Field[];
   callback: ParseCallback<Row>;
-  onFinish: () => void;
+  onFinish?: () => void;
 }>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -100,6 +100,12 @@ function ImporterCore<Row extends BaseRow>({
       preview={preview}
       fieldAssignments={fieldAssignments}
       callback={callback}
+      onRestart={() => {
+        // reset all state
+        setSelectedFile(null);
+        setPreview(null); // not bothering with editFormat flag
+        setFieldAssignments(null);
+      }}
       onFinish={onFinish}
     />
   );
@@ -111,7 +117,7 @@ export function Importer<Row extends BaseRow>({
   children
 }: React.PropsWithChildren<{
   callback: ParseCallback<Row>;
-  onFinish: () => void;
+  onFinish?: () => void;
 }>) {
   const [fields, setFields] = useState<Field[]>([]);
 
