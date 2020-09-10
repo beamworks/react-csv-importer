@@ -5,15 +5,8 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { FieldAssignmentMap } from './parser';
-import { DragState } from './ColumnDragState';
+import { DragState, Field } from './ColumnDragState';
 import { ColumnDragCard, Column } from './ColumnDragCard';
-
-// @todo de-duplicate definition
-export interface Field {
-  name: string;
-  label: string;
-  isOptional: boolean;
-}
 
 export type FieldTouchedMap = { [name: string]: boolean | undefined };
 

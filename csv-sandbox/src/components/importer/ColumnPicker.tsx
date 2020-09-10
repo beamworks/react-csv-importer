@@ -3,17 +3,14 @@ import Divider from '@material-ui/core/Divider';
 
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
-import { useColumnDragState } from './ColumnDragState';
+import { useColumnDragState, Field as DragField } from './ColumnDragState';
 import { useDragObject } from './ColumnDragObject';
 import { Column } from './ColumnDragCard';
 import { ColumnDragSourceArea } from './ColumnDragSourceArea';
 import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
 
-export interface Field {
-  name: string;
-  label: string;
-  isOptional: boolean;
-}
+// re-export from a central spot
+export type Field = DragField;
 
 export const ColumnPicker: React.FC<{
   fields: Field[];

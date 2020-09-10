@@ -4,12 +4,6 @@ import Paper from '@material-ui/core/Paper';
 
 import { PREVIEW_ROW_COUNT } from './parser';
 
-export interface Field {
-  name: string;
-  label: string;
-  isOptional: boolean;
-}
-
 const useStyles = makeStyles((theme) => ({
   columnCardPaper: {
     padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
