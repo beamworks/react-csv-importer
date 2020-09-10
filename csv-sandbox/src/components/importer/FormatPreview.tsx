@@ -1,12 +1,6 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { parsePreview, PreviewResults, PreviewInfo } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -14,34 +8,7 @@ import { FormatRawPreview } from './FormatRawPreview';
 import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
-const useStyles = makeStyles((theme) => ({
-  headerToggle: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: theme.spacing(3),
-    marginTop: theme.spacing(-1),
-    marginBottom: theme.spacing(-1),
-    color: theme.palette.text.primary
-  },
-  mainResultBlock: {},
-  mainPendingBlock: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    padding: theme.spacing(4),
-    color: theme.palette.text.secondary
-  },
-  mainPanelSummary: {
-    // extra selector to override specificity
-    '&[aria-expanded=true]': {
-      minHeight: 0 // condensed appearance
-    },
-
-    '& > div:first-child': {
-      margin: 0 // condensed appearance
-    }
-  }
-}));
+import './FormatPreview.scss';
 
 export const FormatPreview: React.FC<{
   file: File;
@@ -49,8 +16,6 @@ export const FormatPreview: React.FC<{
   onAccept: (preview: PreviewInfo) => void;
   onCancel: () => void;
 }> = ({ file, currentPreview, onAccept, onCancel }) => {
-  const styles = useStyles();
-
   const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
@@ -58,9 +23,6 @@ export const FormatPreview: React.FC<{
         ...currentPreview
       }
   );
-
-  const [panelRawActive, setPanelRawActive] = useState<boolean>(false);
-  const [panelDataActive, setPanelDataActive] = useState<boolean>(false);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -72,10 +34,6 @@ export const FormatPreview: React.FC<{
       if (oplock !== asyncLockRef.current) {
         return;
       }
-
-      // pre-open appropriate panel before rendering results
-      setPanelRawActive(!results.parseError && !!results.parseWarning);
-      setPanelDataActive(!results.parseError && !results.parseWarning);
 
       setPreview(results);
     });
@@ -93,7 +51,7 @@ export const FormatPreview: React.FC<{
 
     if (preview.parseError) {
       return (
-        <div className={styles.mainResultBlock}>
+        <div className="FormatPreview__mainResultBlock">
           <FormatErrorMessage onCancelClick={onCancel}>
             Import error: <b>{preview.parseError.message}</b>
           </FormatErrorMessage>
@@ -102,43 +60,21 @@ export const FormatPreview: React.FC<{
     }
 
     return (
-      <div className={styles.mainResultBlock}>
-        <Accordion
-          expanded={panelRawActive}
-          onChange={() => setPanelRawActive(!panelRawActive)}
-        >
-          <AccordionSummary
-            className={styles.mainPanelSummary}
-            expandIcon={<ExpandMoreIcon />}
-          >
-            <Typography variant="subtitle1" color="textSecondary">
-              File Format
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <FormatRawPreview
-              chunk={preview.firstChunk}
-              warning={preview.parseWarning}
-              onCancelClick={onCancel}
-            />
-          </AccordionDetails>
-        </Accordion>
+      <div className="FormatPreview__mainResultBlock">
+        <div className="FormatPreview__header">File Format</div>
+
+        <FormatRawPreview
+          chunk={preview.firstChunk}
+          warning={preview.parseWarning}
+          onCancelClick={onCancel}
+        />
 
         {preview.parseWarning ? null : (
-          <Accordion
-            expanded={panelDataActive}
-            onChange={() => setPanelDataActive(!panelDataActive)}
-          >
-            <AccordionSummary
-              className={styles.mainPanelSummary}
-              expandIcon={<ExpandMoreIcon />}
-            >
-              <Typography variant="subtitle1" color="textSecondary">
-                Preview Import
-              </Typography>
-
+          <>
+            <div className="FormatPreview__header">
+              Preview Import
               <div
-                className={styles.headerToggle}
+                className="FormatPreview__headerToggle"
                 onClick={(event) => {
                   event.stopPropagation();
                 }}
@@ -162,18 +98,16 @@ export const FormatPreview: React.FC<{
                   label="Data has headers"
                 />
               </div>
-            </AccordionSummary>
-            <AccordionDetails>
-              <FormatDataRowPreview
-                hasHeaders={preview.hasHeaders}
-                rows={preview.firstRows}
-              />
-            </AccordionDetails>
-          </Accordion>
+            </div>
+            <FormatDataRowPreview
+              hasHeaders={preview.hasHeaders}
+              rows={preview.firstRows}
+            />
+          </>
         )}
       </div>
     );
-  }, [styles, preview, panelRawActive, panelDataActive, onCancel]);
+  }, [preview, onCancel]);
 
   return (
     <ImporterFrame
@@ -189,7 +123,9 @@ export const FormatPreview: React.FC<{
       onCancel={onCancel}
     >
       {report || (
-        <div className={styles.mainPendingBlock}>Loading preview...</div>
+        <div className="FormatPreview__mainPendingBlock">
+          Loading preview...
+        </div>
       )}
     </ImporterFrame>
   );

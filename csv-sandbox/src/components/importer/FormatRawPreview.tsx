@@ -4,10 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
 const useStyles = makeStyles((theme) => ({
-  rawPreview: {
-    flex: '1 1 0', // avoid stretching to internal width
-    width: 0
-  },
+  rawPreview: {},
   rawPreviewScroll: {
     marginBottom: theme.spacing(2),
     height: theme.spacing(12),

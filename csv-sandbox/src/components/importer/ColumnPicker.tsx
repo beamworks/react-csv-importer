@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import Divider from '@material-ui/core/Divider';
 
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -84,8 +83,6 @@ export const ColumnPicker: React.FC<{
         eventBinder={dragEventBinder}
         onUnassign={unassignHandler}
       />
-
-      <Divider />
 
       <ColumnDragTargetArea
         fields={fields}
