@@ -1,0 +1,17 @@
+.ColumnDragObject {
+  position: absolute; // @todo this is not working with scroll
+  top: 0;
+  left: 0;
+  min-width: 100px; // in case could not compute
+  width: 0; // dynamically set at drag start
+  height: 0;
+  pointer-events: none;
+
+  &__holder {
+    position: absolute;
+    bottom: -4px;
+    left: -50%;
+    width: 100%;
+    opacity: 0.9;
+  }
+}

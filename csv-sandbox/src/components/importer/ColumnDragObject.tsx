@@ -1,41 +1,21 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { ColumnDragCard } from './ColumnDragCard';
 import { DragState } from './ColumnDragState';
 
-const useStyles = makeStyles(() => ({
-  dragBox: {
-    position: 'absolute', // @todo this is not working with scroll
-    top: 0,
-    left: 0,
-    width: 0, // dynamically set at drag start
-    height: 0,
-    minWidth: 100, // in case could not compute
-    pointerEvents: 'none'
-  },
-  dragBoxHolder: {
-    position: 'absolute',
-    width: '100%',
-    left: '-50%',
-    bottom: -4,
-    opacity: 0.9
-  }
-}));
+import './ColumnDragObject.scss';
 
 export const ColumnDragObject: React.FC<{
   hasHeaders: boolean;
   dragState: DragState | null;
 }> = ({ hasHeaders, dragState }) => {
-  const styles = useStyles();
-
   // @todo wrap in a no-events overlay to clip against screen edges
   const dragBoxRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal = dragState
     ? createPortal(
-        <div className={styles.dragBox} ref={dragBoxRef}>
-          <div className={styles.dragBoxHolder}>
+        <div className="ColumnDragObject" ref={dragBoxRef}>
+          <div className="ColumnDragObject__holder">
             <ColumnDragCard
               hasHeaders={hasHeaders}
               column={dragState.column}
