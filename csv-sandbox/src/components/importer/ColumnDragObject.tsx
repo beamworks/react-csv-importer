@@ -24,10 +24,10 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export function useDragObject(
-  hasHeaders: boolean,
-  dragState: DragState | null
-): React.ReactElement | null {
+export const ColumnDragObject: React.FC<{
+  hasHeaders: boolean;
+  dragState: DragState | null;
+}> = ({ hasHeaders, dragState }) => {
   const styles = useStyles();
 
   // @todo wrap in a no-events overlay to clip against screen edges
@@ -75,4 +75,4 @@ export function useDragObject(
   }, [dragState]);
 
   return dragObjectPortal;
-}
+};

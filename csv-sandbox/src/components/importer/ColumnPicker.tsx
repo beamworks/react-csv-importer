@@ -4,7 +4,7 @@ import Divider from '@material-ui/core/Divider';
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 import { useColumnDragState, Field as DragField } from './ColumnDragState';
-import { useDragObject } from './ColumnDragObject';
+import { ColumnDragObject } from './ColumnDragObject';
 import { Column } from './ColumnDragCard';
 import { ColumnDragSourceArea } from './ColumnDragSourceArea';
 import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
@@ -49,8 +49,6 @@ export const ColumnPicker: React.FC<{
     });
   });
 
-  const dragObjectPortal = useDragObject(preview.hasHeaders, dragState);
-
   return (
     <ImporterFrame
       fileName={preview.file.name}
@@ -89,8 +87,6 @@ export const ColumnPicker: React.FC<{
 
       <Divider />
 
-      {dragObjectPortal}
-
       <ColumnDragTargetArea
         fields={fields}
         columns={columns}
@@ -102,6 +98,8 @@ export const ColumnPicker: React.FC<{
         onHover={dragHoverHandler}
         onUnassign={unassignHandler}
       />
+
+      <ColumnDragObject hasHeaders={preview.hasHeaders} dragState={dragState} />
     </ImporterFrame>
   );
 };
