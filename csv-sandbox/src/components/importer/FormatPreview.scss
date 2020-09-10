@@ -5,7 +5,7 @@
     display: flex;
     align-items: center;
     margin-bottom: spacing(1);
-    font-size: 1rem; // @todo
+    font-size: $titleFontSize;
     color: $textSecondaryColor;
   }
 
@@ -20,8 +20,8 @@
 
     > input[type='checkbox'] {
       margin-right: spacing(1);
-      width: 1.5em;
-      height: 1.5em;
+      width: 1.2em;
+      height: 1.2em;
       cursor: pointer;
     }
   }

@@ -1,12 +1,17 @@
 @import './theme.scss';
 
 .IconButton {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; // override default
+  width: 3em;
+  height: 3em;
   border: 0;
-  padding: spacing(1.5);
+  padding: 0;
   border-radius: 50%;
   background: transparent;
-  font-size: 1.5rem;
+  font-size: inherit;
   color: $fgColor;
   cursor: pointer;
 
@@ -19,14 +24,14 @@
   }
 
   &[data-small='true'] {
-    padding: spacing(0.5);
-    font-size: 1rem;
+    width: 2em;
+    height: 2em;
   }
 
   > span {
     display: block;
-    width: 1em;
-    height: 1em;
+    width: 1.75em;
+    height: 1.75em;
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: cover;
@@ -59,5 +64,9 @@
 
   &:disabled > span {
     opacity: 0.25;
+  }
+
+  &[data-small='true'] > span {
+    font-size: 0.75em;
   }
 }

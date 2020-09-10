@@ -31,8 +31,8 @@
 
   &__boxAction {
     position: absolute;
-    top: spacing(0.5); // matches up with column card header sizing
-    right: spacing(0.5);
+    top: 0; // icon button padding matches card padding
+    right: 0;
     z-index: 1; // right above content
   }
 }

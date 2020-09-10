@@ -2,11 +2,12 @@
 
 .TextButton {
   display: block;
+  margin: 0; // override default
   border: 1px solid $controlBorderColor;
   padding: spacing(1) spacing(2);
   border-radius: 5px;
   background: $fillColor;
-  font-size: 0.8rem;
+  font-size: inherit;
   color: $fgColor;
   cursor: pointer;
 

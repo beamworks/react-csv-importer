@@ -3,20 +3,20 @@
 // @todo use em instead of rem
 .ImporterFrame {
   border: 1px solid $controlBorderColor;
-  padding: spacing(2);
+  padding: 1em;
   border-radius: 5px;
   background: $controlBgColor;
 
   &__header {
     display: flex;
     align-items: center;
-    margin-top: spacing(-2); // cancel out button padding
-    margin-left: spacing(-2);
+    margin-top: -1em; // cancel out button padding
+    margin-left: -1em;
   }
 
   &__headerTitle {
     overflow: hidden;
-    font-size: 1rem;
+    font-size: $titleFontSize;
     color: $textColor;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -27,8 +27,8 @@
     display: flex; // for correct icon alignment
     margin-right: spacing(1);
     margin-left: spacing(1);
-    font-size: 0.75rem;
-    color: $textDisabledColor;
+    font-size: 1.2em;
+    opacity: 0.5;
 
     > span {
       display: block;
@@ -44,7 +44,7 @@
 
   &__headerSubtitle {
     flex: none;
-    font-size: 1rem;
+    font-size: $titleFontSize;
     color: $textColor;
   }
 

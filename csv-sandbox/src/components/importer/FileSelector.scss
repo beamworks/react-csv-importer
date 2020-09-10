@@ -7,6 +7,7 @@
   background: $fillColor;
   text-align: center;
   color: $textColor;
+  cursor: pointer;
 
   &[data-active='true'] {
     background: darken($fillColor, 10%);

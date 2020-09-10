@@ -3,7 +3,7 @@
 .ColumnDragCard {
   position: relative;
   z-index: 0; // reset stacking context
-  padding: spacing(1) spacing(1.5);
+  padding: 0.5em 0.75em;
   border-radius: 5px;
   background: $controlBgColor;
   box-shadow: 0 1px 1px rgba(#000, 0.25);
@@ -38,12 +38,11 @@
   }
 
   &__cardHeader {
-    margin-top: spacing(-0.5);
-    margin-right: spacing(-1);
-    margin-bottom: spacing(0.5);
-    margin-left: spacing(-1);
-    height: spacing(3);
-    // @todo font-size
+    margin-top: -0.25em;
+    margin-right: -0.5em;
+    margin-bottom: 0.25em;
+    margin-left: -0.5em;
+    height: 1.5em; // sized to be covered by small button
     font-weight: bold;
     color: $textSecondaryColor;
 
