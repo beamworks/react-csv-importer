@@ -16,6 +16,14 @@
     margin-bottom: spacing(-1);
     margin-left: spacing(3);
     color: $textColor;
+    cursor: pointer;
+
+    > input[type='checkbox'] {
+      margin-right: spacing(1);
+      width: 1.5em;
+      height: 1.5em;
+      cursor: pointer;
+    }
   }
 
   &__mainPendingBlock {

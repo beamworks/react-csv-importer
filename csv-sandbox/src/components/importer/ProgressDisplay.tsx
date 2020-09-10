@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 import {
   processFile,
@@ -105,7 +104,12 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         <div className="ProgressDisplay__count">{progressCount}</div>
 
-        <LinearProgress variant="determinate" value={progressPercentage} />
+        <div className="ProgressDisplay__progressBar">
+          <div
+            className="ProgressDisplay__progressBarIndicator"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
       </div>
     </ImporterFrame>
   );

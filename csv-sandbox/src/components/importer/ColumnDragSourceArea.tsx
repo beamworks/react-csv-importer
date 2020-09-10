@@ -107,7 +107,7 @@ export const ColumnDragSourceArea: React.FC<{
     <div className="ColumnDragSourceArea">
       <div className="ColumnDragSourceArea__control">
         <IconButton
-          type="arrowBack"
+          type="back"
           disabled={page === 0}
           onClick={() => {
             setPage((prev) => Math.max(0, prev - 1));
@@ -117,7 +117,7 @@ export const ColumnDragSourceArea: React.FC<{
       <div className="ColumnDragSourceArea__page">{pageContents}</div>
       <div className="ColumnDragSourceArea__control">
         <IconButton
-          type="arrowForward"
+          type="forward"
           disabled={page === pageCount - 1}
           onClick={() => {
             setPage((prev) => Math.min(pageCount - 1, prev + 1));

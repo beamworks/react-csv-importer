@@ -14,12 +14,6 @@
     margin-left: spacing(-2);
   }
 
-  &__headerSpinner {
-    display: flex; // correct inline content placement
-    padding: spacing(1.5);
-    font-size: spacing(3);
-  }
-
   &__headerTitle {
     overflow: hidden;
     font-size: 1rem;

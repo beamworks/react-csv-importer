@@ -3,7 +3,7 @@ import React from 'react';
 import './IconButton.scss';
 
 export const IconButton: React.FC<{
-  type: 'back' | 'replay' | 'arrowBack' | 'arrowForward';
+  type: 'back' | 'forward' | 'replay' | 'arrowBack' | 'close';
   small?: boolean;
   disabled?: boolean;
   onClick?: () => void;

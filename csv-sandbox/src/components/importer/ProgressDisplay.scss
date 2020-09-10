@@ -18,4 +18,22 @@
     font-size: 0.75rem; // @todo
     color: $textSecondaryColor;
   }
+
+  &__progressBar {
+    position: relative; // for indicator
+    width: 100%;
+    height: spacing(1);
+    background: $fillColor;
+  }
+
+  &__progressBarIndicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0; // dynamically set in code
+    height: 100%;
+    background: $textColor;
+
+    transition: width 0.2s ease-out;
+  }
 }

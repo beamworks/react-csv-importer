@@ -1,6 +1,4 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 
 import { parsePreview, PreviewResults, PreviewInfo } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -73,31 +71,23 @@ export const FormatPreview: React.FC<{
           <>
             <div className="FormatPreview__header">
               Preview Import
-              <div
-                className="FormatPreview__headerToggle"
-                onClick={(event) => {
-                  event.stopPropagation();
-                }}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      value={preview.hasHeaders}
-                      onChange={() => {
-                        setPreview((prev) =>
-                          prev && !prev.parseError // appease type safety
-                            ? {
-                                ...prev,
-                                hasHeaders: !prev.hasHeaders
-                              }
-                            : prev
-                        );
-                      }}
-                    />
-                  }
-                  label="Data has headers"
+              <label className="FormatPreview__headerToggle">
+                <input
+                  type="checkbox"
+                  checked={preview.hasHeaders}
+                  onChange={() => {
+                    setPreview((prev) =>
+                      prev && !prev.parseError // appease type safety
+                        ? {
+                            ...prev,
+                            hasHeaders: !prev.hasHeaders
+                          }
+                        : prev
+                    );
+                  }}
                 />
-              </div>
+                <span>Data has headers</span>
+              </label>
             </div>
             <FormatDataRowPreview
               hasHeaders={preview.hasHeaders}

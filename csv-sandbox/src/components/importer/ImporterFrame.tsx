@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { IconButton } from './IconButton';
 
@@ -27,13 +26,7 @@ export const ImporterFrame: React.FC<{
   return (
     <div className="ImporterFrame">
       <div className="ImporterFrame__header">
-        {onCancel ? (
-          <IconButton type="back" onClick={onCancel} />
-        ) : (
-          <div className="ImporterFrame__headerSpinner">
-            <CircularProgress size="1em" />
-          </div>
-        )}
+        <IconButton type="arrowBack" disabled={!onCancel} onClick={onCancel} />
 
         <div className="ImporterFrame__headerTitle">{fileName}</div>
 

@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 
 import { FieldAssignmentMap } from './parser';
 import { DragState, Field } from './ColumnDragState';
 import { ColumnDragCard, Column } from './ColumnDragCard';
+import { IconButton } from './IconButton';
 
 export type FieldTouchedMap = { [name: string]: boolean | undefined };
 
@@ -101,9 +100,11 @@ const TargetBox: React.FC<{
       <div className="ColumnDragTargetArea__boxValue">
         {!sourceColumn && assignedColumn && (
           <div className="ColumnDragTargetArea__boxValueAction">
-            <IconButton size="small" onClick={() => onUnassign(assignedColumn)}>
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
+            <IconButton
+              small
+              type="close"
+              onClick={() => onUnassign(assignedColumn)}
+            />
           </div>
         )}
 
