@@ -3,18 +3,15 @@
 .FormatErrorMessage {
   display: flex;
   align-items: center;
-  padding: spacing(1) spacing(2);
+  padding: 0.5em 1em;
   border-radius: 5px;
   background: $fillColor;
   color: $errorTextColor;
 
   & > span {
     flex: 1 1 0;
-    margin-right: spacing(2);
+    margin-right: 1em;
+    width: 0; // avoid sizing on inner content
     word-break: break-word;
-  }
-
-  & > button {
-    flex: none;
   }
 }

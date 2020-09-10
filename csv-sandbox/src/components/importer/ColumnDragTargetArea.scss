@@ -10,18 +10,18 @@
     flex-grow: 0;
     flex-shrink: 1;
     width: 0; // avoid interference from internal width
-    padding-top: spacing(2);
-    padding-right: spacing(2);
+    padding-top: 1em; // not using margin for cleaner percentage calculation
+    padding-right: 1em;
   }
 
   &__boxLabel {
-    margin-bottom: spacing(0.5);
+    margin-bottom: 0.25em;
     font-weight: bold;
     color: $textColor;
     word-break: break-word;
 
     & > b {
-      margin-left: spacing(0.5);
+      margin-left: 0.25em;
       color: $errorTextColor;
     }
   }

@@ -1,7 +1,7 @@
 @import './theme.scss';
 
 .ProgressDisplay {
-  padding: spacing(4);
+  padding: 2em;
 
   &__status {
     text-align: center;
@@ -22,7 +22,7 @@
   &__progressBar {
     position: relative; // for indicator
     width: 100%;
-    height: spacing(1);
+    height: 0.5em;
     background: $fillColor;
   }
 

@@ -25,8 +25,8 @@
   &__headerCrumbSeparator {
     flex: none;
     display: flex; // for correct icon alignment
-    margin-right: spacing(1);
-    margin-left: spacing(1);
+    margin-right: 0.5em;
+    margin-left: 0.5em;
     font-size: 1.2em;
     opacity: 0.5;
 
@@ -52,7 +52,7 @@
     display: flex;
     align-items: center;
 
-    margin-top: spacing(2);
+    margin-top: 1em;
   }
 
   &__footerFill {
@@ -61,7 +61,7 @@
 
   &__footerError {
     flex: none;
-    margin-right: spacing(2);
+    margin-right: 1em;
     line-height: 0.8; // in case of line break
     color: $errorTextColor;
     word-break: break-word;

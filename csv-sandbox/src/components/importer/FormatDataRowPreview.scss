@@ -1,8 +1,8 @@
 @import './theme.scss';
 
 .FormatDataRowPreview {
-  max-height: 12rem;
-  min-height: 6rem;
+  max-height: 12em;
+  min-height: 6em;
   border: 1px solid $controlBorderColor;
   overflow: scroll;
 
@@ -20,7 +20,7 @@
     > thead > tr > th,
     > tbody > tr > td {
       border-right: 1px solid rgba($controlBorderColor, 0.5);
-      padding: spacing(1) spacing(1);
+      padding: 0.5em 0.5em;
       line-height: 1;
       font-size: 0.75em;
       white-space: nowrap;

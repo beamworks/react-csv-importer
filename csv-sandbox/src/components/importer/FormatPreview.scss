@@ -4,7 +4,7 @@
   &__header {
     display: flex;
     align-items: center;
-    margin-bottom: spacing(1);
+    margin-bottom: 0.5em;
     font-size: $titleFontSize;
     color: $textSecondaryColor;
   }
@@ -12,14 +12,14 @@
   &__headerToggle {
     display: flex;
     align-items: center;
-    margin-top: spacing(-1);
-    margin-bottom: spacing(-1);
-    margin-left: spacing(3);
+    margin-top: -0.5em; // allow for larger toggle element
+    margin-bottom: -0.5em;
+    margin-left: 1.5em;
     color: $textColor;
     cursor: pointer;
 
     > input[type='checkbox'] {
-      margin-right: spacing(1);
+      margin-right: 0.5em;
       width: 1.2em;
       height: 1.2em;
       cursor: pointer;
@@ -30,7 +30,7 @@
     display: flex;
     align-content: center;
     justify-content: center;
-    padding: spacing(4);
+    padding: 2em;
     color: $textSecondaryColor;
   }
 }

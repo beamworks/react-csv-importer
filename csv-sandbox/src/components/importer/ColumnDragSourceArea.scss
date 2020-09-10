@@ -2,8 +2,8 @@
 
 .ColumnDragSourceArea {
   display: flex;
-  margin-top: spacing(1);
-  margin-bottom: spacing(2);
+  margin-top: 0.5em;
+  margin-bottom: 1em;
 
   &__control {
     flex: none;
@@ -14,18 +14,18 @@
   &__page {
     flex: 1 1 0;
     display: flex;
-    padding-left: spacing(1); // match interior box spacing
+    padding-left: 0.5em; // match interior box spacing
   }
 
   &__pageFiller {
     flex: 1 1 0;
-    margin-right: spacing(1);
+    margin-right: 0.5em; // match interior box spacing
   }
 
   &__box {
     position: relative; // for action
     flex: 1 1 0;
-    margin-right: spacing(1);
+    margin-right: 0.5em;
     width: 0; // prevent internal sizing from affecting placement
   }
 

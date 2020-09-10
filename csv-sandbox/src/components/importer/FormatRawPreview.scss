@@ -2,8 +2,8 @@
 
 .FormatRawPreview {
   &__scroll {
-    margin-bottom: spacing(2);
-    height: spacing(12);
+    margin-bottom: 1em;
+    height: 6em;
     overflow: auto;
     border-radius: 5px;
     background: $invertedBgColor;
@@ -12,13 +12,13 @@
 
   &__pre {
     margin: 0; // override default
-    padding: spacing(1) spacing(2);
+    padding: 0.5em 1em;
     line-height: 1.25;
     font-size: 1.15em;
 
     & > aside {
       display: inline-block;
-      margin-left: spacing(0.5);
+      margin-left: 0.2em;
       padding: 0 0.25em;
       border-radius: 3px;
       background: $controlBgColor;
