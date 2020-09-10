@@ -10,6 +10,8 @@ export const ColumnDragObject: React.FC<{
   hasHeaders: boolean;
   dragState: DragState | null;
 }> = ({ hasHeaders, dragState }) => {
+  const referenceBoxRef = useRef<HTMLDivElement | null>(null);
+
   // @todo wrap in a no-events overlay to clip against screen edges
   const dragBoxRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal = dragState
@@ -38,6 +40,17 @@ export const ColumnDragObject: React.FC<{
     dragBoxRef.current.style.left = `${initialXY[0]}px`;
     dragBoxRef.current.style.top = `${initialXY[1]}px`;
     dragBoxRef.current.style.width = `${initialWidth}px`;
+
+    // copy known font style from main content
+    // @todo consider other text style properties?
+    if (referenceBoxRef.current) {
+      const computedStyle = window.getComputedStyle(referenceBoxRef.current);
+      dragBoxRef.current.style.fontFamily = computedStyle.fontFamily;
+      dragBoxRef.current.style.fontSize = computedStyle.fontSize;
+      dragBoxRef.current.style.fontWeight = computedStyle.fontWeight;
+      dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
+      dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
+    }
   }, [initialXY, initialWidth]);
 
   // subscribe to live position updates without state changes
@@ -54,5 +67,5 @@ export const ColumnDragObject: React.FC<{
     }
   }, [dragState]);
 
-  return dragObjectPortal;
+  return <div ref={referenceBoxRef}>{dragObjectPortal}</div>;
 };

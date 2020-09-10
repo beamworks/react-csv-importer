@@ -52,6 +52,7 @@
       justify-content: center;
       height: 100%;
       background: $fillColor;
+      line-height: 1; // centered by parent anyway
     }
   }
 
@@ -61,8 +62,9 @@
   }
 
   &__cardValue {
-    margin-top: spacing(0.5);
+    margin-top: 0.25em;
     overflow: hidden;
+    line-height: 1.25em; // might not be inherited from main content
     font-size: 0.75em;
     text-overflow: ellipsis;
     white-space: nowrap;
