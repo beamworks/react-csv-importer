@@ -1,13 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ReplayIcon from '@material-ui/icons/Replay';
 
 import { FieldAssignmentMap } from './parser';
 import { DragState } from './ColumnDragState';
 import { ColumnDragCard, Column } from './ColumnDragCard';
+import { IconButton } from './IconButton';
 
 import './ColumnDragSourceArea.scss';
 
@@ -47,9 +44,7 @@ const SourceBox: React.FC<{
     <div className="ColumnDragSourceArea__box">
       {isAssigned ? (
         <div className="ColumnDragSourceArea__boxAction">
-          <IconButton size="small" onClick={() => onUnassign(column)}>
-            <ReplayIcon fontSize="inherit" />
-          </IconButton>
+          <IconButton small type="replay" onClick={() => onUnassign(column)} />
         </div>
       ) : undefined}
 
@@ -112,24 +107,22 @@ export const ColumnDragSourceArea: React.FC<{
     <div className="ColumnDragSourceArea">
       <div className="ColumnDragSourceArea__control">
         <IconButton
+          type="arrowBack"
           disabled={page === 0}
           onClick={() => {
             setPage((prev) => Math.max(0, prev - 1));
           }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
+        />
       </div>
       <div className="ColumnDragSourceArea__page">{pageContents}</div>
       <div className="ColumnDragSourceArea__control">
         <IconButton
+          type="arrowForward"
           disabled={page === pageCount - 1}
           onClick={() => {
             setPage((prev) => Math.min(pageCount - 1, prev + 1));
           }}
-        >
-          <ArrowForwardIcon />
-        </IconButton>
+        />
       </div>
     </div>
   );
