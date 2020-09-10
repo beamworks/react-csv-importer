@@ -14,33 +14,6 @@
     margin-left: spacing(-2);
   }
 
-  &__headerBackButton {
-    flex: none;
-    display: block;
-    border: 0;
-    padding: spacing(1.5);
-    border-radius: 50%;
-    background: transparent;
-    font-size: 1.5rem;
-    color: $fgColor;
-    cursor: pointer;
-
-    &:hover {
-      background: rgba($controlBorderColor, 0.25);
-    }
-
-    > span {
-      display: block;
-      width: 1em;
-      height: 1em;
-      // MUI ChevronLeft
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZvY3VzYWJsZT0iZmFsc2UiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTE1LjQxIDcuNDFMMTQgNmwtNiA2IDYgNiAxLjQxLTEuNDFMMTAuODMgMTJ6Ij48L3BhdGg+PC9zdmc+');
-      background-position: 50% 50%;
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-  }
-
   &__headerSpinner {
     display: flex; // correct inline content placement
     padding: spacing(1.5);
