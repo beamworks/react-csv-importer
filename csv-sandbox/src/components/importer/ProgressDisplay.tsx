@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import {
@@ -12,11 +10,7 @@ import {
 } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
-const useStyles = makeStyles((theme) => ({
-  progressFrame: {
-    padding: theme.spacing(4)
-  }
-}));
+import './ProgressDisplay.scss';
 
 const estimatedTotal = 100; // @todo compute based on file size
 
@@ -33,8 +27,6 @@ export function ProgressDisplay<Row extends BaseRow>({
   onRestart: () => void;
   onFinish?: () => void;
 }>): React.ReactElement {
-  const styles = useStyles();
-
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
@@ -104,19 +96,15 @@ export function ProgressDisplay<Row extends BaseRow>({
         }
       }}
     >
-      <div className={styles.progressFrame}>
+      <div className="ProgressDisplay">
         {isComplete ? (
-          <Typography variant="subtitle1" color="textPrimary" align="center">
-            Complete
-          </Typography>
+          <div className="ProgressDisplay__status">Complete</div>
         ) : (
-          <Typography variant="subtitle1" color="textSecondary" align="center">
-            Importing...
-          </Typography>
+          <div className="ProgressDisplay__status -pending">Importing...</div>
         )}
-        <Typography variant="body2" color="textSecondary" align="right">
-          {progressCount}
-        </Typography>
+
+        <div className="ProgressDisplay__count">{progressCount}</div>
+
         <LinearProgress variant="determinate" value={progressPercentage} />
       </div>
     </ImporterFrame>
