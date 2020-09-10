@@ -1,78 +1,8 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 
 import { PREVIEW_ROW_COUNT } from './parser';
 
-const useStyles = makeStyles((theme) => ({
-  columnCardPaper: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
-    zIndex: 0, // reset stacking context
-    cursor: 'default',
-
-    '&[data-draggable=true]': {
-      cursor: 'grab'
-    },
-
-    '&[data-dummy=true]': {
-      background: theme.palette.divider,
-      opacity: 0.5,
-      userSelect: 'none'
-    },
-
-    '&[data-error=true]': {
-      background: theme.palette.error.main,
-      color: theme.palette.error.contrastText
-    },
-
-    '&[data-shadow=true]': {
-      background: theme.palette.grey.A100,
-      color: theme.palette.grey.A200 // reduce text
-    },
-
-    '&[data-drop-indicator=true]': {
-      color: theme.palette.text.primary
-    }
-  },
-  columnCardHeader: {
-    marginTop: theme.spacing(-0.5),
-    marginLeft: theme.spacing(-1),
-    marginRight: theme.spacing(-1),
-    marginBottom: theme.spacing(0.5),
-    height: theme.spacing(3),
-    fontWeight: theme.typography.fontWeightBold,
-    color: theme.palette.text.secondary,
-
-    '& > b': {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100%',
-      background: theme.palette.divider
-    },
-
-    '$columnCardPaper[data-draggable=true]:hover &, $columnCardPaper[data-dragged=true] &': {
-      color: theme.palette.text.primary
-    }
-  },
-  columnCardValue: {
-    marginTop: theme.spacing(0.5),
-    fontSize: '0.75em',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-
-    '&[data-header="true"]': {
-      textAlign: 'center',
-      fontStyle: 'italic',
-      color: theme.palette.text.secondary
-    },
-
-    '& + div': {
-      marginTop: 0
-    }
-  }
-}));
+import './ColumnDragCard.scss';
 
 export interface Column {
   index: number;
@@ -99,7 +29,6 @@ export const ColumnDragCard: React.FC<{
   isDragged,
   isDropIndicator
 }) => {
-  const styles = useStyles();
   const isDummy = !optionalColumn;
 
   const column = useMemo<Column>(
@@ -149,31 +78,29 @@ export const ColumnDragCard: React.FC<{
 
   return (
     // not changing variant dynamically because it causes a height jump
-    <Paper
+    <div
       key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
-      className={styles.columnCardPaper}
+      className="ColumnDragCard"
       data-dummy={!!isDummy}
       data-error={!!hasError}
       data-shadow={!!isShadow}
       data-draggable={!!isDraggable}
       data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
-      elevation={isDummy || isShadow ? 0 : isDropIndicator ? 3 : undefined}
-      square={isDummy}
     >
-      <div className={styles.columnCardHeader}>
+      <div className="ColumnDragCard__cardHeader">
         {isDummy ? '\u00a0' : <b>{columnCode}</b>}
       </div>
 
       {column.values.slice(0, rowCount).map((value, valueIndex) => (
         <div
           key={valueIndex}
-          className={styles.columnCardValue}
+          className="ColumnDragCard__cardValue"
           data-header={hasHeaders && valueIndex === 0}
         >
           {value || '\u00a0'}
         </div>
       ))}
-    </Paper>
+    </div>
   );
 };
