@@ -1,0 +1,15 @@
+@import './theme.scss';
+
+.FileSelector {
+  border: 4px dashed $fgColor;
+  border-radius: 5px;
+  background: $fillColor;
+  color: $textColor;
+  padding: 64px;
+  text-align: center;
+
+  &[data-active='true'] {
+    background: darken($fillColor, 20%);
+    transition: background 0.1s ease-out;
+  }
+}
