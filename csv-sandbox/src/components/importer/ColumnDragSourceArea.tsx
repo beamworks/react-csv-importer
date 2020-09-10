@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -10,41 +9,9 @@ import { FieldAssignmentMap } from './parser';
 import { DragState } from './ColumnDragState';
 import { ColumnDragCard, Column } from './ColumnDragCard';
 
-const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
+import './ColumnDragSourceArea.scss';
 
-const useStyles = makeStyles((theme) => ({
-  sourceArea: {
-    display: 'flex',
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(2)
-  },
-  sourceAreaControl: {
-    flex: 'none',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  sourceAreaPage: {
-    flex: '1 1 0',
-    display: 'flex',
-    paddingLeft: theme.spacing(1) // match interior box spacing
-  },
-  sourceAreaPageFiller: {
-    flex: '1 1 0',
-    marginRight: theme.spacing(1)
-  },
-  sourceBox: {
-    position: 'relative', // for action
-    flex: '1 1 0',
-    marginRight: theme.spacing(1),
-    width: 0 // prevent internal sizing from affecting placement
-  },
-  sourceBoxAction: {
-    position: 'absolute',
-    top: theme.spacing(0.5), // matches up with column card header sizing
-    right: theme.spacing(0.5),
-    zIndex: 1 // right above content
-  }
-}));
+const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
 const SourceBox: React.FC<{
   hasHeaders: boolean;
@@ -61,8 +28,6 @@ const SourceBox: React.FC<{
   eventBinder,
   onUnassign
 }) => {
-  const styles = useStyles();
-
   const isShadow = dragState ? column === dragState.column : false;
 
   const isAssigned = useMemo(
@@ -79,9 +44,9 @@ const SourceBox: React.FC<{
   ]);
 
   return (
-    <div className={styles.sourceBox}>
+    <div className="ColumnDragSourceArea__box">
       {isAssigned ? (
-        <div className={styles.sourceBoxAction}>
+        <div className="ColumnDragSourceArea__boxAction">
           <IconButton size="small" onClick={() => onUnassign(column)}>
             <ReplayIcon fontSize="inherit" />
           </IconButton>
@@ -116,8 +81,6 @@ export const ColumnDragSourceArea: React.FC<{
   eventBinder,
   onUnassign
 }) => {
-  const styles = useStyles();
-
   const [page, setPage] = useState<number>(0);
   const pageCount = Math.ceil(columns.length / SOURCES_PAGE_SIZE);
 
@@ -138,13 +101,16 @@ export const ColumnDragSourceArea: React.FC<{
 
   while (pageContents.length < SOURCES_PAGE_SIZE) {
     pageContents.push(
-      <div key={pageContents.length} className={styles.sourceAreaPageFiller} />
+      <div
+        key={pageContents.length}
+        className="ColumnDragSourceArea__pageFiller"
+      />
     );
   }
 
   return (
-    <div className={styles.sourceArea}>
-      <div className={styles.sourceAreaControl}>
+    <div className="ColumnDragSourceArea">
+      <div className="ColumnDragSourceArea__control">
         <IconButton
           disabled={page === 0}
           onClick={() => {
@@ -154,8 +120,8 @@ export const ColumnDragSourceArea: React.FC<{
           <ArrowBackIcon />
         </IconButton>
       </div>
-      <div className={styles.sourceAreaPage}>{pageContents}</div>
-      <div className={styles.sourceAreaControl}>
+      <div className="ColumnDragSourceArea__page">{pageContents}</div>
+      <div className="ColumnDragSourceArea__control">
         <IconButton
           disabled={page === pageCount - 1}
           onClick={() => {

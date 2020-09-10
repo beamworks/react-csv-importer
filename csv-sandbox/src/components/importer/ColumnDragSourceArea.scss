@@ -1,0 +1,38 @@
+@import './theme.scss';
+
+.ColumnDragSourceArea {
+  display: flex;
+  margin-top: spacing(1);
+  margin-bottom: spacing(2);
+
+  &__control {
+    flex: none;
+    display: flex;
+    align-items: center;
+  }
+
+  &__page {
+    flex: 1 1 0;
+    display: flex;
+    padding-left: spacing(1); // match interior box spacing
+  }
+
+  &__pageFiller {
+    flex: 1 1 0;
+    margin-right: spacing(1);
+  }
+
+  &__box {
+    position: relative; // for action
+    flex: 1 1 0;
+    margin-right: spacing(1);
+    width: 0; // prevent internal sizing from affecting placement
+  }
+
+  &__boxAction {
+    position: absolute;
+    top: spacing(0.5); // matches up with column card header sizing
+    right: spacing(0.5);
+    z-index: 1; // right above content
+  }
+}
