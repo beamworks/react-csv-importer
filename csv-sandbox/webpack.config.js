@@ -55,6 +55,7 @@ module.exports = (env, argv) => ({
     })
   ],
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    disableHostCheck: true // for ngrok tunnel
   }
 });
