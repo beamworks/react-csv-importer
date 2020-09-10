@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -10,53 +9,7 @@ import { ColumnDragCard, Column } from './ColumnDragCard';
 
 export type FieldTouchedMap = { [name: string]: boolean | undefined };
 
-const useStyles = makeStyles((theme) => ({
-  targetArea: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap'
-  },
-  targetBox: {
-    flexShrink: 1,
-    flexGrow: 0,
-    flexBasis: '25%',
-    width: 0, // avoid interference from internal width
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(2)
-  },
-  targetBoxLabel: {
-    marginBottom: theme.spacing(0.5),
-    fontWeight: theme.typography.fontWeightBold,
-    color: theme.palette.text.primary,
-    wordBreak: 'break-word',
-
-    '& > b': {
-      marginLeft: theme.spacing(0.5),
-      color: theme.palette.error.dark
-    }
-  },
-  targetBoxValue: {
-    position: 'relative' // for action
-  },
-  targetBoxValueAction: {
-    position: 'absolute',
-    top: theme.spacing(0.5), // matches up with column card header sizing
-    right: theme.spacing(0.5),
-    zIndex: 1 // right above content
-  },
-  targetBoxPlaceholderHelp: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '98%', // nudge up a bit
-    zIndex: 1, // right above content
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: theme.palette.text.secondary
-  }
-}));
+import './ColumnDragTargetArea.scss';
 
 const TargetBox: React.FC<{
   hasHeaders: boolean;
@@ -80,8 +33,6 @@ const TargetBox: React.FC<{
   onHover,
   onUnassign
 }) => {
-  const styles = useStyles();
-
   const mouseHoverHandlers = dragState
     ? {
         onMouseEnter: () => onHover(field.name, true),
@@ -141,15 +92,15 @@ const TargetBox: React.FC<{
 
   // @todo mouse cursor changes to reflect draggable state
   return (
-    <div className={styles.targetBox} {...mouseHoverHandlers}>
-      <div className={styles.targetBoxLabel}>
+    <div className="ColumnDragTargetArea__box" {...mouseHoverHandlers}>
+      <div className="ColumnDragTargetArea__boxLabel">
         {field.label}
         {field.isOptional ? null : <b>*</b>}
       </div>
 
-      <div className={styles.targetBoxValue}>
+      <div className="ColumnDragTargetArea__boxValue">
         {!sourceColumn && assignedColumn && (
-          <div className={styles.targetBoxValueAction}>
+          <div className="ColumnDragTargetArea__boxValueAction">
             <IconButton size="small" onClick={() => onUnassign(assignedColumn)}>
               <CloseIcon fontSize="inherit" />
             </IconButton>
@@ -157,7 +108,7 @@ const TargetBox: React.FC<{
         )}
 
         {!sourceColumn && !assignedColumn && (
-          <div className={styles.targetBoxPlaceholderHelp}>
+          <div className="ColumnDragTargetArea__boxPlaceholderHelp">
             Drag column here
           </div>
         )}
@@ -193,10 +144,8 @@ export const ColumnDragTargetArea: React.FC<{
   onHover,
   onUnassign
 }) => {
-  const styles = useStyles();
-
   return (
-    <div className={styles.targetArea}>
+    <div className="ColumnDragTargetArea">
       {fields.map((field) => {
         const assignedColumnIndex = fieldAssignments[field.name];
 
