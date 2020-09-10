@@ -1,12 +1,12 @@
 html,
 body {
-  margin: 0px;
+  margin: 0;
   height: 100%;
-  padding: 0px;
+  padding: 0;
 }
 
 #root {
   position: relative;
-  height: 100%;
   z-index: 0; // reset stacking order
+  height: 100%;
 }
