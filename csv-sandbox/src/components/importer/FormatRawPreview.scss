@@ -1,0 +1,30 @@
+@import './theme.scss';
+
+.FormatRawPreview {
+  &__scroll {
+    margin-bottom: spacing(2);
+    height: spacing(12);
+    overflow: auto;
+    border-radius: 5px;
+    background: $invertedBgColor;
+    color: $invertedTextColor;
+  }
+
+  &__pre {
+    margin: 0; // override default
+    padding: spacing(1) spacing(2);
+    line-height: 1.25;
+    font-size: 1rem; // @todo
+
+    & > aside {
+      display: inline-block;
+      margin-left: spacing(0.5);
+      padding: 0 0.25em;
+      border-radius: 3px;
+      background: $controlBgColor;
+      font-size: 0.75em;
+      color: $controlBorderColor;
+      opacity: 0.75;
+    }
+  }
+}
