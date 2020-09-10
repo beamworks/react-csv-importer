@@ -5,8 +5,8 @@
   align-items: center;
   padding: spacing(1) spacing(2);
   border-radius: 5px;
-  background: $errorTextColor;
-  color: $controlBgColor;
+  background: $fillColor;
+  color: $errorTextColor;
 
   & > span {
     flex: 1 1 0;

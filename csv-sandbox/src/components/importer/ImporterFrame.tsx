@@ -1,6 +1,6 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 
+import { TextButton } from './TextButton';
 import { IconButton } from './IconButton';
 
 import './ImporterFrame.scss';
@@ -47,14 +47,9 @@ export const ImporterFrame: React.FC<{
         {error ? (
           <div className="ImporterFrame__footerError">{error}</div>
         ) : null}
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={!!nextDisabled}
-          onClick={onNext}
-        >
+        <TextButton disabled={!!nextDisabled} onClick={onNext}>
           {nextLabel || 'Next'}
-        </Button>
+        </TextButton>
       </div>
     </div>
   );

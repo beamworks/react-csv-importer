@@ -1,0 +1,21 @@
+@import './theme.scss';
+
+.TextButton {
+  display: block;
+  border: 1px solid $controlBorderColor;
+  padding: spacing(1) spacing(2);
+  border-radius: 5px;
+  background: $fillColor;
+  font-size: 0.8rem;
+  color: $fgColor;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: darken($fillColor, 10%);
+  }
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+}

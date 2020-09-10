@@ -9,7 +9,7 @@ const RAW_PREVIEW_SIZE = 500;
 export const FormatRawPreview: React.FC<{
   chunk: string;
   warning?: Papa.ParseError;
-  onCancelClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onCancelClick: () => void;
   // eslint-disable-next-line react/display-name
 }> = React.memo(({ chunk, warning, onCancelClick }) => {
   const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);

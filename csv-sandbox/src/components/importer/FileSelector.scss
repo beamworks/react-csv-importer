@@ -2,14 +2,14 @@
 
 .FileSelector {
   border: 4px dashed $fgColor;
+  padding: 64px;
   border-radius: 5px;
   background: $fillColor;
-  color: $textColor;
-  padding: 64px;
   text-align: center;
+  color: $textColor;
 
   &[data-active='true'] {
-    background: darken($fillColor, 20%);
+    background: darken($fillColor, 10%);
     transition: background 0.1s ease-out;
   }
 }
