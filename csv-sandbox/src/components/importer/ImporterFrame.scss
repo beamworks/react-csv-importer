@@ -3,7 +3,7 @@
 // @todo use em instead of rem
 .ImporterFrame {
   border: 1px solid $controlBorderColor;
-  padding: 1em;
+  padding: 1.2em;
   border-radius: $borderRadius;
   background: $controlBgColor;
 
@@ -11,10 +11,12 @@
     display: flex;
     align-items: center;
     margin-top: -1em; // cancel out button padding
+    margin-bottom: 0.2em;
     margin-left: -1em;
   }
 
   &__headerTitle {
+    padding-bottom: 0.1em; // centering nudge
     overflow: hidden;
     font-size: $titleFontSize;
     color: $textColor;
@@ -44,6 +46,7 @@
 
   &__headerSubtitle {
     flex: none;
+    padding-bottom: 0.1em; // centering nudge
     font-size: $titleFontSize;
     color: $textColor;
   }
@@ -52,7 +55,7 @@
     display: flex;
     align-items: center;
 
-    margin-top: 1em;
+    margin-top: 1.2em;
   }
 
   &__footerFill {
