@@ -4,7 +4,7 @@
   position: relative;
   z-index: 0; // reset stacking context
   padding: 0.5em 0.75em;
-  border-radius: 5px;
+  border-radius: $borderRadius;
   background: $controlBgColor;
   box-shadow: 0 1px 1px rgba(#000, 0.25);
   cursor: default;

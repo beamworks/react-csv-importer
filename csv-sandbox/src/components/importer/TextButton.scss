@@ -4,8 +4,8 @@
   display: block;
   margin: 0; // override default
   border: 1px solid $controlBorderColor;
-  padding: 0.5em 1em;
-  border-radius: 5px;
+  padding: 0.4em 1em 0.5em;
+  border-radius: $borderRadius;
   background: $fillColor;
   font-size: inherit;
   color: $fgColor;

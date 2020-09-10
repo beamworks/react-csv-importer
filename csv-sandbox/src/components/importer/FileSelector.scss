@@ -1,9 +1,9 @@
 @import './theme.scss';
 
 .FileSelector {
-  border: 4px dashed $fgColor;
-  padding: 64px;
-  border-radius: 5px;
+  border: 0.25em dashed $fgColor;
+  padding: 4em;
+  border-radius: $borderRadius;
   background: $fillColor;
   text-align: center;
   color: $textColor;

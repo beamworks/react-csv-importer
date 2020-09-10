@@ -4,7 +4,7 @@
 .ImporterFrame {
   border: 1px solid $controlBorderColor;
   padding: 1em;
-  border-radius: 5px;
+  border-radius: $borderRadius;
   background: $controlBgColor;
 
   &__header {
