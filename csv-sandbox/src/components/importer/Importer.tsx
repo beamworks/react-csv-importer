@@ -52,7 +52,7 @@ export const ImporterField: React.FC<FieldProps> = ({
 
       return copy;
     });
-  }, [name, label, optional]);
+  }, [fieldSetter, name, label, optional]);
 
   return null;
 };
@@ -139,7 +139,7 @@ export function Importer<Row extends BaseRow>({
 }: React.PropsWithChildren<{
   callback: ParseCallback<Row>;
   onFinish?: () => void;
-}>) {
+}>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (

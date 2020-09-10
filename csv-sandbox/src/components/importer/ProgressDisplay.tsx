@@ -32,7 +32,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   callback: ParseCallback<Row>;
   onRestart: () => void;
   onFinish?: () => void;
-}>) {
+}>): React.ReactElement {
   const styles = useStyles();
 
   const [progressCount, setProgressCount] = useState(0);
@@ -40,6 +40,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
 
   // perform main async parse
+  const callbackRef = useRef(callback); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
     const oplock = asyncLockRef.current;
@@ -56,7 +57,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      callback
+      callbackRef.current
     ).then(() => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {

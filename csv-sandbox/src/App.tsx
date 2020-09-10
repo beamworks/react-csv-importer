@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage';
 import { ImportPage } from './pages/ImportPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
+// eslint-disable-next-line react/display-name
 const AppRoutes: React.FC = React.memo(() => {
   return (
     <Switch>
