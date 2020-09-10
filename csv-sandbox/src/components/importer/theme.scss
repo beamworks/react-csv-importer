@@ -1,3 +1,12 @@
 $fgColor: #000;
-$textColor: #202020;
 $fillColor: #f0f0f0;
+$controlBorderColor: #808080;
+$controlBgColor: #fff;
+
+$textColor: #202020;
+$textDisabledColor: rgba($textColor, 0.5);
+$errorTextColor: #800000;
+
+@function spacing($mul) {
+  @return $mul * 8px;
+}

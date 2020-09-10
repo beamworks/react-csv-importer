@@ -1,0 +1,104 @@
+@import './theme.scss';
+
+// @todo use em instead of rem
+.ImporterFrame {
+  border: 1px solid $controlBorderColor;
+  border-radius: 5px;
+  background: $controlBgColor;
+  padding: spacing(2);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    margin-top: spacing(-2); // cancel out button padding
+    margin-left: spacing(-2);
+  }
+
+  &__headerBackButton {
+    flex: none;
+    display: block;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: $fgColor;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    padding: spacing(1.5);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba($controlBorderColor, 0.25);
+    }
+
+    > span {
+      display: block;
+      width: 1em;
+      height: 1em;
+      // MUI ChevronLeft
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZvY3VzYWJsZT0iZmFsc2UiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTE1LjQxIDcuNDFMMTQgNmwtNiA2IDYgNiAxLjQxLTEuNDFMMTAuODMgMTJ6Ij48L3BhdGg+PC9zdmc+');
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+    }
+  }
+
+  &__headerSpinner {
+    display: flex; // correct inline content placement
+    margin-left: spacing(-1.5);
+    padding: spacing(1.5);
+    font-size: spacing(3);
+  }
+
+  &__headerTitle {
+    font-size: 1rem;
+    color: $textColor;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__headerCrumbSeparator {
+    flex: none;
+    display: flex; // for correct icon alignment
+    margin-left: spacing(1);
+    margin-right: spacing(1);
+    color: $textDisabledColor;
+    font-size: 0.75rem;
+
+    > span {
+      display: block;
+      width: 1em;
+      height: 1em;
+      // MUI ChevronRight
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZvY3VzYWJsZT0iZmFsc2UiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEwIDZMOC41OSA3LjQxIDEzLjE3IDEybC00LjU4IDQuNTlMMTAgMThsNi02eiI+PC9wYXRoPjwvc3ZnPg==');
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+    }
+  }
+
+  &__headerSubtitle {
+    flex: none;
+    font-size: 1rem;
+    color: $textColor;
+  }
+
+  &__footer {
+    display: flex;
+
+    margin-top: spacing(1);
+    align-items: center;
+  }
+
+  &__footerFill {
+    flex: 1 1 0;
+  }
+
+  &__footerError {
+    flex: none;
+    margin-right: spacing(2);
+    line-height: 0.8; // in case of line break
+    color: $errorTextColor;
+    word-break: break-word;
+  }
+}

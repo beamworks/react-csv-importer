@@ -1,48 +1,8 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-const useStyles = makeStyles((theme) => ({
-  mainHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: -theme.spacing(2) // cancel out button padding
-  },
-  mainHeaderSpinner: {
-    display: 'flex', // correct inline content placement
-    marginLeft: -theme.spacing(1.5),
-    padding: theme.spacing(1.5),
-    fontSize: theme.spacing(3)
-  },
-  mainHeaderCrumbSeparator: {
-    flex: 'none',
-    display: 'flex', // for correct icon alignment
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    color: theme.palette.text.disabled
-  },
-  mainHeaderSubtitle: {
-    flex: 'none'
-  },
-  mainFooterFill: {
-    flex: '1 1 0'
-  },
-  mainFooterError: {
-    flex: 'none',
-    marginRight: theme.spacing(2),
-    lineHeight: 0.8, // in case of line break
-    color: theme.palette.error.dark,
-    wordBreak: 'break-word'
-  }
-}));
+import './ImporterFrame.scss';
 
 export const ImporterFrame: React.FC<{
   fileName: string;
@@ -62,45 +22,41 @@ export const ImporterFrame: React.FC<{
   onCancel,
   children
 }) => {
-  const styles = useStyles();
-
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <div className={styles.mainHeader}>
-          {onCancel ? (
-            <IconButton onClick={onCancel} edge="start">
-              <ChevronLeftIcon />
-            </IconButton>
-          ) : (
-            <div className={styles.mainHeaderSpinner}>
-              <CircularProgress size="1em" />
+    <div className="ImporterFrame">
+      <div className="ImporterFrame__header">
+        {onCancel ? (
+          <button
+            className="ImporterFrame__headerBackButton"
+            onClick={onCancel}
+          >
+            <span />
+          </button>
+        ) : (
+          <div className="ImporterFrame__headerSpinner">
+            <CircularProgress size="1em" />
+          </div>
+        )}
+
+        <div className="ImporterFrame__headerTitle">{fileName}</div>
+
+        {subtitle ? (
+          <>
+            <div className="ImporterFrame__headerCrumbSeparator">
+              <span />
             </div>
-          )}
+            <div className="ImporterFrame__headerSubtitle">{subtitle}</div>
+          </>
+        ) : null}
+      </div>
 
-          <Typography variant="subtitle1" color="textPrimary" noWrap>
-            {fileName}
-          </Typography>
+      {children}
 
-          {subtitle ? (
-            <>
-              <div className={styles.mainHeaderCrumbSeparator}>
-                <ChevronRightIcon fontSize="inherit" />
-              </div>
-              <div className={styles.mainHeaderSubtitle}>
-                <Typography variant="subtitle1" color="textPrimary" noWrap>
-                  {subtitle}
-                </Typography>
-              </div>
-            </>
-          ) : null}
-        </div>
-
-        {children}
-      </CardContent>
-      <CardActions>
-        <div className={styles.mainFooterFill} />
-        {error ? <div className={styles.mainFooterError}>{error}</div> : null}
+      <div className="ImporterFrame__footer">
+        <div className="ImporterFrame__footerFill" />
+        {error ? (
+          <div className="ImporterFrame__footerError">{error}</div>
+        ) : null}
         <Button
           variant="contained"
           color="primary"
@@ -109,7 +65,7 @@ export const ImporterFrame: React.FC<{
         >
           {nextLabel || 'Next'}
         </Button>
-      </CardActions>
-    </Card>
+      </div>
+    </div>
   );
 };
