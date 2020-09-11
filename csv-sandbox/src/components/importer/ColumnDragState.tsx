@@ -130,7 +130,7 @@ export function useColumnDragState(
   const columnSelectHandler = useCallback((column: Column) => {
     setDragState((prev) => {
       // toggle off if needed
-      if (prev) {
+      if (prev && prev.column === column) {
         return null;
       }
 
