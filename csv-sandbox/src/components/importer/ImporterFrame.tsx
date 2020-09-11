@@ -26,7 +26,12 @@ export const ImporterFrame: React.FC<{
   return (
     <div className="ImporterFrame">
       <div className="ImporterFrame__header">
-        <IconButton type="arrowBack" disabled={!onCancel} onClick={onCancel} />
+        <IconButton
+          label="Go to previous step"
+          type="arrowBack"
+          disabled={!onCancel}
+          onClick={onCancel}
+        />
 
         <div className="ImporterFrame__headerTitle">{fileName}</div>
 

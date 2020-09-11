@@ -42,12 +42,6 @@ const SourceBox: React.FC<{
 
   return (
     <div className="ColumnDragSourceArea__box">
-      {isAssigned ? (
-        <div className="ColumnDragSourceArea__boxAction">
-          <IconButton small type="replay" onClick={() => onUnassign(column)} />
-        </div>
-      ) : undefined}
-
       <div {...(isAssigned ? {} : eventHandlers)}>
         <ColumnDragCard
           hasHeaders={hasHeaders}
@@ -56,6 +50,18 @@ const SourceBox: React.FC<{
           isDraggable={!dragState && !isShadow && !isAssigned}
         />
       </div>
+
+      {/* tab order after column contents */}
+      {isAssigned ? (
+        <div className="ColumnDragSourceArea__boxAction">
+          <IconButton
+            label="Reset"
+            small
+            type="replay"
+            onClick={() => onUnassign(column)}
+          />
+        </div>
+      ) : undefined}
     </div>
   );
 };
@@ -104,9 +110,10 @@ export const ColumnDragSourceArea: React.FC<{
   }
 
   return (
-    <div className="ColumnDragSourceArea">
+    <section className="ColumnDragSourceArea" aria-label="Columns to import">
       <div className="ColumnDragSourceArea__control">
         <IconButton
+          label="Previous page"
           type="back"
           disabled={page === 0}
           onClick={() => {
@@ -114,9 +121,15 @@ export const ColumnDragSourceArea: React.FC<{
           }}
         />
       </div>
-      <div className="ColumnDragSourceArea__page">{pageContents}</div>
+      <div
+        className="ColumnDragSourceArea__page"
+        aria-label={`Page ${page + 1}`}
+      >
+        {pageContents}
+      </div>
       <div className="ColumnDragSourceArea__control">
         <IconButton
+          label="Next page"
           type="forward"
           disabled={page === pageCount - 1}
           onClick={() => {
@@ -124,6 +137,6 @@ export const ColumnDragSourceArea: React.FC<{
           }}
         />
       </div>
-    </div>
+    </section>
   );
 };

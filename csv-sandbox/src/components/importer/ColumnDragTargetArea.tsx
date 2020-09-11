@@ -91,32 +91,40 @@ const TargetBox: React.FC<{
 
   // @todo mouse cursor changes to reflect draggable state
   return (
-    <div className="ColumnDragTargetArea__box" {...mouseHoverHandlers}>
+    <section
+      className="ColumnDragTargetArea__box"
+      aria-label={
+        field.isOptional ? 'Optional target field' : 'Required target field'
+      }
+      {...mouseHoverHandlers}
+    >
       <div className="ColumnDragTargetArea__boxLabel">
         {field.label}
-        {field.isOptional ? null : <b>*</b>}
+        {field.isOptional ? null : <b aria-hidden>*</b>}
       </div>
 
       <div className="ColumnDragTargetArea__boxValue">
+        {!sourceColumn && !assignedColumn && (
+          <div className="ColumnDragTargetArea__boxPlaceholderHelp" aria-hidden>
+            Drag column here
+          </div>
+        )}
+
+        <div {...dragHandlers}>{valueContents}</div>
+
+        {/* tab order after column contents */}
         {!sourceColumn && assignedColumn && (
           <div className="ColumnDragTargetArea__boxValueAction">
             <IconButton
+              label="Unassign column"
               small
               type="close"
               onClick={() => onUnassign(assignedColumn)}
             />
           </div>
         )}
-
-        {!sourceColumn && !assignedColumn && (
-          <div className="ColumnDragTargetArea__boxPlaceholderHelp">
-            Drag column here
-          </div>
-        )}
-
-        <div {...dragHandlers}>{valueContents}</div>
       </div>
-    </div>
+    </section>
   );
 };
 
@@ -146,7 +154,7 @@ export const ColumnDragTargetArea: React.FC<{
   onUnassign
 }) => {
   return (
-    <div className="ColumnDragTargetArea">
+    <section className="ColumnDragTargetArea" aria-label="Target fields">
       {fields.map((field) => {
         const assignedColumnIndex = fieldAssignments[field.name];
 
@@ -168,6 +176,6 @@ export const ColumnDragTargetArea: React.FC<{
           />
         );
       })}
-    </div>
+    </section>
   );
 };
