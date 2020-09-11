@@ -12,9 +12,20 @@
   }
 
   &__page {
+    position: relative; // for indicator
     flex: 1 1 0;
     display: flex;
+    padding-top: 0.5em; // some room for the indicator
     padding-left: 0.5em; // match interior box spacing
+  }
+
+  &__pageIndicator {
+    position: absolute;
+    top: -0.5em;
+    right: 0;
+    left: 0;
+    text-align: center;
+    font-size: 0.75em;
   }
 
   &__pageFiller {

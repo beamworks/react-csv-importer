@@ -58,7 +58,7 @@ const SourceBox: React.FC<{
       <div className="ColumnDragSourceArea__boxAction">
         {isAssigned ? (
           <IconButton
-            label="Reset field"
+            label="Clear column assignment"
             small
             type="replay"
             onClick={() => {
@@ -104,6 +104,7 @@ export const ColumnDragSourceArea: React.FC<{
   onUnassign
 }) => {
   const [page, setPage] = useState<number>(0);
+  const [pageChanged, setPageChanged] = useState<boolean>(false);
   const pageCount = Math.ceil(columns.length / SOURCES_PAGE_SIZE);
 
   const start = page * SOURCES_PAGE_SIZE;
@@ -140,13 +141,28 @@ export const ColumnDragSourceArea: React.FC<{
           disabled={page === 0}
           onClick={() => {
             setPage((prev) => Math.max(0, prev - 1));
+            setPageChanged(true);
           }}
         />
       </div>
-      <div
-        className="ColumnDragSourceArea__page"
-        aria-label={`Page ${page + 1}`}
-      >
+      <div className="ColumnDragSourceArea__page">
+        {dragState && !dragState.pointerStartInfo ? (
+          <div className="ColumnDragSourceArea__pageIndicator" role="status">
+            Assigning column {dragState.column.code}
+          </div>
+        ) : (
+          // show page number if needed (and treat as status role if it has changed)
+          // @todo changing role to status does not seem to work
+          pageCount > 1 && (
+            <div
+              className="ColumnDragSourceArea__pageIndicator"
+              role={pageChanged ? 'status' : 'text'}
+            >
+              Page {page + 1} of {pageCount}
+            </div>
+          )
+        )}
+
         {pageContents}
       </div>
       <div className="ColumnDragSourceArea__control">

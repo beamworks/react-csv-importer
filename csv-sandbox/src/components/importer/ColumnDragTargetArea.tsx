@@ -119,7 +119,7 @@ const TargetBox: React.FC<{
         {dragState && !dragState.pointerStartInfo ? (
           <div className="ColumnDragTargetArea__boxValueAction">
             <IconButton
-              label="Assign selected column"
+              label={`Assign column ${dragState.column.code}`}
               small
               type="forward"
               onClick={() => onAssign(field.name)}

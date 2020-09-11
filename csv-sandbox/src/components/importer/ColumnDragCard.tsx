@@ -6,6 +6,7 @@ import './ColumnDragCard.scss';
 
 export interface Column {
   index: number;
+  code: string;
   values: string[];
 }
 
@@ -35,46 +36,11 @@ export const ColumnDragCard: React.FC<{
     () =>
       optionalColumn || {
         index: -1,
+        code: '',
         values: [...new Array(PREVIEW_ROW_COUNT)].map(() => '')
       },
     [optionalColumn]
   );
-
-  // spreadsheet-style column code computation (A, B, ..., Z, AA, AB, ..., etc)
-  const columnCode = useMemo(() => {
-    const value = column.index;
-
-    // ignore dummy index
-    if (value < 0) {
-      return '';
-    }
-
-    // first, determine how many base-26 letters there should be
-    // (because the notation is not purely positional)
-    let digitCount = 1;
-    let base = 0;
-    let next = 26;
-
-    while (next <= value) {
-      digitCount += 1;
-      base = next;
-      next = next * 26 + 26;
-    }
-
-    // then, apply normal positional digit computation on remainder above base
-    let remainder = value - base;
-
-    const digits = [];
-    while (digits.length < digitCount) {
-      const lastDigit = remainder % 26;
-      remainder = Math.floor((remainder - lastDigit) / 26); // applying floor just in case
-
-      // store ASCII code, with A as 0
-      digits.unshift(65 + lastDigit);
-    }
-
-    return String.fromCharCode.apply(null, digits);
-  }, [column]);
 
   const headerValue = hasHeaders ? column.values[0] : undefined;
   const dataValues = column.values.slice(hasHeaders ? 1 : 0, rowCount);
@@ -95,9 +61,9 @@ export const ColumnDragCard: React.FC<{
         {isDummy ? (
           <var role="text">Unassigned field</var>
         ) : (
-          <var role="text">Column {columnCode}</var>
+          <var role="text">Column {column.code}</var>
         )}
-        {isDummy ? '\u00a0' : <b aria-hidden>{columnCode}</b>}
+        {isDummy ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>
 
       {headerValue !== undefined ? (
