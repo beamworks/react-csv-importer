@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint",
+    "prettier/react"
+  ],
+  "plugins": ["@typescript-eslint", "react", "react-hooks"],
+  "rules": {
+    "react/prop-types": "off"
+  }
+}
