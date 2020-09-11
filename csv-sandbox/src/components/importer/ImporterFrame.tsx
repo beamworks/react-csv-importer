@@ -50,7 +50,9 @@ export const ImporterFrame: React.FC<{
       <div className="ImporterFrame__footer">
         <div className="ImporterFrame__footerFill" />
         {error ? (
-          <div className="ImporterFrame__footerError">{error}</div>
+          <div className="ImporterFrame__footerError" role="status">
+            {error}
+          </div>
         ) : null}
         <TextButton disabled={!!nextDisabled} onClick={onNext}>
           {nextLabel || 'Next'}

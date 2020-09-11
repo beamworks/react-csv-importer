@@ -55,7 +55,7 @@ const SourceBox: React.FC<{
       {isAssigned ? (
         <div className="ColumnDragSourceArea__boxAction">
           <IconButton
-            label="Reset"
+            label="Reset field"
             small
             type="replay"
             onClick={() => onUnassign(column)}
@@ -113,7 +113,7 @@ export const ColumnDragSourceArea: React.FC<{
     <section className="ColumnDragSourceArea" aria-label="Columns to import">
       <div className="ColumnDragSourceArea__control">
         <IconButton
-          label="Previous page"
+          label="Show previous columns"
           type="back"
           disabled={page === 0}
           onClick={() => {
@@ -129,7 +129,7 @@ export const ColumnDragSourceArea: React.FC<{
       </div>
       <div className="ColumnDragSourceArea__control">
         <IconButton
-          label="Next page"
+          label="Show next columns"
           type="forward"
           disabled={page === pageCount - 1}
           onClick={() => {
