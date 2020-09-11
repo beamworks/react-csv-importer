@@ -96,14 +96,14 @@ const TargetBox: React.FC<{
   return (
     <section
       className="ColumnDragTargetArea__box"
-      aria-label={
-        field.isOptional ? 'Optional target field' : 'Required target field'
-      }
+      aria-label={`${field.label} (${
+        field.isOptional ? 'optional' : 'required'
+      })`}
       {...mouseHoverHandlers}
     >
-      <div className="ColumnDragTargetArea__boxLabel">
+      <div className="ColumnDragTargetArea__boxLabel" aria-hidden>
         {field.label}
-        {field.isOptional ? null : <b aria-hidden>*</b>}
+        {field.isOptional ? null : <b>*</b>}
       </div>
 
       <div className="ColumnDragTargetArea__boxValue">

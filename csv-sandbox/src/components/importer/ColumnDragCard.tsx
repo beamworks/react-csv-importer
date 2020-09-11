@@ -90,11 +90,14 @@ export const ColumnDragCard: React.FC<{
       data-draggable={!!isDraggable}
       data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
-      aria-hidden={isDummy}
     >
       <div className="ColumnDragCard__cardHeader">
+        {isDummy ? (
+          <var role="text">Unassigned field</var>
+        ) : (
+          <var role="text">Column {columnCode}</var>
+        )}
         {isDummy ? '\u00a0' : <b aria-hidden>{columnCode}</b>}
-        {!isDummy && <var role="text">Column {columnCode}</var>}
       </div>
 
       {headerValue !== undefined ? (
