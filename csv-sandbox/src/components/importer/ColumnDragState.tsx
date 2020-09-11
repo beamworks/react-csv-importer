@@ -128,11 +128,18 @@ export function useColumnDragState(
   }, {});
 
   const columnSelectHandler = useCallback((column: Column) => {
-    setDragState({
-      pointerStartInfo: null, // no draggable position information
-      column,
-      dropFieldName: null,
-      updateListener: null
+    setDragState((prev) => {
+      // toggle off if needed
+      if (prev) {
+        return null;
+      }
+
+      return {
+        pointerStartInfo: null, // no draggable position information
+        column,
+        dropFieldName: null,
+        updateListener: null
+      };
     });
   }, []);
 

@@ -68,8 +68,11 @@ const SourceBox: React.FC<{
         ) : (
           <IconButton
             focusOnly
-            label="Select for assignment"
-            disabled={!!dragState && dragState.column === column}
+            label={
+              dragState && dragState.column === column
+                ? 'Unselect column'
+                : 'Select column for assignment'
+            }
             small
             type="back"
             onClick={() => {
