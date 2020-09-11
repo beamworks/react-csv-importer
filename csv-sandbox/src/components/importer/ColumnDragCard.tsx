@@ -76,6 +76,9 @@ export const ColumnDragCard: React.FC<{
     return String.fromCharCode.apply(null, digits);
   }, [column]);
 
+  const headerValue = hasHeaders ? column.values[0] : undefined;
+  const dataValues = column.values.slice(hasHeaders ? 1 : 0, rowCount);
+
   return (
     // not changing variant dynamically because it causes a height jump
     <div
@@ -87,20 +90,27 @@ export const ColumnDragCard: React.FC<{
       data-draggable={!!isDraggable}
       data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
+      aria-hidden={isDummy}
     >
       <div className="ColumnDragCard__cardHeader">
-        {isDummy ? '\u00a0' : <b>{columnCode}</b>}
+        {isDummy ? '\u00a0' : <b aria-hidden>{columnCode}</b>}
+        {!isDummy && <var role="text">Column {columnCode}</var>}
       </div>
 
-      {column.values.slice(0, rowCount).map((value, valueIndex) => (
-        <div
-          key={valueIndex}
-          className="ColumnDragCard__cardValue"
-          data-header={hasHeaders && valueIndex === 0}
-        >
-          {value || '\u00a0'}
+      {headerValue !== undefined ? (
+        <div className="ColumnDragCard__cardValue" data-header>
+          {headerValue || '\u00a0'}
         </div>
-      ))}
+      ) : null}
+
+      {/* all values grouped into one readable string */}
+      <div role="text">
+        {dataValues.map((value, valueIndex) => (
+          <div key={valueIndex} className="ColumnDragCard__cardValue">
+            {value || '\u00a0'}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

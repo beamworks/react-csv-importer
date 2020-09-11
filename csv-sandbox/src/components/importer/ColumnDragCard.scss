@@ -54,6 +54,13 @@
       background: $fillColor;
       line-height: 1; // centered by parent anyway
     }
+
+    > var {
+      display: block;
+      width: 1px; // non-zero size for reader
+      height: 1px;
+      overflow: hidden;
+    }
   }
 
   &__cardPaper[data-draggable='true']:hover &__cardHeader,
