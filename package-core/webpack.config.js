@@ -7,7 +7,8 @@ const Dotenv = require('dotenv-webpack');
 module.exports = (env, argv) => ({
   entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    libraryTarget: 'commonjs2'
   },
   module: {
     rules: [
