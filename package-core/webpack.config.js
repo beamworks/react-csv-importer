@@ -31,6 +31,10 @@ module.exports = (env, argv) => ({
       }
     ]
   },
+  externals: {
+    react: 'commonjs',
+    'react-dom': 'commonjs'
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
