@@ -6,9 +6,10 @@ export const IconButton: React.FC<{
   label: string;
   type: 'back' | 'forward' | 'replay' | 'arrowBack' | 'close';
   small?: boolean;
+  focusOnly?: boolean;
   disabled?: boolean;
   onClick?: () => void;
-}> = ({ type, label, small, disabled, onClick }) => {
+}> = ({ type, label, small, focusOnly, disabled, onClick }) => {
   return (
     <button
       className="IconButton"
@@ -16,6 +17,7 @@ export const IconButton: React.FC<{
       disabled={disabled}
       onClick={onClick}
       data-small={!!small}
+      data-focus-only={!!focusOnly}
     >
       <span data-type={type} />
     </button>

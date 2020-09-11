@@ -35,6 +35,8 @@ export const ColumnPicker: React.FC<{
     dragState,
     dragEventBinder,
     dragHoverHandler,
+    columnSelectHandler,
+    assignHandler,
     unassignHandler
   } = useColumnDragState(fields, (fieldName) => {
     setFieldTouched((prev) => {
@@ -81,6 +83,7 @@ export const ColumnPicker: React.FC<{
         fieldAssignments={fieldAssignments}
         dragState={dragState}
         eventBinder={dragEventBinder}
+        onSelect={columnSelectHandler}
         onUnassign={unassignHandler}
       />
 
@@ -93,6 +96,7 @@ export const ColumnPicker: React.FC<{
         dragState={dragState}
         eventBinder={dragEventBinder}
         onHover={dragHoverHandler}
+        onAssign={assignHandler}
         onUnassign={unassignHandler}
       />
 

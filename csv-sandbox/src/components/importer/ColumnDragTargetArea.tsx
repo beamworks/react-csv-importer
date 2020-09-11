@@ -21,6 +21,7 @@ const TargetBox: React.FC<{
     startFieldName?: string
   ) => ReturnType<typeof useDrag>;
   onHover: (fieldName: string, isOn: boolean) => void;
+  onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
   hasHeaders,
@@ -30,14 +31,16 @@ const TargetBox: React.FC<{
   dragState,
   eventBinder,
   onHover,
+  onAssign,
   onUnassign
 }) => {
-  const mouseHoverHandlers = dragState
-    ? {
-        onMouseEnter: () => onHover(field.name, true),
-        onMouseLeave: () => onHover(field.name, false)
-      }
-    : {};
+  const mouseHoverHandlers =
+    dragState && dragState.pointerStartInfo
+      ? {
+          onMouseEnter: () => onHover(field.name, true),
+          onMouseLeave: () => onHover(field.name, false)
+        }
+      : {};
 
   const sourceColumn =
     dragState && dragState.dropFieldName === field.name
@@ -113,15 +116,27 @@ const TargetBox: React.FC<{
         <div {...dragHandlers}>{valueContents}</div>
 
         {/* tab order after column contents */}
-        {!sourceColumn && assignedColumn && (
+        {dragState && !dragState.pointerStartInfo ? (
           <div className="ColumnDragTargetArea__boxValueAction">
             <IconButton
-              label="Unassign column"
+              label="Assign selected column"
               small
-              type="close"
-              onClick={() => onUnassign(assignedColumn)}
+              type="forward"
+              onClick={() => onAssign(field.name)}
             />
           </div>
+        ) : (
+          !sourceColumn &&
+          assignedColumn && (
+            <div className="ColumnDragTargetArea__boxValueAction">
+              <IconButton
+                label="Clear column assignment"
+                small
+                type="close"
+                onClick={() => onUnassign(assignedColumn)}
+              />
+            </div>
+          )
         )}
       </div>
     </section>
@@ -141,6 +156,7 @@ export const ColumnDragTargetArea: React.FC<{
     startFieldName?: string
   ) => ReturnType<typeof useDrag>;
   onHover: (fieldName: string, isOn: boolean) => void;
+  onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
   fields,
@@ -151,6 +167,7 @@ export const ColumnDragTargetArea: React.FC<{
   dragState,
   eventBinder,
   onHover,
+  onAssign,
   onUnassign
 }) => {
   return (
@@ -172,6 +189,7 @@ export const ColumnDragTargetArea: React.FC<{
             dragState={dragState}
             eventBinder={eventBinder}
             onHover={onHover}
+            onAssign={onAssign}
             onUnassign={onUnassign}
           />
         );

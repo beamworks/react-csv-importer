@@ -10,12 +10,14 @@ import './ColumnDragSourceArea.scss';
 
 const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
+// @todo readable status text if not mouse-drag
 const SourceBox: React.FC<{
   hasHeaders: boolean;
   column: Column;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
+  onSelect: (column: Column) => void;
   onUnassign: (column: Column) => void;
 }> = ({
   hasHeaders,
@@ -23,9 +25,10 @@ const SourceBox: React.FC<{
   fieldAssignments,
   dragState,
   eventBinder,
+  onSelect,
   onUnassign
 }) => {
-  const isShadow = dragState ? column === dragState.column : false;
+  const isDragged = dragState ? column === dragState.column : false;
 
   const isAssigned = useMemo(
     () =>
@@ -46,22 +49,35 @@ const SourceBox: React.FC<{
         <ColumnDragCard
           hasHeaders={hasHeaders}
           column={column}
-          isShadow={isShadow || isAssigned}
-          isDraggable={!dragState && !isShadow && !isAssigned}
+          isShadow={isDragged || isAssigned}
+          isDraggable={!dragState && !isDragged && !isAssigned}
         />
       </div>
 
       {/* tab order after column contents */}
-      {isAssigned ? (
-        <div className="ColumnDragSourceArea__boxAction">
+      <div className="ColumnDragSourceArea__boxAction">
+        {isAssigned ? (
           <IconButton
             label="Reset field"
             small
             type="replay"
-            onClick={() => onUnassign(column)}
+            onClick={() => {
+              onUnassign(column);
+            }}
           />
-        </div>
-      ) : undefined}
+        ) : (
+          <IconButton
+            focusOnly
+            label="Select for assignment"
+            disabled={!!dragState && dragState.column === column}
+            small
+            type="back"
+            onClick={() => {
+              onSelect(column);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };
@@ -73,6 +89,7 @@ export const ColumnDragSourceArea: React.FC<{
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
+  onSelect: (column: Column) => void;
   onUnassign: (column: Column) => void;
 }> = ({
   hasHeaders,
@@ -80,6 +97,7 @@ export const ColumnDragSourceArea: React.FC<{
   fieldAssignments,
   dragState,
   eventBinder,
+  onSelect,
   onUnassign
 }) => {
   const [page, setPage] = useState<number>(0);
@@ -96,6 +114,7 @@ export const ColumnDragSourceArea: React.FC<{
         fieldAssignments={fieldAssignments}
         dragState={dragState}
         eventBinder={eventBinder}
+        onSelect={onSelect}
         onUnassign={onUnassign}
       />
     ));

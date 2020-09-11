@@ -28,6 +28,15 @@
     height: 2em;
   }
 
+  &[data-focus-only='true'] {
+    opacity: 0;
+    pointer-events: none;
+
+    &:focus {
+      opacity: 1;
+    }
+  }
+
   > span {
     display: block;
     width: 1.75em;

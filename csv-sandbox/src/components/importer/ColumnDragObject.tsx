@@ -14,28 +14,30 @@ export const ColumnDragObject: React.FC<{
 
   // @todo wrap in a no-events overlay to clip against screen edges
   const dragBoxRef = useRef<HTMLDivElement | null>(null);
-  const dragObjectPortal = dragState
-    ? createPortal(
-        <div className="ColumnDragObject" ref={dragBoxRef}>
-          <div className="ColumnDragObject__holder">
-            <ColumnDragCard
-              hasHeaders={hasHeaders}
-              column={dragState.column}
-              isDragged
-            />
-          </div>
-        </div>,
-        document.body
-      )
-    : null;
+  const dragObjectPortal =
+    dragState && dragState.pointerStartInfo
+      ? createPortal(
+          <div className="ColumnDragObject" ref={dragBoxRef}>
+            <div className="ColumnDragObject__holder">
+              <ColumnDragCard
+                hasHeaders={hasHeaders}
+                column={dragState.column}
+                isDragged
+              />
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
 
   // set up initial position
-  const initialXY = dragState && dragState.initialXY;
-  const initialWidth = dragState && dragState.initialWidth;
+  const pointerStartInfo = dragState && dragState.pointerStartInfo;
   useLayoutEffect(() => {
-    if (!initialXY || initialWidth === null || !dragBoxRef.current) {
+    if (!pointerStartInfo || !dragBoxRef.current) {
       return;
     }
+
+    const { initialXY, initialWidth } = pointerStartInfo;
 
     dragBoxRef.current.style.left = `${initialXY[0]}px`;
     dragBoxRef.current.style.top = `${initialXY[1]}px`;
@@ -51,7 +53,7 @@ export const ColumnDragObject: React.FC<{
       dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
       dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
     }
-  }, [initialXY, initialWidth]);
+  }, [pointerStartInfo]);
 
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
