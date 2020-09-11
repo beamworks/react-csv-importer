@@ -17,6 +17,14 @@
     text-align: right;
     font-size: 1em;
     color: $textSecondaryColor;
+
+    > var {
+      display: inline-block;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      opacity: 0;
+    }
   }
 
   &__progressBar {

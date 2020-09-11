@@ -59,7 +59,7 @@ export const FormatPreview: React.FC<{
 
     return (
       <div className="FormatPreview__mainResultBlock">
-        <div className="FormatPreview__header">File Format</div>
+        <div className="FormatPreview__header">Raw File Contents</div>
 
         <FormatRawPreview
           chunk={preview.firstChunk}

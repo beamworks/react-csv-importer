@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { TextButton } from './TextButton';
 import { IconButton } from './IconButton';
@@ -23,6 +23,17 @@ export const ImporterFrame: React.FC<{
   onCancel,
   children
 }) => {
+  const titleRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (subtitleRef.current) {
+      subtitleRef.current.focus();
+    } else if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, []);
+
   return (
     <div className="ImporterFrame">
       <div className="ImporterFrame__header">
@@ -33,14 +44,26 @@ export const ImporterFrame: React.FC<{
           onClick={onCancel}
         />
 
-        <div className="ImporterFrame__headerTitle">{fileName}</div>
+        <div
+          className="ImporterFrame__headerTitle"
+          tabIndex={-1}
+          ref={titleRef}
+        >
+          {fileName}
+        </div>
 
         {subtitle ? (
           <>
             <div className="ImporterFrame__headerCrumbSeparator">
               <span />
             </div>
-            <div className="ImporterFrame__headerSubtitle">{subtitle}</div>
+            <div
+              className="ImporterFrame__headerSubtitle"
+              tabIndex={-1}
+              ref={subtitleRef}
+            >
+              {subtitle}
+            </div>
           </>
         ) : null}
       </div>

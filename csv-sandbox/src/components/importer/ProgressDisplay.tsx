@@ -28,7 +28,16 @@ export function ProgressDisplay<Row extends BaseRow>({
 }>): React.ReactElement {
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
+
+  // ensure status gets focus when complete, in case status role is not read out
+  const statusRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if ((isComplete || error) && statusRef.current) {
+      statusRef.current.focus();
+    }
+  }, [isComplete, error]);
 
   // perform main async parse
   const callbackRef = useRef(callback); // wrap in ref to avoid re-triggering
@@ -49,14 +58,24 @@ export function ProgressDisplay<Row extends BaseRow>({
         setProgressCount((prev) => prev + deltaCount);
       },
       callbackRef.current
-    ).then(() => {
-      // ignore if stale
-      if (oplock !== asyncLockRef.current) {
-        return;
-      }
+    ).then(
+      () => {
+        // ignore if stale
+        if (oplock !== asyncLockRef.current) {
+          return;
+        }
 
-      setIsComplete(true);
-    });
+        setIsComplete(true);
+      },
+      (error) => {
+        // ignore if stale
+        if (oplock !== asyncLockRef.current) {
+          return;
+        }
+
+        setError(error);
+      }
+    );
 
     return () => {
       // invalidate current oplock on change or unmount
@@ -83,6 +102,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Import"
+      error={error && (error.message || error.toString())}
       nextDisabled={!isComplete || isDismissed}
       nextLabel={onFinish ? 'Finish' : 'Upload More'}
       onNext={() => {
@@ -96,13 +116,24 @@ export function ProgressDisplay<Row extends BaseRow>({
       }}
     >
       <div className="ProgressDisplay">
-        {isComplete ? (
-          <div className="ProgressDisplay__status">Complete</div>
+        {isComplete || error ? (
+          <div
+            className="ProgressDisplay__status"
+            role="status"
+            tabIndex={-1}
+            ref={statusRef}
+          >
+            {error ? 'Could not import' : 'Complete'}
+          </div>
         ) : (
-          <div className="ProgressDisplay__status -pending">Importing...</div>
+          <div className="ProgressDisplay__status -pending" role="status">
+            Importing...
+          </div>
         )}
 
-        <div className="ProgressDisplay__count">{progressCount}</div>
+        <div className="ProgressDisplay__count" role="text">
+          <var>Processed rows:</var> {progressCount}
+        </div>
 
         <div className="ProgressDisplay__progressBar">
           <div
