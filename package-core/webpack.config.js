@@ -1,13 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => ({
   entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.[contenthash].js'
+    path: path.resolve(__dirname, 'dist')
   },
   module: {
     rules: [
@@ -25,7 +25,10 @@ module.exports = (env, argv) => ({
         ],
         exclude: /node_modules/
       },
-      { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+      }
     ]
   },
   resolve: {
@@ -40,6 +43,8 @@ module.exports = (env, argv) => ({
       path: `.env.${process.env.NODE_ENV || argv.mode || 'production'}`,
       defaults: '.env'
     }),
+
+    new MiniCssExtractPlugin(),
 
     new CleanWebpackPlugin()
   ]
