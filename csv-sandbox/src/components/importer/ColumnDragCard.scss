@@ -57,6 +57,7 @@
 
     > var {
       display: block;
+      margin-bottom: -1px;
       width: 1px; // non-zero size for reader
       height: 1px;
       overflow: hidden;
