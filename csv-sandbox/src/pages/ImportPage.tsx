@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { Importer, ImporterField } from '../components/importer/Importer';
+import { Importer, ImporterField } from 'react-csv-importer';
 
 export const ImportPage: React.FC = () => {
   return (

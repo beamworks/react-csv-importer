@@ -1,0 +1,53 @@
+{
+  "name": "react-csv-importer",
+  "version": "0.0.1",
+  "description": "React CSV import widget with user-customizable mapping",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
+    "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
+    "stylelint": "stylelint \"src/**/*.scss\"",
+    "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
+    "dist": "rimraf dist && tsc --outDir dist && sass src/index.scss dist/index.css && cp src/exports.ts dist/index.d.ts"
+  },
+  "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
+  "license": "ISC",
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "eslint --max-warnings=0",
+    "src/**/*.scss": "stylelint"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.2.2",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.8.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.0",
+    "lint-staged": "^10.3.0",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "sass": "^1.26.10",
+    "stylelint": "^13.7.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.1.0",
+    "stylelint-scss": "^3.18.0",
+    "typescript": "^4.0.2"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0"
+  },
+  "dependencies": {
+    "papaparse": "^5.3.0",
+    "react-dropzone": "^11.0.3",
+    "react-use-gesture": "^7.0.16"
+  }
+}

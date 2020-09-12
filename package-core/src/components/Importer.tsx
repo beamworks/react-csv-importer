@@ -1,17 +1,16 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
 import {
-  PreviewInfo,
-  FieldAssignmentMap,
+  ImporterFieldProps,
+  ImporterProps,
   ParseCallback,
   BaseRow
-} from './parser';
+} from '../exports';
+import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
-
-import './Importer.scss';
 
 type FieldListSetter = (prev: Field[]) => Field[];
 
@@ -19,13 +18,7 @@ const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
 
-export interface FieldProps {
-  name: string;
-  label: string;
-  optional?: boolean;
-}
-
-export const ImporterField: React.FC<FieldProps> = ({
+export const ImporterField: React.FC<ImporterFieldProps> = ({
   name,
   label,
   optional
@@ -138,10 +131,7 @@ export function Importer<Row extends BaseRow>({
   callback,
   onFinish,
   children
-}: React.PropsWithChildren<{
-  callback: ParseCallback<Row>;
-  onFinish?: () => void;
-}>): React.ReactElement {
+}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (

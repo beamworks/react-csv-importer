@@ -7,6 +7,6 @@ body {
 
 #root {
   position: relative;
-  z-index: 0; // reset stacking order
+  z-index: 0; /* reset stacking order */
   height: 100%;
 }

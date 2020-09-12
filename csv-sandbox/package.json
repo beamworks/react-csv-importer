@@ -1,26 +1,19 @@
 {
   "name": "csv-sandbox",
   "version": "0.0.1",
+  "private": true,
   "description": "",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
-    "stylelint": "stylelint \"src/**/*.scss\"",
-    "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
     "dist": "webpack --mode production",
     "watch": "webpack-dev-server --mode development"
   },
   "author": "Nick Matantsev <nick.matantsev@gmail.com>",
   "license": "GPL-3.0-only",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": "eslint --max-warnings=0",
-    "src/**/*.scss": "stylelint"
+    "src/**/*.{ts,tsx}": "eslint --max-warnings=0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.1.0",
@@ -30,36 +23,25 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.0",
-    "husky": "^4.2.5",
     "lint-staged": "^10.3.0",
     "prettier": "^2.1.1",
-    "stylelint": "^13.7.0",
-    "stylelint-config-standard": "^20.0.0",
-    "stylelint-order": "^4.1.0",
-    "stylelint-scss": "^3.18.0",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@types/papaparse": "^5.2.2",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^4.2.2",
+    "css-loader": "^4.3.0",
     "dotenv-webpack": "^2.0.0",
     "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.4.1",
-    "node-sass": "^4.14.1",
-    "papaparse": "^5.3.0",
     "react": "^16.13.1",
+    "react-csv-importer": "file:../package-core",
     "react-dom": "^16.13.1",
-    "react-dropzone": "^11.0.3",
     "react-router-dom": "^5.2.0",
-    "react-use-gesture": "^7.0.16",
-    "sass": "^1.26.10",
-    "sass-loader": "^10.0.1",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.3",
     "typescript": "^4.0.2",

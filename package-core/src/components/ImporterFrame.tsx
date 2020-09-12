@@ -3,8 +3,6 @@ import React, { useRef, useEffect } from 'react';
 import { TextButton } from './TextButton';
 import { IconButton } from './IconButton';
 
-import './ImporterFrame.scss';
-
 export const ImporterFrame: React.FC<{
   fileName: string;
   subtitle?: string; // @todo allow multiple crumbs

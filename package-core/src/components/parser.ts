@@ -1,5 +1,7 @@
 import Papa from 'papaparse';
 
+import { BaseRow } from '../exports';
+
 export interface PreviewInfo {
   file: File;
   firstChunk: string;
@@ -19,11 +21,6 @@ export type PreviewResults =
 export const PREVIEW_ROW_COUNT = 5;
 
 export type FieldAssignmentMap = { [name: string]: number | undefined };
-
-export type BaseRow = { [name: string]: unknown };
-export type ParseCallback<Row extends BaseRow> = (
-  rows: Row[]
-) => void | Promise<void>;
 
 export function parsePreview(file: File): Promise<PreviewResults> {
   // wrap synchronous errors in promise

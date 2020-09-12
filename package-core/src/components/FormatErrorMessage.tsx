@@ -2,8 +2,6 @@ import React from 'react';
 
 import { TextButton } from './TextButton';
 
-import './FormatErrorMessage.scss';
-
 export const FormatErrorMessage: React.FC<{
   onCancelClick: () => void;
   // eslint-disable-next-line react/display-name
