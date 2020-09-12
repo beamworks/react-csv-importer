@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -16,24 +17,33 @@ export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
           <Box flex="none">
             <AppBar position="sticky">
               <Toolbar>
-                <Typography
-                  variant="h6"
-                  color="inherit"
-                  component={Link}
-                  to="/home"
-                >
-                  React CSV Importer Demo
+                <Typography variant="h1">
+                  <MuiLink
+                    underline="hover"
+                    color="secondary"
+                    component={Link}
+                    to="/home"
+                  >
+                    DemoApp
+                  </MuiLink>
+                </Typography>
+                <Box flex="auto" />
+                <Typography variant="subtitle1" color="textPrimary">
+                  React CSV Importer Sample
                 </Typography>
               </Toolbar>
             </AppBar>
           </Box>
-          <Box flex="1 1 0" px={2} py={4}>
+          <Box flex="1 1 0" px={2} py={4} bgcolor="background.default">
             {main}
           </Box>
-          <Box flex="none" display="flex" p={2} bgcolor="divider">
-            <Box flex="auto">
-              <Typography variant="body2" color="secondary">
-                Example CSV importer application
+          <Box flex="none" display="flex" p={2} bgcolor="secondary.light">
+            <Box flex="auto" color="secondary.contrastText">
+              <Typography variant="body2" color="inherit">
+                Demo for{' '}
+                <MuiLink href="https://www.npmjs.com/package/react-csv-importer">
+                  React CSV Importer
+                </MuiLink>
               </Typography>
             </Box>
             <Box flex="none">

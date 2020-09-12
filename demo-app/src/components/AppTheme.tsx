@@ -28,7 +28,7 @@ const appTheme = createMuiTheme({
       main: '#F2CF1D'
     },
     secondary: {
-      main: '#A68626'
+      main: '#023E73'
     }
   },
   typography: {
@@ -37,7 +37,13 @@ const appTheme = createMuiTheme({
     fontWeightLight: 200,
     fontWeightRegular: 300,
     fontWeightMedium: 400,
-    fontWeightBold: 400
+    fontWeightBold: 400,
+
+    h1: {
+      fontSize: 64,
+      lineHeight: 2,
+      letterSpacing: -6
+    }
   }
 });
 
