@@ -43,6 +43,13 @@ const appTheme = createMuiTheme({
       fontSize: 64,
       lineHeight: 2,
       letterSpacing: -6
+    },
+
+    h2: {
+      fontSize: 48,
+      fontWeight: 200,
+      lineHeight: 2,
+      letterSpacing: -2
     }
   }
 });
