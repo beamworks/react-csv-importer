@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "description": "React CSV import widget with user-customizable mapping",
   "scripts": {
+    "postinstall": "cd package-core && yarn && cd ../csv-sandbox && yarn",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
