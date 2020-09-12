@@ -8,8 +8,6 @@ import { IconButton } from './IconButton';
 
 export type FieldTouchedMap = { [name: string]: boolean | undefined };
 
-import './ColumnDragTargetArea.scss';
-
 const TargetBox: React.FC<{
   hasHeaders: boolean;
   field: Field;
