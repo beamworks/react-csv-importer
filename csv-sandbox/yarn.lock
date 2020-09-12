@@ -5628,6 +5628,13 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
+"react-csv-importer@file:../package-core":
+  version "0.0.1"
+  dependencies:
+    papaparse "^5.3.0"
+    react-dropzone "^11.0.3"
+    react-use-gesture "^7.0.16"
+
 react-dom@^16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
