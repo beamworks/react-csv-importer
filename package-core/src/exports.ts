@@ -17,12 +17,10 @@ export interface ImporterFieldProps {
 export declare const ImporterField: React.FC<ImporterFieldProps>;
 
 export interface ImporterProps<Row extends BaseRow> {
-  callback: ParseCallback<Row>;
+  processChunk: ParseCallback<Row>;
   onFinish?: () => void;
 }
 
-export declare function Importer<Row extends BaseRow>({
-  callback,
-  onFinish,
-  children
-}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement;
+export declare function Importer<Row extends BaseRow>(
+  props: React.PropsWithChildren<ImporterProps<Row>>
+): React.ReactElement;

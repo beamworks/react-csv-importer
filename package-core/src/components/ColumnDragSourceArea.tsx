@@ -42,7 +42,7 @@ const SourceBox: React.FC<{
   ]);
 
   return (
-    <div className="ColumnDragSourceArea__box">
+    <div className="CSVImporter_ColumnDragSourceArea__box">
       <div {...(isAssigned ? {} : eventHandlers)}>
         <ColumnDragCard
           hasHeaders={hasHeaders}
@@ -53,7 +53,7 @@ const SourceBox: React.FC<{
       </div>
 
       {/* tab order after column contents */}
-      <div className="ColumnDragSourceArea__boxAction">
+      <div className="CSVImporter_ColumnDragSourceArea__boxAction">
         {isAssigned ? (
           <IconButton
             label="Clear column assignment"
@@ -125,14 +125,17 @@ export const ColumnDragSourceArea: React.FC<{
     pageContents.push(
       <div
         key={pageContents.length}
-        className="ColumnDragSourceArea__pageFiller"
+        className="CSVImporter_ColumnDragSourceArea__pageFiller"
       />
     );
   }
 
   return (
-    <section className="ColumnDragSourceArea" aria-label="Columns to import">
-      <div className="ColumnDragSourceArea__control">
+    <section
+      className="CSVImporter_ColumnDragSourceArea"
+      aria-label="Columns to import"
+    >
+      <div className="CSVImporter_ColumnDragSourceArea__control">
         <IconButton
           label="Show previous columns"
           type="back"
@@ -143,9 +146,12 @@ export const ColumnDragSourceArea: React.FC<{
           }}
         />
       </div>
-      <div className="ColumnDragSourceArea__page">
+      <div className="CSVImporter_ColumnDragSourceArea__page">
         {dragState && !dragState.pointerStartInfo ? (
-          <div className="ColumnDragSourceArea__pageIndicator" role="status">
+          <div
+            className="CSVImporter_ColumnDragSourceArea__pageIndicator"
+            role="status"
+          >
             Assigning column {dragState.column.code}
           </div>
         ) : (
@@ -153,7 +159,7 @@ export const ColumnDragSourceArea: React.FC<{
           // @todo changing role to status does not seem to work
           pageCount > 1 && (
             <div
-              className="ColumnDragSourceArea__pageIndicator"
+              className="CSVImporter_ColumnDragSourceArea__pageIndicator"
               role={pageChanged ? 'status' : 'text'}
             >
               Page {page + 1} of {pageCount}
@@ -163,7 +169,7 @@ export const ColumnDragSourceArea: React.FC<{
 
         {pageContents}
       </div>
-      <div className="ColumnDragSourceArea__control">
+      <div className="CSVImporter_ColumnDragSourceArea__control">
         <IconButton
           label="Show next columns"
           type="forward"

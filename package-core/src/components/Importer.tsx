@@ -54,11 +54,11 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
 function ImporterCore<Row extends BaseRow>({
   fields,
-  callback,
+  processChunk,
   onFinish
 }: React.PropsWithChildren<{
   fields: Field[];
-  callback: ParseCallback<Row>;
+  processChunk: ParseCallback<Row>;
   onFinish?: () => void;
 }>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -115,7 +115,7 @@ function ImporterCore<Row extends BaseRow>({
     <ProgressDisplay
       preview={preview}
       fieldAssignments={fieldAssignments}
-      callback={callback}
+      processChunk={processChunk}
       onRestart={() => {
         // reset all state
         setSelectedFile(null);
@@ -128,15 +128,19 @@ function ImporterCore<Row extends BaseRow>({
 }
 
 export function Importer<Row extends BaseRow>({
-  callback,
+  processChunk,
   onFinish,
   children
 }: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (
-    <div className="Importer">
-      <ImporterCore fields={fields} callback={callback} onFinish={onFinish} />
+    <div className="CSVImporter_Importer">
+      <ImporterCore
+        fields={fields}
+        processChunk={processChunk}
+        onFinish={onFinish}
+      />
 
       <FieldDefinitionContext.Provider value={setFields}>
         {children}

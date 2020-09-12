@@ -15,8 +15,8 @@ export const ColumnDragObject: React.FC<{
   const dragObjectPortal =
     dragState && dragState.pointerStartInfo
       ? createPortal(
-          <div className="ColumnDragObject" ref={dragBoxRef}>
-            <div className="ColumnDragObject__holder">
+          <div className="CSVImporter_ColumnDragObject" ref={dragBoxRef}>
+            <div className="CSVImporter_ColumnDragObject__holder">
               <ColumnDragCard
                 hasHeaders={hasHeaders}
                 column={dragState.column}

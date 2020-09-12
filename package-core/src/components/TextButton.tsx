@@ -5,7 +5,11 @@ export const TextButton: React.FC<{
   onClick?: () => void;
 }> = ({ disabled, onClick, children }) => {
   return (
-    <button className="TextButton" disabled={disabled} onClick={onClick}>
+    <button
+      className="CSVImporter_TextButton"
+      disabled={disabled}
+      onClick={onClick}
+    >
       {children}
     </button>
   );

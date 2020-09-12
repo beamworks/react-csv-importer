@@ -9,13 +9,13 @@ const estimatedTotal = 100; // @todo compute based on file size
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
   fieldAssignments,
-  callback,
+  processChunk,
   onRestart,
   onFinish
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   fieldAssignments: FieldAssignmentMap;
-  callback: ParseCallback<Row>;
+  processChunk: ParseCallback<Row>;
   onRestart: () => void;
   onFinish?: () => void;
 }>): React.ReactElement {
@@ -33,7 +33,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   }, [isComplete, error]);
 
   // perform main async parse
-  const callbackRef = useRef(callback); // wrap in ref to avoid re-triggering
+  const processChunkRef = useRef(processChunk); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
     const oplock = asyncLockRef.current;
@@ -50,7 +50,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      callbackRef.current
+      processChunkRef.current
     ).then(
       () => {
         // ignore if stale
@@ -108,10 +108,10 @@ export function ProgressDisplay<Row extends BaseRow>({
         }
       }}
     >
-      <div className="ProgressDisplay">
+      <div className="CSVImporter_ProgressDisplay">
         {isComplete || error ? (
           <div
-            className="ProgressDisplay__status"
+            className="CSVImporter_ProgressDisplay__status"
             role="status"
             tabIndex={-1}
             ref={statusRef}
@@ -119,18 +119,21 @@ export function ProgressDisplay<Row extends BaseRow>({
             {error ? 'Could not import' : 'Complete'}
           </div>
         ) : (
-          <div className="ProgressDisplay__status -pending" role="status">
+          <div
+            className="CSVImporter_ProgressDisplay__status -pending"
+            role="status"
+          >
             Importing...
           </div>
         )}
 
-        <div className="ProgressDisplay__count" role="text">
+        <div className="CSVImporter_ProgressDisplay__count" role="text">
           <var>Processed rows:</var> {progressCount}
         </div>
 
-        <div className="ProgressDisplay__progressBar">
+        <div className="CSVImporter_ProgressDisplay__progressBar">
           <div
-            className="ProgressDisplay__progressBarIndicator"
+            className="CSVImporter_ProgressDisplay__progressBarIndicator"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>

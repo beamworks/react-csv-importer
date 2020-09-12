@@ -93,20 +93,23 @@ const TargetBox: React.FC<{
   // @todo mouse cursor changes to reflect draggable state
   return (
     <section
-      className="ColumnDragTargetArea__box"
+      className="CSVImporter_ColumnDragTargetArea__box"
       aria-label={`${field.label} (${
         field.isOptional ? 'optional' : 'required'
       })`}
       {...mouseHoverHandlers}
     >
-      <div className="ColumnDragTargetArea__boxLabel" aria-hidden>
+      <div className="CSVImporter_ColumnDragTargetArea__boxLabel" aria-hidden>
         {field.label}
         {field.isOptional ? null : <b>*</b>}
       </div>
 
-      <div className="ColumnDragTargetArea__boxValue">
+      <div className="CSVImporter_ColumnDragTargetArea__boxValue">
         {!sourceColumn && !assignedColumn && (
-          <div className="ColumnDragTargetArea__boxPlaceholderHelp" aria-hidden>
+          <div
+            className="CSVImporter_ColumnDragTargetArea__boxPlaceholderHelp"
+            aria-hidden
+          >
             Drag column here
           </div>
         )}
@@ -115,7 +118,7 @@ const TargetBox: React.FC<{
 
         {/* tab order after column contents */}
         {dragState && !dragState.pointerStartInfo ? (
-          <div className="ColumnDragTargetArea__boxValueAction">
+          <div className="CSVImporter_ColumnDragTargetArea__boxValueAction">
             <IconButton
               label={`Assign column ${dragState.column.code}`}
               small
@@ -126,7 +129,7 @@ const TargetBox: React.FC<{
         ) : (
           !sourceColumn &&
           assignedColumn && (
-            <div className="ColumnDragTargetArea__boxValueAction">
+            <div className="CSVImporter_ColumnDragTargetArea__boxValueAction">
               <IconButton
                 label="Clear column assignment"
                 small
@@ -169,7 +172,10 @@ export const ColumnDragTargetArea: React.FC<{
   onUnassign
 }) => {
   return (
-    <section className="ColumnDragTargetArea" aria-label="Target fields">
+    <section
+      className="CSVImporter_ColumnDragTargetArea"
+      aria-label="Target fields"
+    >
       {fields.map((field) => {
         const assignedColumnIndex = fieldAssignments[field.name];
 

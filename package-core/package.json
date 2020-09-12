@@ -2,6 +2,10 @@
   "name": "react-csv-importer",
   "version": "0.0.1",
   "description": "React CSV import widget with user-customizable mapping",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beamworks/react-csv-importer"
+  },
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -15,7 +19,7 @@
     "dist": "rimraf dist && tsc --outDir dist && sass src/index.scss dist/index.css && cp src/exports.ts dist/index.d.ts"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
-  "license": "ISC",
+  "license": "MIT",
   "lint-staged": {
     "src/**/*.{ts,tsx}": "eslint --max-warnings=0",
     "src/**/*.scss": "stylelint"

@@ -47,7 +47,7 @@ export const ColumnDragCard: React.FC<{
     // not changing variant dynamically because it causes a height jump
     <div
       key={isDummy || isShadow ? 1 : isDropIndicator ? 2 : 0} // force re-creation to avoid transition anim
-      className="ColumnDragCard"
+      className="CSVImporter_ColumnDragCard"
       data-dummy={!!isDummy}
       data-error={!!hasError}
       data-shadow={!!isShadow}
@@ -55,7 +55,7 @@ export const ColumnDragCard: React.FC<{
       data-dragged={!!isDragged}
       data-drop-indicator={!!isDropIndicator}
     >
-      <div className="ColumnDragCard__cardHeader">
+      <div className="CSVImporter_ColumnDragCard__cardHeader">
         {isDummy ? (
           <var role="text">Unassigned field</var>
         ) : (
@@ -65,7 +65,7 @@ export const ColumnDragCard: React.FC<{
       </div>
 
       {headerValue !== undefined ? (
-        <div className="ColumnDragCard__cardValue" data-header>
+        <div className="CSVImporter_ColumnDragCard__cardValue" data-header>
           {headerValue || '\u00a0'}
         </div>
       ) : null}
@@ -73,7 +73,10 @@ export const ColumnDragCard: React.FC<{
       {/* all values grouped into one readable string */}
       <div role="text">
         {dataValues.map((value, valueIndex) => (
-          <div key={valueIndex} className="ColumnDragCard__cardValue">
+          <div
+            key={valueIndex}
+            className="CSVImporter_ColumnDragCard__cardValue"
+          >
             {value || '\u00a0'}
           </div>
         ))}
