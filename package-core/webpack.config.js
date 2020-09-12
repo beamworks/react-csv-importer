@@ -33,8 +33,11 @@ module.exports = (env, argv) => ({
     ]
   },
   externals: {
+    papaparse: 'commonjs',
     react: 'commonjs',
-    'react-dom': 'commonjs'
+    'react-dom': 'commonjs',
+    'react-dropzone': 'commonjs',
+    'react-use-gesture': 'commonjs'
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
