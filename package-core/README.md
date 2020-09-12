@@ -16,7 +16,7 @@ Example usage:
 import { Importer, ImporterField } from 'react-csv-importer';
 
 <Importer
-  callback={async (rows) => {
+  processChunk={async (rows) => {
     for (row of rows) {
       // console.log('saving row', row)
       await myAppMethod(row);

@@ -7,7 +7,7 @@ export const ImportPage: React.FC = () => {
       <p>Import interface page.</p>
 
       <Importer<{ country: string }>
-        callback={(rows) => {
+        processChunk={(rows) => {
           console.log(rows);
           return new Promise((resolve) => setTimeout(resolve, 1500));
         }}
