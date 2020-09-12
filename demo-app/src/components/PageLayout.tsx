@@ -46,8 +46,24 @@ export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
                 </MuiLink>
               </Typography>
             </Box>
-            <Box flex="none">
-              <AppLink to="/home">Home</AppLink>
+            <Box flex="none" ml={2}>
+              <MuiLink
+                underline="always"
+                href="https://www.npmjs.com/package/react-csv-importer"
+              >
+                npm
+              </MuiLink>
+            </Box>
+            <Box flex="none" ml={2}>
+              <MuiLink
+                underline="always"
+                href="https://github.com/beamworks/react-csv-importer"
+              >
+                GitHub
+              </MuiLink>
+            </Box>
+            <Box flex="none" ml={2}>
+              <AppLink to="/home">Demo Home</AppLink>
             </Box>
           </Box>
         </Box>
