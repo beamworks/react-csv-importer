@@ -2,7 +2,8 @@
   "name": "react-csv-importer",
   "version": "0.0.1",
   "description": "React CSV import widget with user-customizable mapping",
-  "main": "src/index.ts",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
