@@ -6,6 +6,7 @@ import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Avatar from '@material-ui/core/Avatar';
 
 import { AppLink } from './AppLink';
 
@@ -31,6 +32,14 @@ export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
                 <Typography variant="subtitle1" color="textPrimary">
                   React CSV Importer Sample
                 </Typography>
+                <Box flex="none" ml={2}>
+                  <Avatar
+                    variant="circle"
+                    style={{ width: '4rem', height: '4rem' }}
+                    alt="Sample Account"
+                    src="https://placekeanu.com/120/g"
+                  />
+                </Box>
               </Toolbar>
             </AppBar>
           </Box>
