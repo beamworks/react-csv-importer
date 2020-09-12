@@ -8,14 +8,14 @@
     "url": "https://github.com/beamworks/react-csv-importer"
   },
   "scripts": {
-    "postinstall": "cd package-core && yarn && yarn dist && cd ../csv-sandbox && yarn",
+    "postinstall": "cd package-core && yarn && yarn dist && cd ../demo-app && yarn",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
   "license": "MIT",
   "husky": {
     "hooks": {
-      "pre-commit": "cd package-core && node_modules/.bin/lint-staged && cd ../csv-sandbox && node_modules/.bin/lint-staged"
+      "pre-commit": "cd package-core && node_modules/.bin/lint-staged && cd ../demo-app && node_modules/.bin/lint-staged"
     }
   },
   "devDependencies": {

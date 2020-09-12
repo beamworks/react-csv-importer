@@ -22,7 +22,7 @@ export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
                   component={Link}
                   to="/home"
                 >
-                  CSV Sandbox App
+                  React CSV Importer Demo
                 </Typography>
               </Toolbar>
             </AppBar>
