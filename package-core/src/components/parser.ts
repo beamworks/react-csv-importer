@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 
-import { BaseRow } from '../core';
+import { BaseRow } from '../exports';
 
 export interface PreviewInfo {
   file: File;

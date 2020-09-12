@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import { ParseCallback, BaseRow } from '../core';
+import {
+  ImporterFieldProps,
+  ImporterProps,
+  ParseCallback,
+  BaseRow
+} from '../exports';
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
@@ -15,13 +20,7 @@ const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
 
-export interface FieldProps {
-  name: string;
-  label: string;
-  optional?: boolean;
-}
-
-export const ImporterField: React.FC<FieldProps> = ({
+export const ImporterField: React.FC<ImporterFieldProps> = ({
   name,
   label,
   optional
@@ -54,11 +53,6 @@ export const ImporterField: React.FC<FieldProps> = ({
 
   return null;
 };
-
-export interface ImporterProps<Row extends BaseRow> {
-  callback: ParseCallback<Row>;
-  onFinish?: () => void;
-}
 
 function ImporterCore<Row extends BaseRow>({
   fields,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { ParseCallback, BaseRow } from '../core';
+import { ParseCallback, BaseRow } from '../exports';
 import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 

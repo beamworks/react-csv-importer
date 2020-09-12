@@ -8,7 +8,7 @@
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
     "stylelint": "stylelint \"src/**/*.scss\"",
     "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
-    "dist": "webpack --mode production",
+    "dist": "webpack --mode production && cp src/exports.ts dist/main.d.ts",
     "watch": "webpack --mode development --watch"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
