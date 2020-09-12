@@ -23,7 +23,7 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
 
   return (
     <div
-      className="FileSelector"
+      className="CSVImporter_FileSelector"
       data-active={!!isDragActive}
       {...getRootProps()}
     >

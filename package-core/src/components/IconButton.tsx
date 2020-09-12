@@ -10,7 +10,7 @@ export const IconButton: React.FC<{
 }> = ({ type, label, small, focusOnly, disabled, onClick }) => {
   return (
     <button
-      className="IconButton"
+      className="CSVImporter_IconButton"
       aria-label={label}
       disabled={disabled}
       onClick={onClick}

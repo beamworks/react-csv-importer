@@ -14,9 +14,9 @@ export const FormatRawPreview: React.FC<{
   const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
 
   return (
-    <div className="FormatRawPreview">
-      <div className="FormatRawPreview__scroll">
-        <pre className="FormatRawPreview__pre">
+    <div className="CSVImporter_FormatRawPreview">
+      <div className="CSVImporter_FormatRawPreview__scroll">
+        <pre className="CSVImporter_FormatRawPreview__pre">
           {chunkSlice}
           {chunkHasMore && <aside>...</aside>}
         </pre>

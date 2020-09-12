@@ -135,7 +135,7 @@ export function Importer<Row extends BaseRow>({
   const [fields, setFields] = useState<Field[]>([]);
 
   return (
-    <div className="Importer">
+    <div className="CSVImporter_Importer">
       <ImporterCore fields={fields} callback={callback} onFinish={onFinish} />
 
       <FieldDefinitionContext.Provider value={setFields}>

@@ -9,8 +9,8 @@ export const FormatDataRowPreview: React.FC<{
   const bodyRows = hasHeaders ? rows.slice(1) : rows;
 
   return (
-    <div className="FormatDataRowPreview">
-      <table className="FormatDataRowPreview__table">
+    <div className="CSVImporter_FormatDataRowPreview">
+      <table className="CSVImporter_FormatDataRowPreview__table">
         {headerRow && (
           <thead>
             <tr>

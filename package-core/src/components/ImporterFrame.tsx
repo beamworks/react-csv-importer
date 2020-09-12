@@ -33,8 +33,8 @@ export const ImporterFrame: React.FC<{
   }, []);
 
   return (
-    <div className="ImporterFrame">
-      <div className="ImporterFrame__header">
+    <div className="CSVImporter_ImporterFrame">
+      <div className="CSVImporter_ImporterFrame__header">
         <IconButton
           label="Go to previous step"
           type="arrowBack"
@@ -43,7 +43,7 @@ export const ImporterFrame: React.FC<{
         />
 
         <div
-          className="ImporterFrame__headerTitle"
+          className="CSVImporter_ImporterFrame__headerTitle"
           tabIndex={-1}
           ref={titleRef}
         >
@@ -52,11 +52,11 @@ export const ImporterFrame: React.FC<{
 
         {subtitle ? (
           <>
-            <div className="ImporterFrame__headerCrumbSeparator">
+            <div className="CSVImporter_ImporterFrame__headerCrumbSeparator">
               <span />
             </div>
             <div
-              className="ImporterFrame__headerSubtitle"
+              className="CSVImporter_ImporterFrame__headerSubtitle"
               tabIndex={-1}
               ref={subtitleRef}
             >
@@ -68,10 +68,10 @@ export const ImporterFrame: React.FC<{
 
       {children}
 
-      <div className="ImporterFrame__footer">
-        <div className="ImporterFrame__footerFill" />
+      <div className="CSVImporter_ImporterFrame__footer">
+        <div className="CSVImporter_ImporterFrame__footerFill" />
         {error ? (
-          <div className="ImporterFrame__footerError" role="status">
+          <div className="CSVImporter_ImporterFrame__footerError" role="status">
             {error}
           </div>
         ) : null}

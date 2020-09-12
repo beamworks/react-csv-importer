@@ -47,7 +47,7 @@ export const FormatPreview: React.FC<{
 
     if (preview.parseError) {
       return (
-        <div className="FormatPreview__mainResultBlock">
+        <div className="CSVImporter_FormatPreview__mainResultBlock">
           <FormatErrorMessage onCancelClick={onCancel}>
             Import error: <b>{preview.parseError.message}</b>
           </FormatErrorMessage>
@@ -56,8 +56,10 @@ export const FormatPreview: React.FC<{
     }
 
     return (
-      <div className="FormatPreview__mainResultBlock">
-        <div className="FormatPreview__header">Raw File Contents</div>
+      <div className="CSVImporter_FormatPreview__mainResultBlock">
+        <div className="CSVImporter_FormatPreview__header">
+          Raw File Contents
+        </div>
 
         <FormatRawPreview
           chunk={preview.firstChunk}
@@ -67,9 +69,9 @@ export const FormatPreview: React.FC<{
 
         {preview.parseWarning ? null : (
           <>
-            <div className="FormatPreview__header">
+            <div className="CSVImporter_FormatPreview__header">
               Preview Import
-              <label className="FormatPreview__headerToggle">
+              <label className="CSVImporter_FormatPreview__headerToggle">
                 <input
                   type="checkbox"
                   checked={preview.hasHeaders}
@@ -111,7 +113,7 @@ export const FormatPreview: React.FC<{
       onCancel={onCancel}
     >
       {report || (
-        <div className="FormatPreview__mainPendingBlock">
+        <div className="CSVImporter_FormatPreview__mainPendingBlock">
           Loading preview...
         </div>
       )}
