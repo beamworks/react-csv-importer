@@ -1,10 +1,11 @@
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 import { Importer, ImporterField } from 'react-csv-importer';
 
 export const ImportPage: React.FC = () => {
   return (
     <div>
-      <p>Import interface page.</p>
+      <Typography variant="body1">Import interface page.</Typography>
 
       <Importer<{ country: string }>
         processChunk={(rows) => {

@@ -1,12 +1,15 @@
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 
 import { AppLink } from '../components/AppLink';
 
 export const HomePage: React.FC = () => (
   <div>
-    <p>Welcome! This is the home page.</p>
-    <p>
+    <Typography variant="body1" gutterBottom>
+      Welcome! This is the home page.
+    </Typography>
+    <Typography variant="body1">
       Please visit the <AppLink to="/import">importer UI sandbox</AppLink>.
-    </p>
+    </Typography>
   </div>
 );
