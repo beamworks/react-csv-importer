@@ -2,7 +2,11 @@
   "name": "csv-sandbox",
   "version": "0.0.1",
   "private": true,
-  "description": "",
+  "description": "Example code for React CSV Importer widget",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beamworks/react-csv-importer"
+  },
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
