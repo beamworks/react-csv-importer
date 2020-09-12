@@ -15,7 +15,7 @@
   "license": "MIT",
   "husky": {
     "hooks": {
-      "pre-commit": "cd csv-sandbox && node_modules/.bin/lint-staged"
+      "pre-commit": "cd package-core && node_modules/.bin/lint-staged && cd ../csv-sandbox && node_modules/.bin/lint-staged"
     }
   },
   "devDependencies": {
