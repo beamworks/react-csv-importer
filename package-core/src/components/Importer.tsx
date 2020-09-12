@@ -1,11 +1,7 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import {
-  PreviewInfo,
-  FieldAssignmentMap,
-  ParseCallback,
-  BaseRow
-} from './parser';
+import { ParseCallback, BaseRow } from '../core';
+import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
@@ -58,6 +54,11 @@ export const ImporterField: React.FC<FieldProps> = ({
 
   return null;
 };
+
+export interface ImporterProps<Row extends BaseRow> {
+  callback: ParseCallback<Row>;
+  onFinish?: () => void;
+}
 
 function ImporterCore<Row extends BaseRow>({
   fields,
@@ -138,10 +139,7 @@ export function Importer<Row extends BaseRow>({
   callback,
   onFinish,
   children
-}: React.PropsWithChildren<{
-  callback: ParseCallback<Row>;
-  onFinish?: () => void;
-}>): React.ReactElement {
+}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (

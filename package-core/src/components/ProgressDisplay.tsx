@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import {
-  processFile,
-  PreviewInfo,
-  FieldAssignmentMap,
-  ParseCallback,
-  BaseRow
-} from './parser';
+import { ParseCallback, BaseRow } from '../core';
+import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 import './ProgressDisplay.scss';
