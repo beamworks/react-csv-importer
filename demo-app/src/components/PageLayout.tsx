@@ -28,7 +28,7 @@ export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
                 </MuiLink>
               </Typography>
               <Box flex="auto" pl={2} />
-              <Typography variant="subtitle1" color="textPrimary">
+              <Typography variant="subtitle1" color="textPrimary" align="right">
                 React CSV Importer Sample
               </Typography>
               <Box flex="none" ml={2}>
