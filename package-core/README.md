@@ -16,14 +16,21 @@ Example usage:
 import { Importer, ImporterField } from 'react-csv-importer';
 
 <Importer
+  chunkSize={10000} // optional, internal parsing chunk size in bytes
+  onStart={() => {
+    // optional, invoked when user has mapped columns and started import
+    prepMyAppForIncomingData();
+  }}
   processChunk={async (rows) => {
+    // required, receives a list of parsed objects based on user column mapping
+    // (if this returns a promise, the widget will wait for it before parsing more data)
     for (row of rows) {
-      // console.log('saving row', row)
       await myAppMethod(row);
     }
   }}
   onFinish={() => {
-    // console.log('import finished');
+    // optional, invoked when import is done and user clicked "Finish"
+    // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();
   }}
 >
