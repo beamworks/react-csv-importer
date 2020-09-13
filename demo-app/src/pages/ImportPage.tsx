@@ -51,7 +51,9 @@ export const ImportPage: React.FC = () => {
                 [
                   ...prev,
                   ...rows.map((row, rowIndex) => ({
-                    i: prev.length + rowIndex,
+                    i:
+                      (prev.length === 0 ? 0 : prev[prev.length - 1].i + 1) +
+                      rowIndex,
                     a: parseInt(row.a, 10) || 0,
                     b: row.b === undefined ? 0 : parseInt(row.b, 10) || 0
                   }))
@@ -59,7 +61,7 @@ export const ImportPage: React.FC = () => {
             );
 
             // artificial delay
-            return new Promise((resolve) => setTimeout(resolve, 300));
+            return new Promise((resolve) => setTimeout(resolve, 100));
           }}
         >
           <ImporterField name="a" label="Value A" />
