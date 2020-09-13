@@ -2,7 +2,11 @@ import React from 'react';
 import WebFont from 'webfontloader';
 import { useAsync } from 'react-async-hook';
 import { makeStyles } from '@material-ui/core/styles';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import {
+  createMuiTheme,
+  responsiveFontSizes,
+  MuiThemeProvider
+} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -22,37 +26,39 @@ function loadFonts() {
   });
 }
 
-const appTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#F2CF1D'
+const appTheme = responsiveFontSizes(
+  createMuiTheme({
+    palette: {
+      primary: {
+        main: '#F2CF1D'
+      },
+      secondary: {
+        main: '#023E73'
+      }
     },
-    secondary: {
-      main: '#023E73'
-    }
-  },
-  typography: {
-    fontFamily: 'Work Sans',
-    fontSize: 16,
-    fontWeightLight: 200,
-    fontWeightRegular: 300,
-    fontWeightMedium: 400,
-    fontWeightBold: 400,
+    typography: {
+      fontFamily: 'Work Sans',
+      fontSize: 16,
+      fontWeightLight: 200,
+      fontWeightRegular: 300,
+      fontWeightMedium: 400,
+      fontWeightBold: 400,
 
-    h1: {
-      fontSize: 64,
-      lineHeight: 2,
-      letterSpacing: -6
-    },
+      h1: {
+        fontSize: 64,
+        lineHeight: 2,
+        letterSpacing: '-.1em'
+      },
 
-    h2: {
-      fontSize: 48,
-      fontWeight: 200,
-      lineHeight: 2,
-      letterSpacing: -2
+      h2: {
+        fontSize: 48,
+        fontWeight: 200,
+        lineHeight: 2,
+        letterSpacing: '-.05em'
+      }
     }
-  }
-});
+  })
+);
 
 const useStyles = makeStyles((theme) => ({
   loader: {
