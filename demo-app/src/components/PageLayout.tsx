@@ -12,7 +12,7 @@ import { AppLink } from './AppLink';
 
 export const PageLayout: React.FC<{ main: React.ReactNode }> = ({ main }) => {
   return (
-    <Box display="flex" minHeight="100%">
+    <Box display="flex">
       <Container component="main" maxWidth="md">
         <Box display="flex" flexDirection="column" minHeight="100%">
           <Box flex="none">

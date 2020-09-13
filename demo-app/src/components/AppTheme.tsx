@@ -59,8 +59,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    height: '100%',
     paddingBottom: theme.spacing(8) // vertical nudge
   }
 }));
