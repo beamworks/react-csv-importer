@@ -40,7 +40,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',
         firstRows: rowAccumulator,
-        hasHeaders: false // placeholder to modify downstream
+        hasHeaders: true // placeholder to modify downstream
       });
     }
 
