@@ -9,6 +9,7 @@ import {
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import InfoIcon from '@material-ui/icons/Info';
 import { Importer, ImporterField } from 'react-csv-importer';
 
 export const ImportPage: React.FC = () => {
@@ -25,11 +26,16 @@ export const ImportPage: React.FC = () => {
       </VictoryChart>
 
       <Paper>
-        <Box px={2} py={1}>
-          <Typography variant="body1">
-            Upload any CSV file with one or two numeric columns, and it will be
-            graphed on the above chart.
-          </Typography>
+        <Box display="flex" alignItems="center" px={2} py={1}>
+          <Box display="flex" fontSize={48}>
+            <InfoIcon color="secondary" fontSize="inherit" />
+          </Box>
+          <Box ml={2}>
+            <Typography variant="body2">
+              Upload any CSV file with one or two numeric columns: it will be
+              graphed on the above chart.
+            </Typography>
+          </Box>
         </Box>
       </Paper>
 
