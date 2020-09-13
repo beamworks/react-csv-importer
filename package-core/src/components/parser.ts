@@ -46,7 +46,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
 
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
-      chunkSize: 20000,
+      chunkSize: 10000,
       preview: PREVIEW_ROW_COUNT,
       skipEmptyLines: true,
       error: (error) => {
@@ -102,7 +102,7 @@ export function processFile<Row extends BaseRow>(
 
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
-      chunkSize: 100,
+      chunkSize: 10000, // @todo configurable
       skipEmptyLines: true,
       error: (error) => {
         reject(error);
