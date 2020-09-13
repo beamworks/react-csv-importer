@@ -8,21 +8,34 @@ const estimatedTotal = 100; // @todo compute based on file size
 
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
+  chunkSize,
   fieldAssignments,
   processChunk,
-  onRestart,
+  onReset,
+  onStart,
   onFinish
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
+  chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
-  onRestart: () => void;
+  onReset: () => void;
+  onStart?: () => void;
   onFinish?: () => void;
 }>): React.ReactElement {
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
+
+  // notify on start of processing
+  // (separate effect in case of errors)
+  const onStartRef = useRef(onStart); // wrap in ref to avoid re-triggering
+  useEffect(() => {
+    if (onStartRef.current) {
+      onStartRef.current();
+    }
+  }, []);
 
   // ensure status gets focus when complete, in case status role is not read out
   const statusRef = useRef<HTMLDivElement>(null);
@@ -33,6 +46,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   }, [isComplete, error]);
 
   // perform main async parse
+  const chunkSizeRef = useRef(chunkSize); // wrap in ref to avoid re-triggering
   const processChunkRef = useRef(processChunk); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
@@ -50,7 +64,8 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      processChunkRef.current
+      processChunkRef.current,
+      chunkSizeRef.current
     ).then(
       () => {
         // ignore if stale
@@ -104,7 +119,7 @@ export function ProgressDisplay<Row extends BaseRow>({
         if (onFinish) {
           onFinish();
         } else {
-          onRestart();
+          onReset();
         }
       }}
     >
