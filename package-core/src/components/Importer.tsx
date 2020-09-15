@@ -1,11 +1,6 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import {
-  ImporterFieldProps,
-  ImporterProps,
-  ParseCallback,
-  BaseRow
-} from '../exports';
+import { ImporterFieldProps, ImporterProps, BaseRow } from '../exports';
 import { PreviewInfo, FieldAssignmentMap } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
@@ -54,13 +49,15 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
 function ImporterCore<Row extends BaseRow>({
   fields,
+  chunkSize,
   processChunk,
+  onStart,
   onFinish
-}: React.PropsWithChildren<{
-  fields: Field[];
-  processChunk: ParseCallback<Row>;
-  onFinish?: () => void;
-}>) {
+}: React.PropsWithChildren<
+  ImporterProps<Row> & {
+    fields: Field[];
+  }
+>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [preview, setPreview] = useState<PreviewInfo | null>(null);
@@ -115,8 +112,10 @@ function ImporterCore<Row extends BaseRow>({
     <ProgressDisplay
       preview={preview}
       fieldAssignments={fieldAssignments}
+      chunkSize={chunkSize}
       processChunk={processChunk}
-      onRestart={() => {
+      onStart={onStart}
+      onReset={() => {
         // reset all state
         setSelectedFile(null);
         setPreview(null); // not bothering with editFormat flag
@@ -128,7 +127,9 @@ function ImporterCore<Row extends BaseRow>({
 }
 
 export function Importer<Row extends BaseRow>({
+  chunkSize,
   processChunk,
+  onStart,
   onFinish,
   children
 }: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
@@ -138,7 +139,9 @@ export function Importer<Row extends BaseRow>({
     <div className="CSVImporter_Importer">
       <ImporterCore
         fields={fields}
+        chunkSize={chunkSize}
         processChunk={processChunk}
+        onStart={onStart}
         onFinish={onFinish}
       />
 

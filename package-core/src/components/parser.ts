@@ -40,13 +40,13 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',
         firstRows: rowAccumulator,
-        hasHeaders: false // placeholder to modify downstream
+        hasHeaders: true // placeholder to modify downstream
       });
     }
 
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
-      chunkSize: 20000,
+      chunkSize: 10000, // not configurable, preview only
       preview: PREVIEW_ROW_COUNT,
       skipEmptyLines: true,
       error: (error) => {
@@ -91,7 +91,8 @@ export function processFile<Row extends BaseRow>(
   hasHeaders: boolean,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
-  callback: (rows: Row[]) => void | Promise<void>
+  callback: (rows: Row[]) => void | Promise<void>,
+  chunkSize?: number
 ): Promise<void> {
   const fieldNames = Object.keys(fieldAssignments);
 
@@ -102,7 +103,7 @@ export function processFile<Row extends BaseRow>(
 
     // @todo true streaming support for local files (use worker?)
     Papa.parse(file, {
-      chunkSize: 100,
+      chunkSize: chunkSize || 10000,
       skipEmptyLines: true,
       error: (error) => {
         reject(error);

@@ -18,7 +18,7 @@ const AppRoutes: React.FC = React.memo(() => {
     <Switch>
       <Redirect exact from="/" to="/home" />
       <Route path="/home" component={HomePage} />
-      <Route path="/import" component={ImportPage} />
+      <Route path="/chart-import" component={ImportPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
