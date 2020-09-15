@@ -10,7 +10,7 @@ The UI theme is standalone (has no external dependencies such as Material UI) an
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
-Example usage:
+## Example Usage
 
 ```js
 import { Importer, ImporterField } from 'react-csv-importer';
@@ -40,3 +40,9 @@ import { Importer, ImporterField } from 'react-csv-importer';
   <ImporterField name="postalCode" label="Postal Code" optional />
 </Importer>;
 ```
+
+## Dependencies
+
+- [PapaParse](https://www.papaparse.com/) for CSV parsing
+- [react-dropzone](https://react-dropzone.js.org/) for file upload
+- [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
