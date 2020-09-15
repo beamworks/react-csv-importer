@@ -4,3 +4,5 @@ This library provides an uploader + CSV parser + raw file preview + UI for custo
 mapping, all in one.
 
 See more in [main package README](package-core/README.md).
+
+![React CSV Importer usage demo](package-core/react-csv-importer-demo-20200914.gif)
