@@ -29,7 +29,7 @@ export const ImportPage: React.FC = () => {
           <Box ml={2}>
             <Typography variant="body2">
               Upload any CSV file with one or two numeric columns: it will be
-              graphed on the above chart.
+              graphed on the above chart
             </Typography>
           </Box>
         </Box>
