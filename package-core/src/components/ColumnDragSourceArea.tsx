@@ -56,6 +56,7 @@ const SourceBox: React.FC<{
       <div className="CSVImporter_ColumnDragSourceArea__boxAction">
         {isAssigned ? (
           <IconButton
+            key="clear" // key-prop helps clear focus on click
             label="Clear column assignment"
             small
             type="replay"
@@ -65,6 +66,7 @@ const SourceBox: React.FC<{
           />
         ) : (
           <IconButton
+            key="dragSelect" // key-prop helps clear focus on click
             focusOnly
             label={
               dragState && dragState.column === column
