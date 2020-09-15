@@ -6,6 +6,8 @@ mapping, all in one.
 Use this in your web app's bulk data import screen to allow users to drop a file for upload,
 preview the raw uploaded data before parsing and pick which columns to import.
 
+![React CSV Importer usage demo](react-csv-importer-demo-20200914.gif)
+
 The UI theme is standalone (has no external dependencies such as Material UI) and tailored to
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
