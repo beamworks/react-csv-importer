@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  VictoryTheme,
-  VictoryChart,
-  VictoryStack,
-  VictoryArea,
-  VictoryAxis
-} from 'victory';
+import { VictoryTheme, VictoryChart, VictoryLine, VictoryAxis } from 'victory';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -13,16 +7,18 @@ import InfoIcon from '@material-ui/icons/Info';
 import { Importer, ImporterField } from 'react-csv-importer';
 
 export const ImportPage: React.FC = () => {
-  const [data, setData] = useState<{ i: number; a: number; b: number }[]>([]);
+  const [data, setData] = useState<{ i: number; a: number; b?: number }[]>([]);
+
+  const dataHasSecondValue = data.length > 0 && data[0].b !== undefined;
 
   return (
     <div>
       <VictoryChart theme={VictoryTheme.material} width={800} height={150}>
-        <VictoryStack>
-          <VictoryArea data={data} x="i" y="a" />
-          <VictoryArea data={data} x="i" y="b" />
-        </VictoryStack>
+        <VictoryLine data={data} x="i" y="a" />
+        {dataHasSecondValue ? <VictoryLine data={data} x="i" y="b" /> : null}
+
         <VictoryAxis />
+        <VictoryAxis dependentAxis domain={undefined} />
       </VictoryChart>
 
       <Paper>
@@ -55,7 +51,8 @@ export const ImportPage: React.FC = () => {
                       (prev.length === 0 ? 0 : prev[prev.length - 1].i + 1) +
                       rowIndex,
                     a: parseInt(row.a, 10) || 0,
-                    b: row.b === undefined ? 0 : parseInt(row.b, 10) || 0
+                    b:
+                      row.b === undefined ? undefined : parseInt(row.b, 10) || 0
                   }))
                 ].slice(-200) // limit total displayed
             );
