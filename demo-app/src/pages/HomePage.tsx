@@ -13,7 +13,7 @@ export const HomePage: React.FC = () => (
     <Paper>
       <Box p={2}>
         <Typography variant="body1">
-          Continue to <AppLink to="/import">import page</AppLink>.
+          <AppLink to="/chart-import">Basic import demo</AppLink>
         </Typography>
       </Box>
     </Paper>
