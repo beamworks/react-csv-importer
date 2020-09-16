@@ -5,4 +5,4 @@ mapping, all in one.
 
 **[react-csv-importer on npm](https://www.npmjs.com/package/react-csv-importer)**
 
-![React CSV Importer usage demo](package-core/react-csv-importer-demo-20200914.gif)
+![React CSV Importer usage demo](package-core/react-csv-importer-demo-20200915.gif)
