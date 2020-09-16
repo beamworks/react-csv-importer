@@ -13,14 +13,6 @@ export const ImportPage: React.FC = () => {
 
   return (
     <div>
-      <VictoryChart theme={VictoryTheme.material} width={800} height={150}>
-        <VictoryLine data={data} x="i" y="a" />
-        {dataHasSecondValue ? <VictoryLine data={data} x="i" y="b" /> : null}
-
-        <VictoryAxis />
-        <VictoryAxis dependentAxis domain={undefined} />
-      </VictoryChart>
-
       <Paper>
         <Box display="flex" alignItems="center" px={2} py={1}>
           <Box display="flex" fontSize={48}>
@@ -29,7 +21,7 @@ export const ImportPage: React.FC = () => {
           <Box ml={2}>
             <Typography variant="body2">
               Upload any CSV file with one or two numeric columns: it will be
-              graphed on the above chart
+              graphed in a chart below
             </Typography>
           </Box>
         </Box>
@@ -66,6 +58,16 @@ export const ImportPage: React.FC = () => {
           <ImporterField name="snack" label="Snack Preference" optional />
         </Importer>
       </Box>
+
+      {data.length > 0 && (
+        <VictoryChart theme={VictoryTheme.material} width={800} height={150}>
+          <VictoryLine data={data} x="i" y="a" />
+          {dataHasSecondValue ? <VictoryLine data={data} x="i" y="b" /> : null}
+
+          <VictoryAxis />
+          <VictoryAxis dependentAxis domain={undefined} />
+        </VictoryChart>
+      )}
     </div>
   );
 };
