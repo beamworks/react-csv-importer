@@ -32,7 +32,11 @@ import { Importer, ImporterField } from 'react-csv-importer';
       await myAppMethod(row);
     }
   }}
-  onFinish={() => {
+  onComplete={() => {
+    // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
+    showMyAppToastNotification();
+  }}
+  onClose={() => {
     // optional, invoked when import is done and user clicked "Finish"
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();

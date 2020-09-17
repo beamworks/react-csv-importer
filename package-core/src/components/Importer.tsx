@@ -52,7 +52,8 @@ function ImporterCore<Row extends BaseRow>({
   chunkSize,
   processChunk,
   onStart,
-  onFinish
+  onComplete,
+  onClose
 }: React.PropsWithChildren<
   ImporterProps<Row> & {
     fields: Field[];
@@ -121,7 +122,8 @@ function ImporterCore<Row extends BaseRow>({
         setPreview(null); // not bothering with editFormat flag
         setFieldAssignments(null);
       }}
-      onFinish={onFinish}
+      onComplete={onComplete}
+      onClose={onClose}
     />
   );
 }
@@ -130,7 +132,8 @@ export function Importer<Row extends BaseRow>({
   chunkSize,
   processChunk,
   onStart,
-  onFinish,
+  onComplete,
+  onClose,
   children
 }: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
@@ -142,7 +145,8 @@ export function Importer<Row extends BaseRow>({
         chunkSize={chunkSize}
         processChunk={processChunk}
         onStart={onStart}
-        onFinish={onFinish}
+        onComplete={onComplete}
+        onClose={onClose}
       />
 
       <FieldDefinitionContext.Provider value={setFields}>

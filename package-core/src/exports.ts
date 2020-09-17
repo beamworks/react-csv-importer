@@ -20,7 +20,8 @@ export interface ImporterProps<Row extends BaseRow> {
   chunkSize?: number;
   processChunk: ParseCallback<Row>;
   onStart?: () => void;
-  onFinish?: () => void;
+  onComplete?: () => void;
+  onClose?: () => void;
 }
 
 export declare function Importer<Row extends BaseRow>(
