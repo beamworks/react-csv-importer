@@ -6,17 +6,23 @@ import { IconButton } from './IconButton';
 export const ImporterFrame: React.FC<{
   fileName: string;
   subtitle?: string; // @todo allow multiple crumbs
+  secondaryDisabled?: boolean;
+  secondaryLabel?: string;
   nextDisabled?: boolean;
   nextLabel?: string;
   error?: string | null;
+  onSecondary?: () => void;
   onNext: () => void;
   onCancel?: () => void;
 }> = ({
   fileName,
   subtitle,
+  secondaryDisabled,
+  secondaryLabel,
   nextDisabled,
   nextLabel,
   error,
+  onSecondary,
   onNext,
   onCancel,
   children
@@ -73,6 +79,14 @@ export const ImporterFrame: React.FC<{
         {error ? (
           <div className="CSVImporter_ImporterFrame__footerError" role="status">
             {error}
+          </div>
+        ) : null}
+
+        {secondaryLabel ? (
+          <div className="CSVImporter_ImporterFrame__footerSecondary">
+            <TextButton disabled={!!secondaryDisabled} onClick={onSecondary}>
+              {secondaryLabel}
+            </TextButton>
           </div>
         ) : null}
         <TextButton disabled={!!nextDisabled} onClick={onNext}>

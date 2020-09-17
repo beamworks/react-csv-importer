@@ -11,18 +11,18 @@ export function ProgressDisplay<Row extends BaseRow>({
   chunkSize,
   fieldAssignments,
   processChunk,
-  onReset,
   onStart,
   onComplete,
+  onRestart,
   onClose
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
-  onReset: () => void;
   onStart?: () => void;
   onComplete?: () => void;
+  onRestart?: () => void;
   onClose?: () => void;
 }>): React.ReactElement {
   const [progressCount, setProgressCount] = useState(0);
@@ -123,15 +123,18 @@ export function ProgressDisplay<Row extends BaseRow>({
       fileName={preview.file.name}
       subtitle="Import"
       error={error && (error.message || error.toString())}
-      nextDisabled={!isComplete || isDismissed}
-      nextLabel={onClose ? 'Finish' : 'Upload More'}
+      secondaryDisabled={!isComplete || isDismissed}
+      secondaryLabel={onRestart && onClose ? 'Upload More' : undefined}
+      onSecondary={onRestart && onClose ? onRestart : undefined}
+      nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
+      nextLabel={!onClose && onRestart ? 'Upload More' : 'Finish'}
       onNext={() => {
         setIsDismissed(true);
 
         if (onClose) {
           onClose();
-        } else {
-          onReset();
+        } else if (onRestart) {
+          onRestart();
         }
       }}
     >

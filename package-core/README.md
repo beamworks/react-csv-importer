@@ -21,6 +21,7 @@ import { Importer, ImporterField } from 'react-csv-importer';
 
 <Importer
   chunkSize={10000} // optional, internal parsing chunk size in bytes
+  restartable={false} // optional, lets user choose to upload another file when import is complete
   onStart={() => {
     // optional, invoked when user has mapped columns and started import
     prepMyAppForIncomingData();
