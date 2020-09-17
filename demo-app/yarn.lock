@@ -4532,10 +4532,10 @@ react-async-hook@^3.6.1:
   resolved "https://registry.yarnpkg.com/react-async-hook/-/react-async-hook-3.6.1.tgz#aed3e492d87319392865c83ed7cef3609e2a7fef"
   integrity sha512-YWBB2feVQF79t5u2raMPHlZ8975Jds+guCvkWVC4kRLDlSCouLsYpQm4DGSqPeHvoHYVVcDfqNayLZAXQmnxnw==
 
-react-csv-importer@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.0.2.tgz#45b9356d27ffa0fc6d98142b68b1d1f4b53b7980"
-  integrity sha512-ndmgO0YctD21BhA/ZmfXBCW0qd7Zq2eMIasB6AGzZEn/Au0OldLexm7OSZAl9UlNRMS8UP8xQQTl+iEnwIQ1+A==
+react-csv-importer@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.0.3.tgz#66a8bf210bdddbd4894cfe2d116c4b316be2144e"
+  integrity sha512-mXZ8CjoPP/sNcBB4W3O0uH3HW/kfsSSNVG1gW65dCdXb3kHR/F4HC4LAilCEvq6zQWju5slRMRvlle/Lbe9B1w==
   dependencies:
     papaparse "^5.3.0"
     react-dropzone "^11.0.3"

@@ -30,6 +30,7 @@ export const ImportPage: React.FC = () => {
       <Box mt={2}>
         <Importer<{ a: string; b: string }>
           chunkSize={150} // intentionally small chunk size for interactive display
+          restartable
           onStart={() => {
             setData([]);
           }}
@@ -50,7 +51,7 @@ export const ImportPage: React.FC = () => {
             );
 
             // artificial delay
-            return new Promise((resolve) => setTimeout(resolve, 100));
+            return new Promise((resolve) => setTimeout(resolve, 20));
           }}
         >
           <ImporterField name="a" label="Value A" />
