@@ -18,9 +18,11 @@ export declare const ImporterField: React.FC<ImporterFieldProps>;
 
 export interface ImporterProps<Row extends BaseRow> {
   chunkSize?: number;
+  restartable?: boolean;
   processChunk: ParseCallback<Row>;
   onStart?: () => void;
-  onFinish?: () => void;
+  onComplete?: () => void;
+  onClose?: () => void;
 }
 
 export declare function Importer<Row extends BaseRow>(

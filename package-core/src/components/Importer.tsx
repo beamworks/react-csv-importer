@@ -50,9 +50,11 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 function ImporterCore<Row extends BaseRow>({
   fields,
   chunkSize,
+  restartable,
   processChunk,
   onStart,
-  onFinish
+  onComplete,
+  onClose
 }: React.PropsWithChildren<
   ImporterProps<Row> & {
     fields: Field[];
@@ -115,35 +117,31 @@ function ImporterCore<Row extends BaseRow>({
       chunkSize={chunkSize}
       processChunk={processChunk}
       onStart={onStart}
-      onReset={() => {
-        // reset all state
-        setSelectedFile(null);
-        setPreview(null); // not bothering with editFormat flag
-        setFieldAssignments(null);
-      }}
-      onFinish={onFinish}
+      onRestart={
+        restartable
+          ? () => {
+              // reset all state
+              setSelectedFile(null);
+              setPreview(null); // not bothering with editFormat flag
+              setFieldAssignments(null);
+            }
+          : undefined
+      }
+      onComplete={onComplete}
+      onClose={onClose}
     />
   );
 }
 
 export function Importer<Row extends BaseRow>({
-  chunkSize,
-  processChunk,
-  onStart,
-  onFinish,
-  children
+  children,
+  ...props
 }: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   const [fields, setFields] = useState<Field[]>([]);
 
   return (
     <div className="CSVImporter_Importer">
-      <ImporterCore
-        fields={fields}
-        chunkSize={chunkSize}
-        processChunk={processChunk}
-        onStart={onStart}
-        onFinish={onFinish}
-      />
+      <ImporterCore fields={fields} {...props} />
 
       <FieldDefinitionContext.Provider value={setFields}>
         {children}

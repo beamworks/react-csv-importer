@@ -45,7 +45,7 @@
     "html-webpack-plugin": "^4.4.1",
     "react": "^16.13.1",
     "react-async-hook": "^3.6.1",
-    "react-csv-importer": "^0.0.2",
+    "react-csv-importer": "0.0.2",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "style-loader": "^1.2.1",

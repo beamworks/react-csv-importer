@@ -11,17 +11,19 @@ export function ProgressDisplay<Row extends BaseRow>({
   chunkSize,
   fieldAssignments,
   processChunk,
-  onReset,
   onStart,
-  onFinish
+  onComplete,
+  onRestart,
+  onClose
 }: React.PropsWithChildren<{
   preview: PreviewInfo;
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
-  onReset: () => void;
   onStart?: () => void;
-  onFinish?: () => void;
+  onComplete?: () => void;
+  onRestart?: () => void;
+  onClose?: () => void;
 }>): React.ReactElement {
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -30,12 +32,22 @@ export function ProgressDisplay<Row extends BaseRow>({
 
   // notify on start of processing
   // (separate effect in case of errors)
-  const onStartRef = useRef(onStart); // wrap in ref to avoid re-triggering
+  const onStartRef = useRef(onStart); // wrap in ref to avoid re-triggering (only first instance is needed)
   useEffect(() => {
     if (onStartRef.current) {
       onStartRef.current();
     }
   }, []);
+
+  // notify on end of processing
+  // (separate effect in case of errors)
+  const onCompleteRef = useRef(onComplete); // wrap in ref to avoid re-triggering
+  onCompleteRef.current = onComplete;
+  useEffect(() => {
+    if (isComplete && onCompleteRef.current) {
+      onCompleteRef.current();
+    }
+  }, [isComplete]);
 
   // ensure status gets focus when complete, in case status role is not read out
   const statusRef = useRef<HTMLDivElement>(null);
@@ -111,15 +123,18 @@ export function ProgressDisplay<Row extends BaseRow>({
       fileName={preview.file.name}
       subtitle="Import"
       error={error && (error.message || error.toString())}
-      nextDisabled={!isComplete || isDismissed}
-      nextLabel={onFinish ? 'Finish' : 'Upload More'}
+      secondaryDisabled={!isComplete || isDismissed}
+      secondaryLabel={onRestart && onClose ? 'Upload More' : undefined}
+      onSecondary={onRestart && onClose ? onRestart : undefined}
+      nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
+      nextLabel={!onClose && onRestart ? 'Upload More' : 'Finish'}
       onNext={() => {
         setIsDismissed(true);
 
-        if (onFinish) {
-          onFinish();
-        } else {
-          onReset();
+        if (onClose) {
+          onClose();
+        } else if (onRestart) {
+          onRestart();
         }
       }}
     >

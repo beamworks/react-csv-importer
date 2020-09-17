@@ -21,6 +21,7 @@ import { Importer, ImporterField } from 'react-csv-importer';
 
 <Importer
   chunkSize={10000} // optional, internal parsing chunk size in bytes
+  restartable={false} // optional, lets user choose to upload another file when import is complete
   onStart={() => {
     // optional, invoked when user has mapped columns and started import
     prepMyAppForIncomingData();
@@ -32,7 +33,11 @@ import { Importer, ImporterField } from 'react-csv-importer';
       await myAppMethod(row);
     }
   }}
-  onFinish={() => {
+  onComplete={() => {
+    // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
+    showMyAppToastNotification();
+  }}
+  onClose={() => {
     // optional, invoked when import is done and user clicked "Finish"
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();

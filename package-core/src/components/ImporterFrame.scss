@@ -69,4 +69,10 @@
     color: $errorTextColor;
     word-break: break-word;
   }
+
+  &__footerSecondary {
+    flex: none;
+    display: flex; // for more consistent button alignment
+    margin-right: 1em;
+  }
 }
