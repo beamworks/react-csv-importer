@@ -35,12 +35,12 @@ export const ImportPage: React.FC = () => {
         <Importer<{ a: string; b: string }>
           chunkSize={150} // intentionally small chunk size for interactive display
           restartable
-          onStart={() => {
-            showSnack('Import started');
+          onStart={({ file }) => {
             setData([]);
+            showSnack(`Importing ${file.name}`);
           }}
-          onComplete={() => {
-            showSnack('Import finished');
+          onComplete={({ file }) => {
+            showSnack(`Finished importing ${file.name}`);
           }}
           processChunk={(rows) => {
             setData(
