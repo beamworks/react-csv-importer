@@ -9,6 +9,7 @@
   },
   "main": "src/index.ts",
   "scripts": {
+    "preinstall": "cd ../package-core && yarn && yarn dist",
     "lint": "eslint --max-warnings=0 --ext ts --ext tsx src",
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
     "dist": "webpack --mode production",
