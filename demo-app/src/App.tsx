@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 
 import { AppTheme } from './components/AppTheme';
+import { AppSnackbarProvider } from './components/AppSnackbar';
 import { PageLayout } from './components/PageLayout';
 import { HomePage } from './pages/HomePage';
 import { ImportPage } from './pages/ImportPage';
@@ -28,7 +29,9 @@ export const App: React.FC = () => {
   return (
     <Router>
       <AppTheme>
-        <PageLayout main={<AppRoutes />} />
+        <AppSnackbarProvider>
+          <PageLayout main={<AppRoutes />} />
+        </AppSnackbarProvider>
       </AppTheme>
     </Router>
   );

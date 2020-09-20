@@ -43,6 +43,7 @@
     "dotenv-webpack": "^2.0.0",
     "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.4.1",
+    "notistack": "^1.0.0",
     "react": "^16.13.1",
     "react-async-hook": "^3.6.1",
     "react-csv-importer": "0.0.3",
