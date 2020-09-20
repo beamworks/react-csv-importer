@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { ParseCallback, BaseRow } from '../exports';
+import { ImportInfo, ParseCallback, BaseRow } from '../exports';
 import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
@@ -20,24 +20,31 @@ export function ProgressDisplay<Row extends BaseRow>({
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
-  onStart?: () => void;
-  onComplete?: () => void;
+  onStart?: (info: ImportInfo) => void;
+  onComplete?: (info: ImportInfo) => void;
   onRestart?: () => void;
-  onClose?: () => void;
+  onClose?: (info: ImportInfo) => void;
 }>): React.ReactElement {
   const [progressCount, setProgressCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
 
+  const importInfo = useMemo<ImportInfo>(() => {
+    return {
+      file: preview.file,
+      fields: Object.keys(fieldAssignments)
+    };
+  }, [preview, fieldAssignments]);
+
   // notify on start of processing
   // (separate effect in case of errors)
   const onStartRef = useRef(onStart); // wrap in ref to avoid re-triggering (only first instance is needed)
   useEffect(() => {
     if (onStartRef.current) {
-      onStartRef.current();
+      onStartRef.current(importInfo);
     }
-  }, []);
+  }, [importInfo]);
 
   // notify on end of processing
   // (separate effect in case of errors)
@@ -45,9 +52,9 @@ export function ProgressDisplay<Row extends BaseRow>({
   onCompleteRef.current = onComplete;
   useEffect(() => {
     if (isComplete && onCompleteRef.current) {
-      onCompleteRef.current();
+      onCompleteRef.current(importInfo);
     }
-  }, [isComplete]);
+  }, [importInfo, isComplete]);
 
   // ensure status gets focus when complete, in case status role is not read out
   const statusRef = useRef<HTMLDivElement>(null);
@@ -132,7 +139,7 @@ export function ProgressDisplay<Row extends BaseRow>({
         setIsDismissed(true);
 
         if (onClose) {
-          onClose();
+          onClose(importInfo);
         } else if (onRestart) {
           onRestart();
         }

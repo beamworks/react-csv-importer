@@ -6,7 +6,11 @@ import Paper from '@material-ui/core/Paper';
 import InfoIcon from '@material-ui/icons/Info';
 import { Importer, ImporterField } from 'react-csv-importer';
 
+import { useAppSnackbar } from '../components/AppSnackbar';
+
 export const ImportPage: React.FC = () => {
+  const showSnack = useAppSnackbar();
+
   const [data, setData] = useState<{ i: number; a: number; b?: number }[]>([]);
 
   const dataHasSecondValue = data.length > 0 && data[0].b !== undefined;
@@ -31,8 +35,12 @@ export const ImportPage: React.FC = () => {
         <Importer<{ a: string; b: string }>
           chunkSize={150} // intentionally small chunk size for interactive display
           restartable
-          onStart={() => {
+          onStart={({ file }) => {
             setData([]);
+            showSnack(`Importing ${file.name}`);
+          }}
+          onComplete={({ file }) => {
+            showSnack(`Finished importing ${file.name}`);
           }}
           processChunk={(rows) => {
             setData(

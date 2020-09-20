@@ -30,9 +30,9 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
       <input {...getInputProps()} />
 
       {isDragActive ? (
-        <span>Drop the files here...</span>
+        <span>Drop CSV file here...</span>
       ) : (
-        <span>Drag-and-drop some files here, or click to select files</span>
+        <span>Drag-and-drop CSV file here, or click to select in folder</span>
       )}
     </div>
   );

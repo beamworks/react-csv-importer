@@ -8,7 +8,6 @@
     "url": "https://github.com/beamworks/react-csv-importer"
   },
   "scripts": {
-    "postinstall": "cd package-core && yarn && yarn dist && cd ../demo-app && yarn",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
