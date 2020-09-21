@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 import { BaseRow } from '../exports';
 
@@ -44,8 +45,10 @@ export function parsePreview(file: File): Promise<PreviewResults> {
       });
     }
 
-    // @todo true streaming support for local files (use worker?)
-    Papa.parse(file, {
+    // true streaming support for local files (@todo wait for upstream fix)
+    // @todo close the stream
+    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    Papa.parse(nodeStream, {
       chunkSize: 10000, // not configurable, preview only
       preview: PREVIEW_ROW_COUNT,
       skipEmptyLines: true,
@@ -71,9 +74,8 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         }
 
         // finish parsing after first chunk
-        if (rowAccumulator.length < PREVIEW_ROW_COUNT) {
-          parser.abort();
-        }
+        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
+        parser.abort();
 
         reportSuccess();
       },
@@ -101,8 +103,9 @@ export function processFile<Row extends BaseRow>(
     // skip first line if needed
     let skipLine = hasHeaders;
 
-    // @todo true streaming support for local files (use worker?)
-    Papa.parse(file, {
+    // true streaming support for local files (@todo wait for upstream fix)
+    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    Papa.parse(nodeStream, {
       chunkSize: chunkSize || 10000,
       skipEmptyLines: true,
       error: (error) => {
@@ -110,6 +113,7 @@ export function processFile<Row extends BaseRow>(
       },
       chunk: ({ data }, parser) => {
         // pause to wait until the rows are consumed
+        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
         parser.pause();
 
         const skipped = skipLine && data.length > 0;
@@ -141,17 +145,22 @@ export function processFile<Row extends BaseRow>(
 
         // wrap sync errors in promise
         // (avoid invoking callback if there are no rows to consume)
-        const whenConsumed = new Promise<void>((resolve) =>
-          resolve(rows.length ? callback(rows) : undefined)
-        );
+        const whenConsumed = new Promise<void>((resolve) => {
+          const result = rows.length ? callback(rows) : undefined;
+
+          // introduce delay to allow a frame render
+          setTimeout(() => resolve(result), 0);
+        });
 
         // unpause parsing when done
         whenConsumed.then(
           () => {
+            nodeStream.resume();
             parser.resume();
           },
           () => {
             // @todo collect errors
+            nodeStream.resume();
             parser.resume();
           }
         );
