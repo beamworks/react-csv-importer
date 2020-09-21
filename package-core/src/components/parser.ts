@@ -74,7 +74,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         }
 
         // finish parsing after first chunk
-        nodeStream.pause();
+        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
         parser.abort();
 
         reportSuccess();
@@ -113,7 +113,7 @@ export function processFile<Row extends BaseRow>(
       },
       chunk: ({ data }, parser) => {
         // pause to wait until the rows are consumed
-        nodeStream.pause();
+        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
         parser.pause();
 
         const skipped = skipLine && data.length > 0;
