@@ -14,6 +14,16 @@ The UI theme is standalone (has no external dependencies such as Material UI) an
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
+Feature summary:
+
+- raw file preview
+- user-selectable column mapping
+- optional fields
+- self-contained styling
+- arbitrary CSV file size (true streaming support)
+- screen reader a11y
+- keyboard a11y
+
 ## Example Usage
 
 ```js
