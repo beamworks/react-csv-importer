@@ -4,7 +4,17 @@ import { ImportInfo, ParseCallback, BaseRow } from '../exports';
 import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
-const estimatedTotal = 100; // @todo compute based on file size
+// compute actual UTF-8 bytes used by a string
+// (inspired by https://stackoverflow.com/questions/10576905/how-to-convert-javascript-unicode-notation-code-to-utf-8)
+function countUTF8Bytes(item: string) {
+  // re-encode into UTF-8
+  const escaped = encodeURIComponent(item);
+
+  // convert byte escape sequences into single characters
+  const normalized = escaped.replace(/%\d\d/g, '_');
+
+  return normalized.length;
+}
 
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
@@ -36,6 +46,26 @@ export function ProgressDisplay<Row extends BaseRow>({
       fields: Object.keys(fieldAssignments)
     };
   }, [preview, fieldAssignments]);
+
+  // estimate number of rows
+  const estimatedRowCount = useMemo(() => {
+    // sum up sizes of all the parsed preview rows and get estimated average
+    const totalPreviewRowBytes = preview.firstRows.reduce((prevCount, row) => {
+      const rowBytes = row.reduce((prev, item) => {
+        return prev + countUTF8Bytes(item) + 1; // add a byte for separator or newline
+      }, 0);
+
+      return prevCount + rowBytes;
+    }, 0);
+
+    const averagePreviewRowSize =
+      totalPreviewRowBytes / preview.firstRows.length;
+
+    // divide file size by estimated row size (or fall back to a sensible amount)
+    return averagePreviewRowSize > 1
+      ? preview.file.size / averagePreviewRowSize
+      : 100;
+  }, [preview]);
 
   // notify on start of processing
   // (separate effect in case of errors)
@@ -116,14 +146,13 @@ export function ProgressDisplay<Row extends BaseRow>({
       return 100;
     }
 
-    // inputs hand-picked so that correctly estimated total is about 65% of the bar
-    // @todo tweak to be at ~80%?
-    const progressPower = 1.5 * (progressCount / estimatedTotal);
+    // inputs hand-picked so that correctly estimated total is about 75% of the bar
+    const progressPower = 2.5 * (progressCount / estimatedRowCount);
     const progressLeft = 0.5 ** progressPower;
 
     // convert to .1 percent precision for smoother bar display
     return Math.floor(1000 - 1000 * progressLeft) / 10;
-  }, [progressCount, isComplete]);
+  }, [estimatedRowCount, progressCount, isComplete]);
 
   return (
     <ImporterFrame
