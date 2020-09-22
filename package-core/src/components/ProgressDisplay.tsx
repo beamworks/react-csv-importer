@@ -146,8 +146,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       return 100;
     }
 
-    // inputs hand-picked so that correctly estimated total is about 65% of the bar
-    // @todo tweak to be at ~80%?
+    // inputs hand-picked so that correctly estimated total is about 75% of the bar
     const progressPower = 2.5 * (progressCount / estimatedRowCount);
     const progressLeft = 0.5 ** progressPower;
 
