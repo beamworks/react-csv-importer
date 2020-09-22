@@ -3,6 +3,8 @@ import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 import { BaseRow } from '../exports';
 
+const BOM_CODE = 65279;
+
 export interface PreviewInfo {
   file: File;
   firstChunk: string;
@@ -61,6 +63,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         firstChunk = chunk;
       },
       chunk: ({ data, errors }, parser) => {
+        // ignoring possible leading BOM
         data.forEach((row) => {
           rowAccumulator.push(
             (row as unknown[]).map((item) =>
@@ -102,6 +105,7 @@ export function processFile<Row extends BaseRow>(
   return new Promise<void>((resolve, reject) => {
     // skip first line if needed
     let skipLine = hasHeaders;
+    let skipBOM = !hasHeaders;
 
     // true streaming support for local files (@todo wait for upstream fix)
     const nodeStream = new ReadableWebToNodeStream(file.stream());
@@ -122,6 +126,15 @@ export function processFile<Row extends BaseRow>(
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
+
+          // perform BOM skip on first value
+          if (skipBOM && stringRow.length > 0) {
+            skipBOM = false;
+            stringRow[0] =
+              stringRow[0].charCodeAt(0) === BOM_CODE
+                ? stringRow[0].substring(1)
+                : stringRow[0];
+          }
 
           const record = {} as { [name: string]: string | undefined };
 
