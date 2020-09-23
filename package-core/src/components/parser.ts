@@ -3,7 +3,7 @@ import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 import { BaseRow } from '../exports';
 
-const BOM_CODE = 65279;
+const BOM_CODE = 65279; // 0xFEFF
 
 export interface PreviewInfo {
   file: File;
