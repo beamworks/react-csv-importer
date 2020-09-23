@@ -50,6 +50,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 function ImporterCore<Row extends BaseRow>({
   fields,
   chunkSize,
+  assumeNoHeaders,
   restartable,
   processChunk,
   onStart,
@@ -82,6 +83,7 @@ function ImporterCore<Row extends BaseRow>({
     return (
       <FormatPreview
         file={selectedFile}
+        assumeNoHeaders={assumeNoHeaders}
         currentPreview={preview}
         onAccept={(parsedPreview) => {
           setPreview(parsedPreview);
