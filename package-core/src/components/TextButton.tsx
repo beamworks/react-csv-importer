@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './TextButton.scss';
+
 export const TextButton: React.FC<{
   disabled?: boolean;
   onClick?: () => void;

@@ -1,6 +1,8 @@
 import React, { useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 
+import './FileSelector.scss';
+
 export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
   onSelected
 }) => {

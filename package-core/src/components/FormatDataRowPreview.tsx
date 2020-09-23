@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './FormatDataRowPreview.scss';
+
 export const FormatDataRowPreview: React.FC<{
   hasHeaders: boolean;
   rows: string[][];

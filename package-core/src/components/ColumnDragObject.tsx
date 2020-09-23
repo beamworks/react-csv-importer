@@ -4,6 +4,8 @@ import { createPortal } from 'react-dom';
 import { ColumnDragCard } from './ColumnDragCard';
 import { DragState } from './ColumnDragState';
 
+import './ColumnDragObject.scss';
+
 export const ColumnDragObject: React.FC<{
   hasHeaders: boolean;
   dragState: DragState | null;
