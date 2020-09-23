@@ -44,7 +44,10 @@ module.exports = (env, argv) => ({
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
-  devtool: false, // leave code simple for cleaner downstream bundling
+  devtool: 'cheap-source-map',
+  optimization: {
+    minimize: false
+  },
   plugins: [
     // similar env file logic to create-react-app
     // (using webpack mode if no env is set)
