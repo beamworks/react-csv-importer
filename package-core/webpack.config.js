@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => ({
-  entry: './src/index.ts',
+  entry: { index: './src/index.ts' },
   output: {
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'commonjs2'
