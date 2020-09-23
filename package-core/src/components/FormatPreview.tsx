@@ -8,10 +8,11 @@ import { FormatErrorMessage } from './FormatErrorMessage';
 
 export const FormatPreview: React.FC<{
   file: File;
+  assumeNoHeaders?: boolean;
   currentPreview: PreviewInfo | null;
   onAccept: (preview: PreviewInfo) => void;
   onCancel: () => void;
-}> = ({ file, currentPreview, onAccept, onCancel }) => {
+}> = ({ file, assumeNoHeaders, currentPreview, onAccept, onCancel }) => {
   const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
@@ -19,6 +20,10 @@ export const FormatPreview: React.FC<{
         ...currentPreview
       }
   );
+
+  // wrap in ref to avoid triggering effect
+  const assumeNoHeadersRef = useRef(assumeNoHeaders);
+  assumeNoHeadersRef.current = assumeNoHeaders;
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -31,7 +36,12 @@ export const FormatPreview: React.FC<{
         return;
       }
 
-      setPreview(results);
+      // set, pre-filling the headers flag
+      setPreview(
+        results.parseError
+          ? results // no headers flag if error
+          : { ...results, hasHeaders: !assumeNoHeadersRef.current }
+      );
     });
 
     return () => {

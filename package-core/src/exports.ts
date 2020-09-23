@@ -23,6 +23,7 @@ export interface ImportInfo {
 
 export interface ImporterProps<Row extends BaseRow> {
   chunkSize?: number;
+  assumeNoHeaders?: boolean;
   restartable?: boolean;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
