@@ -10,7 +10,7 @@ preview the raw uploaded data before parsing and pick which columns to import.
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
-The UI theme is standalone (has no external dependencies such as Material UI) and tailored to
+The UI theme is standalone (no external dependencies such as Material UI) and tailored to
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
@@ -20,6 +20,7 @@ Feature summary:
 - user-selectable column mapping
 - optional fields
 - self-contained styling
+- strip leading BOM character in data
 - arbitrary CSV file size (true streaming support)
 - screen reader a11y
 - keyboard a11y
@@ -38,7 +39,7 @@ import { Importer, ImporterField } from 'react-csv-importer';
   }}
   processChunk={async (rows) => {
     // required, receives a list of parsed objects based on user column mapping
-    // (if this returns a promise, the widget will wait for it before parsing more data)
+    // (if this callback returns a promise, the widget will wait for it before parsing more data)
     for (row of rows) {
       await myAppMethod(row);
     }
