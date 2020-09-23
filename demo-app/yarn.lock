@@ -4546,15 +4546,7 @@ react-csv-importer@../package-core:
     papaparse "^5.3.0"
     react-dropzone "^11.0.3"
     react-use-gesture "^7.0.16"
-
-react-csv-importer@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.0.3.tgz#66a8bf210bdddbd4894cfe2d116c4b316be2144e"
-  integrity sha512-mXZ8CjoPP/sNcBB4W3O0uH3HW/kfsSSNVG1gW65dCdXb3kHR/F4HC4LAilCEvq6zQWju5slRMRvlle/Lbe9B1w==
-  dependencies:
-    papaparse "^5.3.0"
-    react-dropzone "^11.0.3"
-    react-use-gesture "^7.0.16"
+    readable-web-to-node-stream "^2.0.0"
 
 react-dom@^16.13.1:
   version "16.13.1"
@@ -4659,6 +4651,11 @@ readable-stream@^3.0.6, readable-stream@^3.1.1, readable-stream@^3.6.0:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
+
+readable-web-to-node-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/readable-web-to-node-stream/-/readable-web-to-node-stream-2.0.0.tgz#751e632f466552ac0d5c440cc01470352f93c4b7"
+  integrity sha512-+oZJurc4hXpaaqsN68GoZGQAQIA3qr09Or4fqEsargABnbe5Aau8hFn6ISVleT3cpY/0n/8drn7huyyEvTbghA==
 
 readdirp@^2.2.1:
   version "2.2.1"
