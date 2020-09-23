@@ -26,9 +26,7 @@
     "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "dist2": "rimraf dist && tsc --outDir dist && sass src/index.scss dist/index.css && cp src/exports.ts dist/index.d.ts",
-    "dist": "webpack --mode production && cp src/exports.ts dist/main.d.ts",
-    "watch2": "webpack --mode development --watch"
+    "dist": "webpack --mode production && cp src/exports.ts dist/main.d.ts"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
   "license": "MIT",
