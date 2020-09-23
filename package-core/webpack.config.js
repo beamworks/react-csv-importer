@@ -33,16 +33,16 @@ module.exports = (env, argv) => ({
     ]
   },
   externals: {
-    papaparse: 'commonjs',
-    react: 'commonjs',
-    'react-dom': 'commonjs',
-    'react-dropzone': 'commonjs',
-    'react-use-gesture': 'commonjs'
+    papaparse: 'papaparse',
+    react: 'react',
+    'react-dom': 'react-dom',
+    'react-dropzone': 'react-dropzone',
+    'react-use-gesture': 'react-use-gesture'
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
-  devtool: 'eval-cheap-module-source-map',
+  devtool: false, // leave code simple for cleaner downstream bundling
   plugins: [
     // similar env file logic to create-react-app
     // (using webpack mode if no env is set)
