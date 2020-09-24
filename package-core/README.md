@@ -67,3 +67,13 @@ import { Importer, ImporterField } from 'react-csv-importer';
 - [PapaParse](https://www.papaparse.com/) for CSV parsing
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
 - [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
+
+## Changes
+
+- 0.2.0
+  - bundling core package using Webpack
+  - added source maps
+- 0.1.0
+  - first beta release
+  - true streaming support using shim for PapaParse
+  - lifecycle hooks receive info about the import
