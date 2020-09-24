@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => ({
@@ -58,11 +57,6 @@ module.exports = (env, argv) => ({
     }),
 
     new MiniCssExtractPlugin(),
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: path.resolve(__dirname, 'src/exports.ts'), to: 'index.d.ts' }
-      ]
-    }),
 
     new CleanWebpackPlugin()
   ]

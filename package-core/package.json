@@ -26,7 +26,7 @@
     "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "dist": "webpack --mode production"
+    "dist": "webpack --mode production && dts-bundle-generator -o dist/index.d.ts src/index.ts"
   },
   "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
   "license": "MIT",
@@ -48,9 +48,9 @@
     "@typescript-eslint/parser": "^4.1.0",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^6.1.1",
     "css-loader": "^4.3.0",
     "dotenv-webpack": "^2.0.0",
+    "dts-bundle-generator": "^5.4.0",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",

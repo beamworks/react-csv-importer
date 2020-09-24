@@ -1,6 +1,4 @@
-// external-facing type definitions for the entire library
-// @todo replace with auto-generated .d.ts bundle
-import * as React from 'react';
+// @todo move these back to relevant modules
 
 export type BaseRow = { [name: string]: unknown };
 
@@ -13,8 +11,6 @@ export interface ImporterFieldProps {
   label: string;
   optional?: boolean;
 }
-
-export declare const ImporterField: React.FC<ImporterFieldProps>;
 
 export interface ImportInfo {
   file: File;
@@ -30,7 +26,3 @@ export interface ImporterProps<Row extends BaseRow> {
   onComplete?: (info: ImportInfo) => void;
   onClose?: (info: ImportInfo) => void;
 }
-
-export declare function Importer<Row extends BaseRow>(
-  props: React.PropsWithChildren<ImporterProps<Row>>
-): React.ReactElement;
