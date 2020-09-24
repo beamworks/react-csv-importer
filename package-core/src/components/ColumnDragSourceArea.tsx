@@ -6,6 +6,8 @@ import { DragState } from './ColumnDragState';
 import { ColumnDragCard, Column } from './ColumnDragCard';
 import { IconButton } from './IconButton';
 
+import './ColumnDragSourceArea.scss';
+
 const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
 // @todo readable status text if not mouse-drag

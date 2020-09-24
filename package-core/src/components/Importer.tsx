@@ -7,6 +7,8 @@ import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 
+import './Importer.scss';
+
 type FieldListSetter = (prev: Field[]) => Field[];
 
 const FieldDefinitionContext = React.createContext<

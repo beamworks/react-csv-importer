@@ -6,6 +6,8 @@ import { FormatRawPreview } from './FormatRawPreview';
 import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
+import './FormatPreview.scss';
+
 export const FormatPreview: React.FC<{
   file: File;
   assumeNoHeaders?: boolean;

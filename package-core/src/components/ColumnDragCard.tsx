@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 
 import { PREVIEW_ROW_COUNT } from './parser';
 
+import './ColumnDragCard.scss';
+
 export interface Column {
   index: number;
   code: string;

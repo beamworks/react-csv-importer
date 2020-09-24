@@ -2,6 +2,8 @@ import React from 'react';
 
 import { FormatErrorMessage } from './FormatErrorMessage';
 
+import './FormatRawPreview.scss';
+
 const RAW_PREVIEW_SIZE = 500;
 
 export const FormatRawPreview: React.FC<{

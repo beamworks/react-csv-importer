@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './IconButton.scss';
+
 export const IconButton: React.FC<{
   label: string;
   type: 'back' | 'forward' | 'replay' | 'arrowBack' | 'close';
