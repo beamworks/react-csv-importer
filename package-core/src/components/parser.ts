@@ -1,8 +1,6 @@
 import Papa from 'papaparse';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
-import { BaseRow } from '../exports';
-
 const BOM_CODE = 65279; // 0xFEFF
 
 export interface PreviewInfo {
@@ -24,6 +22,12 @@ export type PreviewResults =
 export const PREVIEW_ROW_COUNT = 5;
 
 export type FieldAssignmentMap = { [name: string]: number | undefined };
+
+export type BaseRow = { [name: string]: unknown };
+
+export type ParseCallback<Row extends BaseRow> = (
+  rows: Row[]
+) => void | Promise<void>;
 
 export function parsePreview(file: File): Promise<PreviewResults> {
   // wrap synchronous errors in promise

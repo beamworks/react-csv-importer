@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { ImportInfo, ParseCallback, BaseRow } from '../exports';
-import { processFile, PreviewInfo, FieldAssignmentMap } from './parser';
+import {
+  processFile,
+  PreviewInfo,
+  FieldAssignmentMap,
+  ParseCallback,
+  BaseRow
+} from './parser';
 import { ImporterFrame } from './ImporterFrame';
 
 import './ProgressDisplay.scss';
+
+export interface ImportInfo {
+  file: File;
+  fields: string[];
+}
 
 // compute actual UTF-8 bytes used by a string
 // (inspired by https://stackoverflow.com/questions/10576905/how-to-convert-javascript-unicode-notation-code-to-utf-8)
