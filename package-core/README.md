@@ -70,6 +70,8 @@ import { Importer, ImporterField } from 'react-csv-importer';
 
 ## Changes
 
+- 0.2.1
+  - update index.d.ts generation
 - 0.2.0
   - bundling core package using Webpack
   - added source maps
