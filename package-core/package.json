@@ -8,13 +8,14 @@
     "upload",
     "parser",
     "import",
+    "preview",
     "papaparse"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/beamworks/react-csv-importer"
   },
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**"
