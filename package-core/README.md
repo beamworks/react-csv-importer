@@ -30,6 +30,10 @@ Feature summary:
 ```js
 import { Importer, ImporterField } from 'react-csv-importer';
 
+// include the widget CSS file whichever way your bundler supports it
+import 'react-csv-importer/dist/index.css';
+
+// in your component code:
 <Importer
   chunkSize={10000} // optional, internal parsing chunk size in bytes
   assumeNoHeaders={false} // optional, keeps "data has headers" checkbox off by default
