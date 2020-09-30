@@ -43,7 +43,8 @@ import 'react-csv-importer/dist/index.css';
     prepMyAppForIncomingData();
   }}
   processChunk={async (rows) => {
-    // required, receives a list of parsed objects based on user column mapping
+    // required, receives a list of parsed objects based on defined fields and user column mapping
+    // may be called several times if file is large
     // (if this callback returns a promise, the widget will wait for it before parsing more data)
     for (row of rows) {
       await myAppMethod(row);
