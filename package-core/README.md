@@ -75,6 +75,10 @@ import 'react-csv-importer/dist/index.css';
 
 ## Changes
 
+- 0.2.2
+  - empty file checks
+  - fix up package metadata
+  - extra docs
 - 0.2.1
   - update index.d.ts generation
 - 0.2.0
