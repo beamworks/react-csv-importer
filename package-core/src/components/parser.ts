@@ -37,6 +37,14 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     const rowAccumulator: string[][] = [];
 
     function reportSuccess() {
+      // PapaParse normally complains first anyway, but might as well flag it
+      if (rowAccumulator.length === 0) {
+        return {
+          parseError: new Error('File is empty')
+        };
+      }
+
+      // fill preview with blanks if needed
       while (rowAccumulator.length < PREVIEW_ROW_COUNT) {
         rowAccumulator.push([]);
       }
