@@ -38,12 +38,14 @@ export const FormatPreview: React.FC<{
         return;
       }
 
-      // set, pre-filling the headers flag
-      setPreview(
-        results.parseError
-          ? results // no headers flag if error
-          : { ...results, hasHeaders: !assumeNoHeadersRef.current }
-      );
+      if (results.parseError) {
+        setPreview(results);
+      } else {
+        // pre-fill headers flag (only possible with >1 lines)
+        const hasHeaders = !assumeNoHeadersRef.current && !results.isSingleLine;
+
+        setPreview({ ...results, hasHeaders });
+      }
     });
 
     return () => {
@@ -83,23 +85,25 @@ export const FormatPreview: React.FC<{
           <>
             <div className="CSVImporter_FormatPreview__header">
               Preview Import
-              <label className="CSVImporter_FormatPreview__headerToggle">
-                <input
-                  type="checkbox"
-                  checked={preview.hasHeaders}
-                  onChange={() => {
-                    setPreview((prev) =>
-                      prev && !prev.parseError // appease type safety
-                        ? {
-                            ...prev,
-                            hasHeaders: !prev.hasHeaders
-                          }
-                        : prev
-                    );
-                  }}
-                />
-                <span>Data has headers</span>
-              </label>
+              {!preview.isSingleLine && ( // hide setting if only one line anyway
+                <label className="CSVImporter_FormatPreview__headerToggle">
+                  <input
+                    type="checkbox"
+                    checked={preview.hasHeaders}
+                    onChange={() => {
+                      setPreview((prev) =>
+                        prev && !prev.parseError // appease type safety
+                          ? {
+                              ...prev,
+                              hasHeaders: !prev.hasHeaders
+                            }
+                          : prev
+                      );
+                    }}
+                  />
+                  <span>Data has headers</span>
+                </label>
+              )}
             </div>
             <FormatDataRowPreview
               hasHeaders={preview.hasHeaders}

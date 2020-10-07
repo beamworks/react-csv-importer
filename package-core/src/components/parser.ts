@@ -7,6 +7,7 @@ export interface PreviewInfo {
   file: File;
   firstChunk: string;
   firstRows: string[][]; // always PREVIEW_ROWS count
+  isSingleLine: boolean;
   hasHeaders: boolean;
 }
 
@@ -44,6 +45,9 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         };
       }
 
+      // remember whether this file has only one line
+      const isSingleLine = rowAccumulator.length === 1;
+
       // fill preview with blanks if needed
       while (rowAccumulator.length < PREVIEW_ROW_COUNT) {
         rowAccumulator.push([]);
@@ -55,6 +59,7 @@ export function parsePreview(file: File): Promise<PreviewResults> {
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',
         firstRows: rowAccumulator,
+        isSingleLine,
         hasHeaders: true // placeholder to modify downstream
       });
     }
