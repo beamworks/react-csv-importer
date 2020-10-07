@@ -1,7 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
-import '../index.scss';
 import { Importer, ImporterProps, ImporterField } from './Importer';
 
 export default {

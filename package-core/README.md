@@ -30,6 +30,10 @@ Feature summary:
 ```js
 import { Importer, ImporterField } from 'react-csv-importer';
 
+// include the widget CSS file whichever way your bundler supports it
+import 'react-csv-importer/dist/index.css';
+
+// in your component code:
 <Importer
   chunkSize={10000} // optional, internal parsing chunk size in bytes
   assumeNoHeaders={false} // optional, keeps "data has headers" checkbox off by default
@@ -39,7 +43,8 @@ import { Importer, ImporterField } from 'react-csv-importer';
     prepMyAppForIncomingData();
   }}
   processChunk={async (rows) => {
-    // required, receives a list of parsed objects based on user column mapping
+    // required, receives a list of parsed objects based on defined fields and user column mapping;
+    // may be called several times if file is large
     // (if this callback returns a promise, the widget will wait for it before parsing more data)
     for (row of rows) {
       await myAppMethod(row);
