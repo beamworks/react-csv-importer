@@ -6,7 +6,7 @@ mapping, all in one.
 Use this in your web app's bulk data import screen to allow users to drop a file for upload,
 preview the raw uploaded data before parsing and pick which columns to import.
 
-[Try the live demo app](https://react-csv-importer.vercel.app/).
+[Try the live editable code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox) or see the [themed demo app](https://react-csv-importer.vercel.app/).
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
