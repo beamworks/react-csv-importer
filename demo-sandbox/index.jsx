@@ -9,6 +9,7 @@ import "react-csv-importer/dist/index.css";
 import "./index.css";
 
 // sample importer usage snippet, play around with the settings and try it out!
+// (open console output to see sample results)
 ReactDOM.render(
   <div>
     <h1>React CSV Importer sandbox</h1>
