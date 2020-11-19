@@ -1,0 +1,13 @@
+{
+  "name": "demo-sandbox",
+  "version": "0.0.1",
+  "description": "Sample react-csv-importer usage snippet",
+  "main": "index.jsx",
+  "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-csv-importer": "^0.2.2",
+    "react-dom": "^17.0.1"
+  }
+}
