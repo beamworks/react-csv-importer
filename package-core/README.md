@@ -75,6 +75,9 @@ import 'react-csv-importer/dist/index.css';
 
 ## Changes
 
+- 0.2.3
+  - tweak TS compilation targets
+  - live editable sandbox link in docs
 - 0.2.2
   - empty file checks
   - fix up package metadata
