@@ -1,16 +1,16 @@
-import Papa, { ParseConfig } from 'papaparse';
+import Papa from 'papaparse';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 const BOM_CODE = 65279; // 0xFEFF
 
 export interface CustomizablePapaParseConfig {
-  delimiter?: ParseConfig['delimiter'];
-  newline?: ParseConfig['newline'];
-  quoteChar?: ParseConfig['quoteChar'];
-  escapeChar?: ParseConfig['escapeChar'];
-  comments?: ParseConfig['comments'];
-  skipEmptyLines?: ParseConfig['skipEmptyLines'];
-  delimitersToGuess?: ParseConfig['delimitersToGuess'];
+  delimiter?: Papa.ParseConfig['delimiter'];
+  newline?: Papa.ParseConfig['newline'];
+  quoteChar?: Papa.ParseConfig['quoteChar'];
+  escapeChar?: Papa.ParseConfig['escapeChar'];
+  comments?: Papa.ParseConfig['comments'];
+  skipEmptyLines?: Papa.ParseConfig['skipEmptyLines'];
+  delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
 }
 
 export interface PreviewInfo {
