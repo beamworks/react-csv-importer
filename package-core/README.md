@@ -16,7 +16,7 @@ reader accessibility and keyboard-only usage.
 
 Feature summary:
 
-- uses PapaParse library
+- uses Papa Parse library
 - raw file preview
 - user-selectable column mapping (drag-drop UI)
 - optional fields
@@ -80,7 +80,7 @@ import 'react-csv-importer/dist/index.css';
 
 ## Dependencies
 
-- [PapaParse](https://www.papaparse.com/) for CSV parsing
+- [Papa Parse](https://www.papaparse.com/) for CSV parsing
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
 - [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
 
