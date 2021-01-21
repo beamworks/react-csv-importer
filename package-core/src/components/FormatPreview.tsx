@@ -1,6 +1,11 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 
-import { parsePreview, PreviewResults, PreviewInfo } from './parser';
+import {
+  parsePreview,
+  PreviewResults,
+  PreviewInfo,
+  CustomizablePapaParseConfig
+} from './parser';
 import { ImporterFrame } from './ImporterFrame';
 import { FormatRawPreview } from './FormatRawPreview';
 import { FormatDataRowPreview } from './FormatDataRowPreview';
@@ -9,12 +14,20 @@ import { FormatErrorMessage } from './FormatErrorMessage';
 import './FormatPreview.scss';
 
 export const FormatPreview: React.FC<{
+  customConfig: CustomizablePapaParseConfig;
   file: File;
   assumeNoHeaders?: boolean;
   currentPreview: PreviewInfo | null;
   onAccept: (preview: PreviewInfo) => void;
   onCancel: () => void;
-}> = ({ file, assumeNoHeaders, currentPreview, onAccept, onCancel }) => {
+}> = ({
+  customConfig,
+  file,
+  assumeNoHeaders,
+  currentPreview,
+  onAccept,
+  onCancel
+}) => {
   const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
@@ -24,6 +37,8 @@ export const FormatPreview: React.FC<{
   );
 
   // wrap in ref to avoid triggering effect
+  const customConfigRef = useRef(customConfig);
+  customConfigRef.current = customConfig;
   const assumeNoHeadersRef = useRef(assumeNoHeaders);
   assumeNoHeadersRef.current = assumeNoHeaders;
 
@@ -32,7 +47,7 @@ export const FormatPreview: React.FC<{
   useEffect(() => {
     const oplock = asyncLockRef.current;
 
-    parsePreview(file).then((results) => {
+    parsePreview(file, customConfigRef.current).then((results) => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {
         return;
