@@ -59,6 +59,15 @@ import 'react-csv-importer/dist/index.css';
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();
   }}
+
+  // CSV options passed directly to PapaParse if specified:
+  // delimiter={...}
+  // newline={...}
+  // quoteChar={...}
+  // escapeChar={...}
+  // comments={...}
+  // skipEmptyLines={...}
+  // delimitersToGuess={...}
 >
   <ImporterField name="name" label="Name" />
   <ImporterField name="email" label="Email" />
@@ -75,6 +84,8 @@ import 'react-csv-importer/dist/index.css';
 
 ## Changes
 
+- 0.3.0
+  - allow passing PapaParse config options
 - 0.2.3
   - tweak TS compilation targets
   - live editable sandbox link in docs
