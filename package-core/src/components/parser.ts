@@ -1,7 +1,17 @@
-import Papa from 'papaparse';
+import Papa, { ParseConfig } from 'papaparse';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 const BOM_CODE = 65279; // 0xFEFF
+
+export interface CustomizablePapaParseConfig {
+  delimiter?: ParseConfig['delimiter'];
+  newline?: ParseConfig['newline'];
+  quoteChar?: ParseConfig['quoteChar'];
+  escapeChar?: ParseConfig['escapeChar'];
+  comments?: ParseConfig['comments'];
+  skipEmptyLines?: ParseConfig['skipEmptyLines'];
+  delimitersToGuess?: ParseConfig['delimitersToGuess'];
+}
 
 export interface PreviewInfo {
   file: File;
@@ -30,7 +40,10 @@ export type ParseCallback<Row extends BaseRow> = (
   rows: Row[]
 ) => void | Promise<void>;
 
-export function parsePreview(file: File): Promise<PreviewResults> {
+export function parsePreview(
+  file: File,
+  customConfig: CustomizablePapaParseConfig
+): Promise<PreviewResults> {
   // wrap synchronous errors in promise
   return new Promise<PreviewResults>((resolve) => {
     let firstChunk: string | null = null;
@@ -68,6 +81,8 @@ export function parsePreview(file: File): Promise<PreviewResults> {
     // @todo close the stream
     const nodeStream = new ReadableWebToNodeStream(file.stream());
     Papa.parse(nodeStream, {
+      ...customConfig,
+
       chunkSize: 10000, // not configurable, preview only
       preview: PREVIEW_ROW_COUNT,
       skipEmptyLines: true,

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
 import {
+  CustomizablePapaParseConfig,
   PreviewInfo,
   FieldAssignmentMap,
   ParseCallback,
@@ -19,7 +20,8 @@ export interface ImporterFieldProps {
   optional?: boolean;
 }
 
-export interface ImporterProps<Row extends BaseRow> {
+export interface ImporterProps<Row extends BaseRow>
+  extends CustomizablePapaParseConfig {
   chunkSize?: number;
   assumeNoHeaders?: boolean;
   restartable?: boolean;
@@ -77,7 +79,8 @@ function ImporterCore<Row extends BaseRow>({
   processChunk,
   onStart,
   onComplete,
-  onClose
+  onClose,
+  ...customPapaParseConfig
 }: React.PropsWithChildren<
   ImporterProps<Row> & {
     fields: Field[];
@@ -104,6 +107,7 @@ function ImporterCore<Row extends BaseRow>({
   if (preview === null || editFormat) {
     return (
       <FormatPreview
+        customConfig={customPapaParseConfig}
         file={selectedFile}
         assumeNoHeaders={assumeNoHeaders}
         currentPreview={preview}

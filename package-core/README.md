@@ -1,10 +1,10 @@
 # React CSV Importer
 
-This library provides an uploader + CSV parser + raw file preview + UI for custom user column
-mapping, all in one.
+This library combines an uploader + CSV parser + raw file preview + UI for custom user column
+mapping, all in one. Relies on the popular PapaParse CSV library to preview and process file contents directly in the browser.
 
 Use this in your web app's bulk data import screen to allow users to drop a file for upload,
-preview the raw uploaded data before parsing and pick which columns to import.
+preview the raw uploaded data before parsing and pick which columns to import. Your front-end application logic directly receives the resulting array of JSON objects in reasonable-sized chunks: you can then validate and send the data to the backend in any final format it requires instead of raw CSV.
 
 [Try the live editable code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox) or see the [themed demo app](https://react-csv-importer.vercel.app/).
 
@@ -16,12 +16,14 @@ reader accessibility and keyboard-only usage.
 
 Feature summary:
 
+- uses Papa Parse library
 - raw file preview
-- user-selectable column mapping
+- user-selectable column mapping (drag-drop UI)
 - optional fields
 - self-contained styling
 - strip leading BOM character in data
 - arbitrary CSV file size (true streaming support)
+- runs entirely in-browser
 - screen reader a11y
 - keyboard a11y
 
@@ -59,6 +61,15 @@ import 'react-csv-importer/dist/index.css';
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();
   }}
+
+  // CSV options passed directly to PapaParse if specified:
+  // delimiter={...}
+  // newline={...}
+  // quoteChar={...}
+  // escapeChar={...}
+  // comments={...}
+  // skipEmptyLines={...}
+  // delimitersToGuess={...}
 >
   <ImporterField name="name" label="Name" />
   <ImporterField name="email" label="Email" />
@@ -69,12 +80,14 @@ import 'react-csv-importer/dist/index.css';
 
 ## Dependencies
 
-- [PapaParse](https://www.papaparse.com/) for CSV parsing
+- [Papa Parse](https://www.papaparse.com/) for CSV parsing
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
 - [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
 
 ## Changes
 
+- 0.3.0
+  - allow passing PapaParse config options
 - 0.2.3
   - tweak TS compilation targets
   - live editable sandbox link in docs
