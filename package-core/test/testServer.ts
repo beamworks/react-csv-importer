@@ -1,3 +1,4 @@
+import path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
@@ -23,6 +24,7 @@ export function runTestServer(): string {
     const compiler = webpack(webpackConfig as any);
 
     const devServer = new WebpackDevServer(compiler, {
+      contentBase: path.resolve(__dirname, './public'), // static test helper content
       hot: false,
       liveReload: false,
       noInfo: true,
