@@ -18,6 +18,7 @@ module.exports = (env, argv) => ({
           {
             loader: 'ts-loader',
             options: {
+              configFile: 'tsconfig.base.json',
               compilerOptions: {
                 noEmit: false
               }
