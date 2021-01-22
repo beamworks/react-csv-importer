@@ -52,6 +52,7 @@
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "@types/selenium-webdriver": "^4.0.11",
+    "@types/webpack-dev-server": "^3.11.1",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
     "babel-loader": "^8.1.0",
@@ -88,7 +89,8 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.0.2",
     "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.7.0"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0",
