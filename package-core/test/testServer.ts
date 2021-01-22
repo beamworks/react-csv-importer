@@ -13,9 +13,21 @@ export function runTestServer(): string {
   const serverUrl = `http://localhost:${TEST_SERVER_PORT}`;
 
   before(async function () {
+    // override config to allow direct in-browser usage with test code
     const webpackConfig = {
       ...appWebpackConfig,
-      output: { ...appWebpackConfig.output, publicPath: '/' },
+      output: {
+        ...appWebpackConfig.output,
+        publicPath: '/',
+
+        // browser-friendly settings
+        libraryTarget: 'global',
+        library: 'ReactCSVImporter'
+      },
+
+      // ensure everything is included instead of generating require() statements
+      externals: {},
+
       mode: 'production',
       watch: false
     };
