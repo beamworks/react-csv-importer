@@ -1,7 +1,7 @@
 {
   "env": {
-    "mocha": true,
-    "es6": true
+    "node": true,
+    "mocha": true
   },
   "parser": "@typescript-eslint/parser",
   "extends": [
