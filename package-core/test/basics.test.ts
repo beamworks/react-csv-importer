@@ -7,6 +7,9 @@ import { ImporterProps } from '../src/components/ImporterProps';
 import { runTestServer } from './testServer';
 import { runDriver } from './webdriver';
 
+// extra timeout allowance on CI
+const testTimeoutMs = process.env.CI ? 20000 : 10000;
+
 describe('importer basics', () => {
   const appUrl = runTestServer();
   const getDriver = runDriver();
@@ -51,9 +54,8 @@ describe('importer basics', () => {
     );
 
     const fileInput = await getDriver().findElement(By.xpath('//input'));
-
     expect(await fileInput.getAttribute('type')).to.equal('file');
 
     await getDriver().sleep(1000); // @todo remove
   });
-});
+}).timeout(testTimeoutMs);
