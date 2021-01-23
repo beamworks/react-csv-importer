@@ -1,7 +1,8 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 
-import { Importer, ImporterProps, ImporterField } from './Importer';
+import { ImporterProps } from './ImporterProps';
+import { Importer, ImporterField } from './Importer';
 
 export default {
   title: 'Importer',
