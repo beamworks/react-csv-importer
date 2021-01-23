@@ -16,6 +16,30 @@ export function runTestServer(): string {
     // override config to allow direct in-browser usage with test code
     const webpackConfig = {
       ...appWebpackConfig,
+
+      module: {
+        ...appWebpackConfig.module,
+
+        rules: [
+          ...appWebpackConfig.module.rules,
+
+          {
+            test: require.resolve('react'),
+            loader: 'expose-loader',
+            options: {
+              exposes: ['React']
+            }
+          },
+          {
+            test: require.resolve('react-dom'),
+            loader: 'expose-loader',
+            options: {
+              exposes: ['ReactDOM']
+            }
+          }
+        ]
+      },
+
       output: {
         ...appWebpackConfig.output,
         publicPath: '/',
