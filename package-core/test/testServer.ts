@@ -4,6 +4,7 @@ import WebpackDevServer from 'webpack-dev-server';
 
 const TEST_SERVER_PORT = 8090;
 
+// @todo use pre-built dist folder instead (to properly test production artifacts)
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const appWebpackConfig = require('../webpack.config');
 
