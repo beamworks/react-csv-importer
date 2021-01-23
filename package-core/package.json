@@ -27,7 +27,7 @@
     "lint-fix": "eslint --max-warnings=0 --ext ts --ext tsx src --fix",
     "stylelint": "stylelint \"src/**/*.scss\"",
     "stylelint-fix": "stylelint \"src/**/*.scss\" --fix",
-    "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --require ts-node/register --timeout 10000 test/**/*.test.ts",
+    "test": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --require ts-node/register --timeout 60000 test/**/*.test.ts",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "dist": "webpack --mode production && dts-bundle-generator -o dist/index.d.ts src/index.ts"
