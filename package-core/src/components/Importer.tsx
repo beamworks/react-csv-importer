@@ -1,35 +1,13 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import {
-  CustomizablePapaParseConfig,
-  PreviewInfo,
-  FieldAssignmentMap,
-  ParseCallback,
-  BaseRow
-} from './parser';
+import { PreviewInfo, FieldAssignmentMap, BaseRow } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
-import { ProgressDisplay, ImportInfo } from './ProgressDisplay';
+import { ProgressDisplay } from './ProgressDisplay';
+import { ImporterProps, ImporterFieldProps } from './ImporterProps';
 
 import './Importer.scss';
-
-export interface ImporterFieldProps {
-  name: string;
-  label: string;
-  optional?: boolean;
-}
-
-export interface ImporterProps<Row extends BaseRow>
-  extends CustomizablePapaParseConfig {
-  chunkSize?: number;
-  assumeNoHeaders?: boolean;
-  restartable?: boolean;
-  processChunk: ParseCallback<Row>;
-  onStart?: (info: ImportInfo) => void;
-  onComplete?: (info: ImportInfo) => void;
-  onClose?: (info: ImportInfo) => void;
-}
 
 type FieldListSetter = (prev: Field[]) => Field[];
 

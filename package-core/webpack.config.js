@@ -2,9 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
 
-module.exports = (env, argv) => ({
+module.exports = {
   entry: { index: './src/index.ts' },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -18,6 +17,7 @@ module.exports = (env, argv) => ({
           {
             loader: 'ts-loader',
             options: {
+              configFile: 'tsconfig.base.json',
               compilerOptions: {
                 noEmit: false
               }
@@ -47,17 +47,5 @@ module.exports = (env, argv) => ({
   optimization: {
     minimize: false
   },
-  plugins: [
-    // similar env file logic to create-react-app
-    // (using webpack mode if no env is set)
-    new Dotenv({
-      systemvars: true,
-      path: `.env.${process.env.NODE_ENV || argv.mode || 'production'}`,
-      defaults: '.env'
-    }),
-
-    new MiniCssExtractPlugin(),
-
-    new CleanWebpackPlugin()
-  ]
-});
+  plugins: [new MiniCssExtractPlugin(), new CleanWebpackPlugin()]
+};
