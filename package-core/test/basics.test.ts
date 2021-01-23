@@ -1,3 +1,4 @@
+import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import ReactModule from 'react';
 import ReactDOMModule from 'react-dom';
@@ -24,7 +25,7 @@ describe('importer basics', () => {
     );
   }
 
-  it('adds 2 and 2', async () => {
+  it('shows file selector', async () => {
     await getDriver().get(appUrl);
 
     await runScript((React, ReactDOM, ReactCSVImporter) => {
@@ -42,8 +43,17 @@ describe('importer basics', () => {
       );
     });
 
-    await getDriver().sleep(1000);
+    await getDriver().wait(
+      until.elementLocated(
+        By.xpath('//span[contains(., "Drag-and-drop CSV file here")]')
+      ),
+      300 // a little extra time
+    );
 
-    expect(2 + 2).to.equal(4);
+    const fileInput = await getDriver().findElement(By.xpath('//input'));
+
+    expect(await fileInput.getAttribute('type')).to.equal('file');
+
+    await getDriver().sleep(1000); // @todo remove
   });
 });
