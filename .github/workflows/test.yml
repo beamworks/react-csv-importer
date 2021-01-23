@@ -2,9 +2,9 @@ name: Run e2e tests
 
 on:
   push:
-    branches: [$default-branch]
+    branches: [ master ]
   pull_request:
-    branches: [$default-branch]
+    branches: [ master ]
 
 jobs:
   test:
@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [ 14.x ]
 
     steps:
       - uses: actions/checkout@v2
