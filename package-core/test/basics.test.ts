@@ -51,7 +51,6 @@ describe('importer basics', () => {
     );
 
     const fileInput = await getDriver().findElement(By.xpath('//input'));
-
     expect(await fileInput.getAttribute('type')).to.equal('file');
 
     await getDriver().sleep(1000); // @todo remove
