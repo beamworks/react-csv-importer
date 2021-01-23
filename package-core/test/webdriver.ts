@@ -1,4 +1,5 @@
 import { Builder, ThenableWebDriver } from 'selenium-webdriver';
+import { Options as ChromeOptions } from 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 export function runDriver(): () => ThenableWebDriver {
@@ -6,7 +7,12 @@ export function runDriver(): () => ThenableWebDriver {
 
   // same webdriver instance serves all the tests in the suite
   before(function () {
-    webdriver = new Builder().forBrowser('chrome').build();
+    webdriver = new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(
+        process.env.CI ? new ChromeOptions().headless() : new ChromeOptions()
+      )
+      .build();
   });
 
   after(async function () {
