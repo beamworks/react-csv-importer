@@ -47,9 +47,7 @@ describe('importer basics', () => {
     });
 
     await getDriver().wait(
-      until.elementLocated(
-        By.xpath('//span[contains(., "Drag-and-drop CSV file here")]')
-      ),
+      until.elementLocated(By.xpath('//span[contains(., "Drag-and-drop")]')),
       300 // a little extra time
     );
   });
@@ -65,7 +63,5 @@ describe('importer basics', () => {
   it('shows file selector', async () => {
     const fileInput = await getDriver().findElement(By.xpath('//input'));
     expect(await fileInput.getAttribute('type')).to.equal('file');
-
-    await getDriver().sleep(1000); // @todo remove
   });
 }).timeout(testTimeoutMs);
