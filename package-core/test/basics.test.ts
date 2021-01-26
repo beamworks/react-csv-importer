@@ -1,5 +1,6 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
+import path from 'path';
 import ReactModule from 'react';
 import ReactDOMModule from 'react-dom';
 import { ImporterProps } from '../src/components/ImporterProps';
@@ -63,5 +64,19 @@ describe('importer basics', () => {
   it('shows file selector', async () => {
     const fileInput = await getDriver().findElement(By.xpath('//input'));
     expect(await fileInput.getAttribute('type')).to.equal('file');
+  });
+
+  it('accepts file', async () => {
+    const filePath = path.resolve(__dirname, './fixtures/simple.csv');
+
+    const fileInput = await getDriver().findElement(By.xpath('//input'));
+    fileInput.sendKeys(filePath);
+
+    await getDriver().wait(
+      until.elementLocated(
+        By.xpath('//span[contains(., "Raw File Contents")]')
+      ),
+      300 // extra time
+    );
   });
 }).timeout(testTimeoutMs);
