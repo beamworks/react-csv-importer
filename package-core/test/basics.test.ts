@@ -28,7 +28,7 @@ describe('importer basics', () => {
     );
   }
 
-  it('shows file selector', async () => {
+  beforeEach(async () => {
     await getDriver().get(appUrl);
 
     await runScript((React, ReactDOM, ReactCSVImporter) => {
@@ -52,7 +52,17 @@ describe('importer basics', () => {
       ),
       300 // a little extra time
     );
+  });
 
+  afterEach(async () => {
+    await runScript((React, ReactDOM) => {
+      ReactDOM.unmountComponentAtNode(
+        document.getElementById('root') || document.body
+      );
+    });
+  });
+
+  it('shows file selector', async () => {
     const fileInput = await getDriver().findElement(By.xpath('//input'));
     expect(await fileInput.getAttribute('type')).to.equal('file');
 
