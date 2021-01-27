@@ -3,7 +3,10 @@ import { expect } from 'chai';
 import path from 'path';
 import ReactModule from 'react';
 import ReactDOMModule from 'react-dom';
-import { ImporterProps } from '../src/components/ImporterProps';
+import {
+  ImporterProps,
+  ImporterFieldProps
+} from '../src/components/ImporterProps';
 
 import { runTestServer } from './testServer';
 import { runDriver } from './webdriver';
@@ -21,31 +24,43 @@ describe('importer basics', () => {
       rd: typeof ReactDOMModule,
       im: (
         props: ImporterProps<Record<string, unknown>>
-      ) => ReactModule.ReactElement
+      ) => ReactModule.ReactElement,
+      imf: (props: ImporterFieldProps) => ReactModule.ReactElement
     ) => void
   ) {
     await getDriver().executeScript(
-      `(${script.toString()})(React, ReactDOM, ReactCSVImporter.Importer)`
+      `(${script.toString()})(React, ReactDOM, ReactCSVImporter.Importer, ReactCSVImporter.ImporterField)`
     );
   }
 
   beforeEach(async () => {
     await getDriver().get(appUrl);
 
-    await runScript((React, ReactDOM, ReactCSVImporter) => {
-      ReactDOM.render(
-        React.createElement(
-          ReactCSVImporter,
-          {
-            processChunk: (rows) => {
-              console.log('chunk', rows);
-            }
-          },
-          []
-        ),
-        document.getElementById('root')
-      );
-    });
+    await runScript(
+      (React, ReactDOM, ReactCSVImporter, ReactCSVImporterField) => {
+        ReactDOM.render(
+          React.createElement(
+            ReactCSVImporter,
+            {
+              processChunk: (rows) => {
+                console.log('chunk', rows);
+              }
+            },
+            [
+              React.createElement(ReactCSVImporterField, {
+                name: 'fieldA',
+                label: 'Field A'
+              }),
+              React.createElement(ReactCSVImporterField, {
+                name: 'fieldB',
+                label: 'Field B'
+              })
+            ]
+          ),
+          document.getElementById('root')
+        );
+      }
+    );
 
     await getDriver().wait(
       until.elementLocated(By.xpath('//span[contains(., "Drag-and-drop")]')),
@@ -148,6 +163,26 @@ describe('importer basics', () => {
         'ColC',
         'ColD'
       ]);
+    });
+
+    describe('with preview accepted', () => {
+      beforeEach(async () => {
+        const nextButton = await getDriver().findElement(
+          By.xpath('//button[text() = "Next"]')
+        );
+
+        nextButton.click();
+
+        await getDriver().wait(
+          until.elementLocated(By.xpath('//*[contains(., "Select Columns")]')),
+          300 // extra time
+        );
+      });
+
+      it('shows selection prompt under active focus for screen reader', async () => {
+        const focusedHeading = await getDriver().switchTo().activeElement();
+        expect(await focusedHeading.getText()).to.equal('Select Columns');
+      });
     });
   });
 }).timeout(testTimeoutMs);
