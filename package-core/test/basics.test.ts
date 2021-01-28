@@ -183,6 +183,85 @@ describe('importer basics', () => {
         const focusedHeading = await getDriver().switchTo().activeElement();
         expect(await focusedHeading.getText()).to.equal('Select Columns');
       });
+
+      it('shows target fields', async () => {
+        const targetFields = await getDriver().findElements(
+          By.xpath('//section[@aria-label = "Target fields"]/section')
+        );
+
+        expect(targetFields.length).to.equal(2);
+        expect(await targetFields[0].getAttribute('aria-label')).to.equal(
+          'Field A (required)'
+        );
+        expect(await targetFields[1].getAttribute('aria-label')).to.equal(
+          'Field B'
+        );
+      });
+
+      it('does not allow to proceed without assignment', async () => {
+        const nextButton = await getDriver().findElement(
+          By.xpath('//button[text() = "Next"]')
+        );
+
+        nextButton.click();
+
+        await getDriver().wait(
+          until.elementLocated(
+            By.xpath('//*[contains(., "Please assign all required fields")]')
+          ),
+          300 // extra time
+        );
+      });
+
+      it('offers keyboard-only select start buttons', async () => {
+        const selectButtons = await getDriver().findElements(
+          By.xpath('//button[@aria-label = "Select column for assignment"]')
+        );
+
+        expect(selectButtons.length).to.equal(4);
+      });
+
+      describe('with assigned field', () => {
+        beforeEach(async () => {
+          const selectButton = await getDriver().findElement(
+            By.xpath(
+              '//button[@aria-label = "Select column for assignment"][1]'
+            )
+          );
+
+          selectButton.click();
+
+          await getDriver().wait(
+            until.elementLocated(
+              By.xpath('//*[contains(., "Assigning column A")]')
+            ),
+            200
+          );
+
+          const assignButton = await getDriver().findElement(
+            By.xpath('//button[@aria-label = "Assign column A"]')
+          );
+
+          assignButton.click();
+
+          await getDriver().wait(
+            until.elementLocated(
+              By.xpath('//*[contains(., "Assigning column A")]')
+            ),
+            200
+          );
+        });
+
+        it('allows to proceed', async () => {
+          const nextButton = await getDriver().findElement(
+            By.xpath('//button[text() = "Next"]')
+          );
+
+          nextButton.click();
+
+          await getDriver().sleep(5000);
+        });
+      });
     });
   });
 }).timeout(testTimeoutMs);
