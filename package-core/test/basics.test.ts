@@ -53,7 +53,8 @@ describe('importer basics', () => {
               }),
               React.createElement(ReactCSVImporterField, {
                 name: 'fieldB',
-                label: 'Field B'
+                label: 'Field B',
+                optional: true
               })
             ]
           ),
@@ -86,7 +87,7 @@ describe('importer basics', () => {
       const filePath = path.resolve(__dirname, './fixtures/simple.csv');
 
       const fileInput = await getDriver().findElement(By.xpath('//input'));
-      fileInput.sendKeys(filePath);
+      await fileInput.sendKeys(filePath);
 
       await getDriver().wait(
         until.elementLocated(By.xpath('//*[contains(., "Raw File Contents")]')),
@@ -171,7 +172,7 @@ describe('importer basics', () => {
           By.xpath('//button[text() = "Next"]')
         );
 
-        nextButton.click();
+        await nextButton.click();
 
         await getDriver().wait(
           until.elementLocated(By.xpath('//*[contains(., "Select Columns")]')),
@@ -194,7 +195,7 @@ describe('importer basics', () => {
           'Field A (required)'
         );
         expect(await targetFields[1].getAttribute('aria-label')).to.equal(
-          'Field B'
+          'Field B (optional)'
         );
       });
 
@@ -203,7 +204,7 @@ describe('importer basics', () => {
           By.xpath('//button[text() = "Next"]')
         );
 
-        nextButton.click();
+        await nextButton.click();
 
         await getDriver().wait(
           until.elementLocated(
@@ -223,13 +224,16 @@ describe('importer basics', () => {
 
       describe('with assigned field', () => {
         beforeEach(async () => {
+          // start the keyboard-based selection mode
+          const focusedHeading = await getDriver().switchTo().activeElement();
+          await focusedHeading.sendKeys('\t'); // tab to next element
+
           const selectButton = await getDriver().findElement(
             By.xpath(
               '//button[@aria-label = "Select column for assignment"][1]'
             )
           );
-
-          selectButton.click();
+          await selectButton.sendKeys('\n'); // cannot use click
 
           await getDriver().wait(
             until.elementLocated(
@@ -241,15 +245,7 @@ describe('importer basics', () => {
           const assignButton = await getDriver().findElement(
             By.xpath('//button[@aria-label = "Assign column A"]')
           );
-
-          assignButton.click();
-
-          await getDriver().wait(
-            until.elementLocated(
-              By.xpath('//*[contains(., "Assigning column A")]')
-            ),
-            200
-          );
+          await assignButton.click();
         });
 
         it('allows to proceed', async () => {
@@ -257,7 +253,7 @@ describe('importer basics', () => {
             By.xpath('//button[text() = "Next"]')
           );
 
-          nextButton.click();
+          await nextButton.click();
 
           await getDriver().sleep(5000);
         });
