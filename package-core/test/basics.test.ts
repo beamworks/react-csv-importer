@@ -43,7 +43,17 @@ describe('importer basics', () => {
             ReactCSVImporter,
             {
               processChunk: (rows) => {
-                console.log('chunk', rows);
+                ((window as unknown) as Record<
+                  string,
+                  unknown
+                >).TEST_PROCESS_CHUNK_ROWS = rows;
+
+                return new Promise((resolve) => {
+                  ((window as unknown) as Record<
+                    string,
+                    unknown
+                  >).TEST_PROCESS_CHUNK_RESOLVE = resolve;
+                });
               }
             },
             [
@@ -248,14 +258,65 @@ describe('importer basics', () => {
           await assignButton.click();
         });
 
-        it('allows to proceed', async () => {
-          const nextButton = await getDriver().findElement(
-            By.xpath('//button[text() = "Next"]')
-          );
+        describe('with confirmation to start processing', () => {
+          beforeEach(async () => {
+            const nextButton = await getDriver().findElement(
+              By.xpath('//button[text() = "Next"]')
+            );
 
-          await nextButton.click();
+            await nextButton.click();
 
-          await getDriver().sleep(5000);
+            await getDriver().wait(
+              until.elementLocated(
+                By.xpath(
+                  '//button[@aria-label = "Go to previous step"]/../*[contains(., "Import")]'
+                )
+              ),
+              200
+            );
+          });
+
+          it('sets focus on next heading', async () => {
+            const focusedHeading = await getDriver().switchTo().activeElement();
+            expect(await focusedHeading.getText()).to.equal('Import');
+          });
+
+          it('does not finish until processChunk returns', async () => {
+            await getDriver().sleep(300);
+
+            const focusedHeading = await getDriver().switchTo().activeElement();
+            expect(await focusedHeading.getText()).to.equal('Import');
+          });
+
+          describe('after processChunk is complete', () => {
+            beforeEach(async () => {
+              await getDriver().executeScript(
+                'window.TEST_PROCESS_CHUNK_RESOLVE()'
+              );
+              await getDriver().wait(
+                until.elementLocated(By.xpath('//*[contains(., "Complete")]')),
+                200
+              );
+            });
+
+            it('has active focus on completion message', async () => {
+              const focusedHeading = await getDriver()
+                .switchTo()
+                .activeElement();
+              expect(await focusedHeading.getText()).to.equal('Complete');
+            });
+
+            it('produces parsed data with correct fields', async () => {
+              const parsedData = await getDriver().executeScript(
+                'return window.TEST_PROCESS_CHUNK_ROWS'
+              );
+
+              expect(parsedData).to.deep.equal([
+                { fieldA: 'AAAA' },
+                { fieldA: 'EEEE' }
+              ]);
+            });
+          });
         });
       });
     });
