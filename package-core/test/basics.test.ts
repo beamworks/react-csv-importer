@@ -1,8 +1,12 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
+import path from 'path';
 import ReactModule from 'react';
 import ReactDOMModule from 'react-dom';
-import { ImporterProps } from '../src/components/ImporterProps';
+import {
+  ImporterProps,
+  ImporterFieldProps
+} from '../src/components/ImporterProps';
 
 import { runTestServer } from './testServer';
 import { runDriver } from './webdriver';
@@ -20,42 +24,301 @@ describe('importer basics', () => {
       rd: typeof ReactDOMModule,
       im: (
         props: ImporterProps<Record<string, unknown>>
-      ) => ReactModule.ReactElement
+      ) => ReactModule.ReactElement,
+      imf: (props: ImporterFieldProps) => ReactModule.ReactElement
     ) => void
   ) {
     await getDriver().executeScript(
-      `(${script.toString()})(React, ReactDOM, ReactCSVImporter.Importer)`
+      `(${script.toString()})(React, ReactDOM, ReactCSVImporter.Importer, ReactCSVImporter.ImporterField)`
     );
   }
 
-  it('shows file selector', async () => {
+  beforeEach(async () => {
     await getDriver().get(appUrl);
 
-    await runScript((React, ReactDOM, ReactCSVImporter) => {
-      ReactDOM.render(
-        React.createElement(
-          ReactCSVImporter,
-          {
-            processChunk: (rows) => {
-              console.log('chunk', rows);
-            }
-          },
-          []
-        ),
-        document.getElementById('root')
+    await runScript(
+      (React, ReactDOM, ReactCSVImporter, ReactCSVImporterField) => {
+        ReactDOM.render(
+          React.createElement(
+            ReactCSVImporter,
+            {
+              processChunk: (rows) => {
+                ((window as unknown) as Record<
+                  string,
+                  unknown
+                >).TEST_PROCESS_CHUNK_ROWS = rows;
+
+                return new Promise((resolve) => {
+                  ((window as unknown) as Record<
+                    string,
+                    unknown
+                  >).TEST_PROCESS_CHUNK_RESOLVE = resolve;
+                });
+              }
+            },
+            [
+              React.createElement(ReactCSVImporterField, {
+                name: 'fieldA',
+                label: 'Field A'
+              }),
+              React.createElement(ReactCSVImporterField, {
+                name: 'fieldB',
+                label: 'Field B',
+                optional: true
+              })
+            ]
+          ),
+          document.getElementById('root')
+        );
+      }
+    );
+
+    await getDriver().wait(
+      until.elementLocated(By.xpath('//span[contains(., "Drag-and-drop")]')),
+      300 // a little extra time
+    );
+  });
+
+  afterEach(async () => {
+    await runScript((React, ReactDOM) => {
+      ReactDOM.unmountComponentAtNode(
+        document.getElementById('root') || document.body
+      );
+    });
+  });
+
+  it('shows file selector', async () => {
+    const fileInput = await getDriver().findElement(By.xpath('//input'));
+    expect(await fileInput.getAttribute('type')).to.equal('file');
+  });
+
+  describe('with file selected', () => {
+    beforeEach(async () => {
+      const filePath = path.resolve(__dirname, './fixtures/simple.csv');
+
+      const fileInput = await getDriver().findElement(By.xpath('//input'));
+      await fileInput.sendKeys(filePath);
+
+      await getDriver().wait(
+        until.elementLocated(By.xpath('//*[contains(., "Raw File Contents")]')),
+        300 // extra time
       );
     });
 
-    await getDriver().wait(
-      until.elementLocated(
-        By.xpath('//span[contains(., "Drag-and-drop CSV file here")]')
-      ),
-      300 // a little extra time
-    );
+    it('shows file name under active focus for screen reader', async () => {
+      const focusedHeading = await getDriver().switchTo().activeElement();
+      expect(await focusedHeading.getText()).to.equal('simple.csv');
+    });
 
-    const fileInput = await getDriver().findElement(By.xpath('//input'));
-    expect(await fileInput.getAttribute('type')).to.equal('file');
+    it('shows raw file contents', async () => {
+      const rawPreview = await getDriver().findElement(By.xpath('//pre'));
+      expect(await rawPreview.getText()).to.have.string('AAAA,BBBB,CCCC,DDDD');
+    });
 
-    await getDriver().sleep(1000); // @todo remove
+    it('shows a preview table', async () => {
+      const tablePreview = await getDriver().findElement(By.xpath('//table'));
+
+      // header row
+      const tableCols = await tablePreview.findElements(
+        By.xpath('thead/tr/th')
+      );
+      const tableColStrings = await tableCols.reduce(
+        async (acc, col) => [...(await acc), await col.getText()],
+        Promise.resolve([] as string[])
+      );
+      expect(tableColStrings).to.deep.equal(['ColA', 'ColB', 'ColC', 'ColD']);
+
+      // first data row
+      const firstDataCells = await tablePreview.findElements(
+        By.xpath('tbody/tr[1]/td')
+      );
+      const firstDataCellStrings = await firstDataCells.reduce(
+        async (acc, col) => [...(await acc), await col.getText()],
+        Promise.resolve([] as string[])
+      );
+      expect(firstDataCellStrings).to.deep.equal([
+        'AAAA',
+        'BBBB',
+        'CCCC',
+        'DDDD'
+      ]);
+    });
+
+    it('allows toggling header row', async () => {
+      const headersCheckbox = await getDriver().findElement(
+        By.xpath(
+          '//label[contains(., "Data has headers")]/input[@type="checkbox"]'
+        )
+      );
+
+      await headersCheckbox.click();
+
+      // ensure there are no headers now
+      const tablePreview = await getDriver().findElement(By.xpath('//table'));
+      const tableCols = await tablePreview.findElements(
+        By.xpath('thead/tr/th')
+      );
+      expect(tableCols.length).to.equal(0);
+
+      // first data row should now show the header strings
+      const firstDataCells = await tablePreview.findElements(
+        By.xpath('tbody/tr[1]/td')
+      );
+      const firstDataCellStrings = await firstDataCells.reduce(
+        async (acc, col) => [...(await acc), await col.getText()],
+        Promise.resolve([] as string[])
+      );
+      expect(firstDataCellStrings).to.deep.equal([
+        'ColA',
+        'ColB',
+        'ColC',
+        'ColD'
+      ]);
+    });
+
+    describe('with preview accepted', () => {
+      beforeEach(async () => {
+        const nextButton = await getDriver().findElement(
+          By.xpath('//button[text() = "Next"]')
+        );
+
+        await nextButton.click();
+
+        await getDriver().wait(
+          until.elementLocated(By.xpath('//*[contains(., "Select Columns")]')),
+          300 // extra time
+        );
+      });
+
+      it('shows selection prompt under active focus for screen reader', async () => {
+        const focusedHeading = await getDriver().switchTo().activeElement();
+        expect(await focusedHeading.getText()).to.equal('Select Columns');
+      });
+
+      it('shows target fields', async () => {
+        const targetFields = await getDriver().findElements(
+          By.xpath('//section[@aria-label = "Target fields"]/section')
+        );
+
+        expect(targetFields.length).to.equal(2);
+        expect(await targetFields[0].getAttribute('aria-label')).to.equal(
+          'Field A (required)'
+        );
+        expect(await targetFields[1].getAttribute('aria-label')).to.equal(
+          'Field B (optional)'
+        );
+      });
+
+      it('does not allow to proceed without assignment', async () => {
+        const nextButton = await getDriver().findElement(
+          By.xpath('//button[text() = "Next"]')
+        );
+
+        await nextButton.click();
+
+        await getDriver().wait(
+          until.elementLocated(
+            By.xpath('//*[contains(., "Please assign all required fields")]')
+          ),
+          300 // extra time
+        );
+      });
+
+      it('offers keyboard-only select start buttons', async () => {
+        const selectButtons = await getDriver().findElements(
+          By.xpath('//button[@aria-label = "Select column for assignment"]')
+        );
+
+        expect(selectButtons.length).to.equal(4);
+      });
+
+      describe('with assigned field', () => {
+        beforeEach(async () => {
+          // start the keyboard-based selection mode
+          const focusedHeading = await getDriver().switchTo().activeElement();
+          await focusedHeading.sendKeys('\t'); // tab to next element
+
+          const selectButton = await getDriver().findElement(
+            By.xpath(
+              '//button[@aria-label = "Select column for assignment"][1]'
+            )
+          );
+          await selectButton.sendKeys('\n'); // cannot use click
+
+          await getDriver().wait(
+            until.elementLocated(
+              By.xpath('//*[contains(., "Assigning column A")]')
+            ),
+            200
+          );
+
+          const assignButton = await getDriver().findElement(
+            By.xpath('//button[@aria-label = "Assign column A"]')
+          );
+          await assignButton.click();
+        });
+
+        describe('with confirmation to start processing', () => {
+          beforeEach(async () => {
+            const nextButton = await getDriver().findElement(
+              By.xpath('//button[text() = "Next"]')
+            );
+
+            await nextButton.click();
+
+            await getDriver().wait(
+              until.elementLocated(
+                By.xpath(
+                  '//button[@aria-label = "Go to previous step"]/../*[contains(., "Import")]'
+                )
+              ),
+              200
+            );
+          });
+
+          it('sets focus on next heading', async () => {
+            const focusedHeading = await getDriver().switchTo().activeElement();
+            expect(await focusedHeading.getText()).to.equal('Import');
+          });
+
+          it('does not finish until processChunk returns', async () => {
+            await getDriver().sleep(300);
+
+            const focusedHeading = await getDriver().switchTo().activeElement();
+            expect(await focusedHeading.getText()).to.equal('Import');
+          });
+
+          describe('after processChunk is complete', () => {
+            beforeEach(async () => {
+              await getDriver().executeScript(
+                'window.TEST_PROCESS_CHUNK_RESOLVE()'
+              );
+              await getDriver().wait(
+                until.elementLocated(By.xpath('//*[contains(., "Complete")]')),
+                200
+              );
+            });
+
+            it('has active focus on completion message', async () => {
+              const focusedHeading = await getDriver()
+                .switchTo()
+                .activeElement();
+              expect(await focusedHeading.getText()).to.equal('Complete');
+            });
+
+            it('produces parsed data with correct fields', async () => {
+              const parsedData = await getDriver().executeScript(
+                'return window.TEST_PROCESS_CHUNK_ROWS'
+              );
+
+              expect(parsedData).to.deep.equal([
+                { fieldA: 'AAAA' },
+                { fieldA: 'EEEE' }
+              ]);
+            });
+          });
+        });
+      });
+    });
   });
 }).timeout(testTimeoutMs);

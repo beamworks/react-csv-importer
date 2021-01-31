@@ -84,6 +84,30 @@ import 'react-csv-importer/dist/index.css';
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
 - [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
 
+## Local Development
+
+Perform local `git clone`, etc. Then ensure modules are installed:
+
+```sh
+yarn # root folder only needs this for Husky pre-commit triggers
+cd package-core
+yarn # main package dev dependencies
+```
+
+Most of the interesting stuff is inside `package-core` folder.
+
+To start Storybook to have a hot-reloaded local sandbox:
+
+```sh
+yarn storybook
+```
+
+To run the end-to-end test suite:
+
+```sh
+yarn test
+```
+
 ## Changes
 
 - 0.3.0
