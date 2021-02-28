@@ -13,7 +13,6 @@ const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
 // @todo readable status text if not mouse-drag
 const SourceBox: React.FC<{
-  hasHeaders: boolean;
   column: Column;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
@@ -21,7 +20,6 @@ const SourceBox: React.FC<{
   onSelect: (column: Column) => void;
   onUnassign: (column: Column) => void;
 }> = ({
-  hasHeaders,
   column,
   fieldAssignments,
   dragState,
@@ -48,7 +46,6 @@ const SourceBox: React.FC<{
     <div className="CSVImporter_ColumnDragSourceArea__box">
       <div {...(isAssigned ? {} : eventHandlers)}>
         <ColumnDragCard
-          hasHeaders={hasHeaders}
           column={column}
           isShadow={isDragged || isAssigned}
           isDraggable={!dragState && !isDragged && !isAssigned}
@@ -90,7 +87,6 @@ const SourceBox: React.FC<{
 
 // @todo current page indicator (dots)
 export const ColumnDragSourceArea: React.FC<{
-  hasHeaders: boolean;
   columns: Column[];
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
@@ -98,7 +94,6 @@ export const ColumnDragSourceArea: React.FC<{
   onSelect: (column: Column) => void;
   onUnassign: (column: Column) => void;
 }> = ({
-  hasHeaders,
   columns,
   fieldAssignments,
   dragState,
@@ -116,7 +111,6 @@ export const ColumnDragSourceArea: React.FC<{
     .map((column, columnIndex) => (
       <SourceBox
         key={columnIndex}
-        hasHeaders={hasHeaders}
         column={column}
         fieldAssignments={fieldAssignments}
         dragState={dragState}

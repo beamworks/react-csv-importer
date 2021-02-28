@@ -4,6 +4,7 @@ import { PreviewInfo } from './parser';
 export interface Column {
   index: number; // position inside spreadsheet
   code: string; // A, B, ..., AA, AB, etc
+  header?: string; // header, if present
   values: string[]; // sample preview values
 }
 
@@ -43,11 +44,19 @@ function generateColumnCode(value: number) {
 
 // prepare spreadsheet-like column display information for given raw data preview
 export function generatePreviewColumns(preview: PreviewInfo): Column[] {
-  return [...new Array(preview.firstRows[0].length)].map((empty, index) => {
+  const columnStubs = [...new Array(preview.firstRows[0].length)];
+
+  return columnStubs.map((empty, index) => {
+    const values = preview.firstRows.map((row) => row[index] || '');
+
+    const dataValues = [...values];
+    const headerValue = preview.hasHeaders ? values.shift() : undefined;
+
     return {
       index,
       code: generateColumnCode(index),
-      values: preview.firstRows.map((row) => row[index] || '')
+      header: headerValue,
+      values: dataValues
     };
   });
 }

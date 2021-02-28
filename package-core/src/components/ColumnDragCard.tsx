@@ -7,7 +7,6 @@ import './ColumnDragCard.scss';
 
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 export const ColumnDragCard: React.FC<{
-  hasHeaders: boolean;
   column?: Column;
   rowCount?: number;
   hasError?: boolean;
@@ -16,7 +15,6 @@ export const ColumnDragCard: React.FC<{
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
-  hasHeaders,
   column: optionalColumn,
   rowCount = PREVIEW_ROW_COUNT,
   hasError,
@@ -37,8 +35,11 @@ export const ColumnDragCard: React.FC<{
     [optionalColumn]
   );
 
-  const headerValue = hasHeaders ? column.values[0] : undefined;
-  const dataValues = column.values.slice(hasHeaders ? 1 : 0, rowCount);
+  const headerValue = column.header;
+  const dataValues = column.values.slice(
+    headerValue === undefined ? 0 : 1,
+    rowCount
+  );
 
   return (
     // not changing variant dynamically because it causes a height jump

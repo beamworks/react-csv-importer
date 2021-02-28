@@ -73,7 +73,6 @@ export const ColumnPicker: React.FC<{
       }}
     >
       <ColumnDragSourceArea
-        hasHeaders={preview.hasHeaders}
         columns={columns}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
@@ -85,7 +84,6 @@ export const ColumnPicker: React.FC<{
       <ColumnDragTargetArea
         fields={fields}
         columns={columns}
-        hasHeaders={preview.hasHeaders}
         fieldTouched={fieldTouched}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
@@ -95,7 +93,7 @@ export const ColumnPicker: React.FC<{
         onUnassign={unassignHandler}
       />
 
-      <ColumnDragObject hasHeaders={preview.hasHeaders} dragState={dragState} />
+      <ColumnDragObject dragState={dragState} />
     </ImporterFrame>
   );
 };

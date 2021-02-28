@@ -12,7 +12,6 @@ export type FieldTouchedMap = { [name: string]: boolean | undefined };
 import './ColumnDragTargetArea.scss';
 
 const TargetBox: React.FC<{
-  hasHeaders: boolean;
   field: Field;
   touched?: boolean;
   assignedColumn: Column | null;
@@ -25,7 +24,6 @@ const TargetBox: React.FC<{
   onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
-  hasHeaders,
   field,
   touched,
   assignedColumn,
@@ -62,19 +60,13 @@ const TargetBox: React.FC<{
   const valueContents = useMemo(() => {
     if (sourceColumn) {
       return (
-        <ColumnDragCard
-          hasHeaders={hasHeaders}
-          rowCount={3}
-          column={sourceColumn}
-          isDropIndicator
-        />
+        <ColumnDragCard rowCount={3} column={sourceColumn} isDropIndicator />
       );
     }
 
     if (assignedColumn) {
       return (
         <ColumnDragCard
-          hasHeaders={hasHeaders}
           rowCount={3}
           column={assignedColumn}
           isShadow={isReDragged}
@@ -84,14 +76,8 @@ const TargetBox: React.FC<{
     }
 
     const hasError = touched && !field.isOptional;
-    return (
-      <ColumnDragCard
-        hasHeaders={hasHeaders}
-        rowCount={3}
-        hasError={hasError}
-      />
-    );
-  }, [field, hasHeaders, touched, assignedColumn, sourceColumn, isReDragged]);
+    return <ColumnDragCard rowCount={3} hasError={hasError} />;
+  }, [field, touched, assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
   return (
@@ -150,7 +136,6 @@ const TargetBox: React.FC<{
 export const ColumnDragTargetArea: React.FC<{
   fields: Field[];
   columns: Column[];
-  hasHeaders: boolean;
   fieldTouched: FieldTouchedMap;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
@@ -165,7 +150,6 @@ export const ColumnDragTargetArea: React.FC<{
 }> = ({
   fields,
   columns,
-  hasHeaders,
   fieldTouched,
   fieldAssignments,
   dragState,
@@ -185,7 +169,6 @@ export const ColumnDragTargetArea: React.FC<{
         return (
           <TargetBox
             key={field.name}
-            hasHeaders={hasHeaders}
             field={field}
             touched={fieldTouched[field.name]}
             assignedColumn={
