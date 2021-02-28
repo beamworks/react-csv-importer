@@ -81,7 +81,7 @@ import 'react-csv-importer/dist/index.css';
 </Importer>;
 ```
 
-In the above example, if the user uploads a CSV file with column headers "Name", "Email" and so on, the columns will be automatically matched to the defined fields. If any of the headers do not match, the user will have an opportunity to manually remap columns to the defined fields.
+In the above example, if the user uploads a CSV file with column headers "Name", "Email" and so on, the columns will be automatically matched to fields with same labels. If any of the headers do not match, the user will have an opportunity to manually remap columns to the defined fields.
 
 ## Dependencies
 
