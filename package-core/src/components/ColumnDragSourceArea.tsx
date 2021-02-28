@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
 
 import { FieldAssignmentMap } from './parser';
+import { Column } from './ColumnPreview';
 import { DragState } from './ColumnDragState';
-import { ColumnDragCard, Column } from './ColumnDragCard';
+import { ColumnDragCard } from './ColumnDragCard';
 import { IconButton } from './IconButton';
 
 import './ColumnDragSourceArea.scss';

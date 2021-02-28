@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDrag } from 'react-use-gesture';
 
 import { FieldAssignmentMap } from './parser';
-import { Column } from './ColumnDragCard';
+import { Column } from './ColumnPreview';
 
 export interface Field {
   name: string;

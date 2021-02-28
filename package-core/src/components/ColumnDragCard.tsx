@@ -1,14 +1,9 @@
 import React, { useMemo } from 'react';
 
 import { PREVIEW_ROW_COUNT } from './parser';
+import { Column } from './ColumnPreview';
 
 import './ColumnDragCard.scss';
-
-export interface Column {
-  index: number;
-  code: string;
-  values: string[];
-}
 
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 export const ColumnDragCard: React.FC<{
