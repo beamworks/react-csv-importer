@@ -47,6 +47,8 @@
     justify-content: center;
     width: 100%;
     height: 98%; // nudge up a bit
+    padding: 0.5em;
+    text-align: center; // in case text wraps
     color: $textSecondaryColor; // @todo font-size
   }
 }

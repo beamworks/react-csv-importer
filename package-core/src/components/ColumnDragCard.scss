@@ -87,4 +87,8 @@
       margin-top: 0;
     }
   }
+
+  &[data-shadow='true'] > &__cardValue[data-header='true'] {
+    color: rgba($textSecondaryColor, 0.25); // reduce text
+  }
 }

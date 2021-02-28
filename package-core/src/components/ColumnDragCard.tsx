@@ -1,30 +1,25 @@
 import React, { useMemo } from 'react';
 
 import { PREVIEW_ROW_COUNT } from './parser';
+import { Column } from './ColumnPreview';
 
 import './ColumnDragCard.scss';
 
-export interface Column {
-  index: number;
-  code: string;
-  values: string[];
-}
-
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 export const ColumnDragCard: React.FC<{
-  hasHeaders: boolean;
   column?: Column;
   rowCount?: number;
   hasError?: boolean;
+  isAssigned?: boolean;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
-  hasHeaders,
   column: optionalColumn,
   rowCount = PREVIEW_ROW_COUNT,
   hasError,
+  isAssigned,
   isShadow,
   isDraggable,
   isDragged,
@@ -42,8 +37,11 @@ export const ColumnDragCard: React.FC<{
     [optionalColumn]
   );
 
-  const headerValue = hasHeaders ? column.values[0] : undefined;
-  const dataValues = column.values.slice(hasHeaders ? 1 : 0, rowCount);
+  const headerValue = column.header;
+  const dataValues = column.values.slice(
+    headerValue === undefined ? 0 : 1,
+    rowCount
+  );
 
   return (
     // not changing variant dynamically because it causes a height jump
@@ -63,7 +61,7 @@ export const ColumnDragCard: React.FC<{
         ) : (
           <var role="text">Column {column.code}</var>
         )}
-        {isDummy ? '\u00a0' : <b aria-hidden>{column.code}</b>}
+        {isDummy || isAssigned ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>
 
       {headerValue !== undefined ? (

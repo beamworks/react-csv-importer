@@ -7,9 +7,8 @@ import { DragState } from './ColumnDragState';
 import './ColumnDragObject.scss';
 
 export const ColumnDragObject: React.FC<{
-  hasHeaders: boolean;
   dragState: DragState | null;
-}> = ({ hasHeaders, dragState }) => {
+}> = ({ dragState }) => {
   const referenceBoxRef = useRef<HTMLDivElement | null>(null);
 
   // @todo wrap in a no-events overlay to clip against screen edges
@@ -19,11 +18,7 @@ export const ColumnDragObject: React.FC<{
       ? createPortal(
           <div className="CSVImporter_ColumnDragObject" ref={dragBoxRef}>
             <div className="CSVImporter_ColumnDragObject__holder">
-              <ColumnDragCard
-                hasHeaders={hasHeaders}
-                column={dragState.column}
-                isDragged
-              />
+              <ColumnDragCard column={dragState.column} isDragged />
             </div>
           </div>,
           document.body

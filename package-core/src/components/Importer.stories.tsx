@@ -20,3 +20,18 @@ export const Main: Story<SampleImporterProps> = (args: SampleImporterProps) => {
     </Importer>
   );
 };
+
+export const Timesheet: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <Importer {...args}>
+      <ImporterField name="date" label="Date" />
+      <ImporterField name="clientName" label="Client" />
+      <ImporterField name="projectName" label="Project" />
+      <ImporterField name="projectCode" label="Project Code" optional />
+      <ImporterField name="taskName" label="Task" />
+      <ImporterField name="notes" label="Notes" optional />
+    </Importer>
+  );
+};

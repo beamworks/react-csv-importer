@@ -20,6 +20,7 @@ Feature summary:
 
 - uses Papa Parse library
 - raw file preview
+- auto-map fields to matching column names
 - user-selectable column mapping (drag-drop UI)
 - optional fields
 - self-contained styling
@@ -80,6 +81,8 @@ import 'react-csv-importer/dist/index.css';
 </Importer>;
 ```
 
+In the above example, if the user uploads a CSV file with column headers "Name", "Email" and so on, the columns will be automatically matched to fields with same labels. If any of the headers do not match, the user will have an opportunity to manually remap columns to the defined fields.
+
 ## Dependencies
 
 - [Papa Parse](https://www.papaparse.com/) for CSV parsing
@@ -112,6 +115,8 @@ yarn test
 
 ## Changes
 
+- 0.4.0
+  - auto-assign column headers
 - 0.3.0
   - allow passing PapaParse config options
 - 0.2.3
