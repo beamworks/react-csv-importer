@@ -1,5 +1,7 @@
 # React CSV Importer
 
+![https://www.npmjs.com/package/react-csv-importer](https://img.shields.io/npm/v/react-csv-importer) ![https://github.com/beamworks/react-csv-importer/actions](https://github.com/beamworks/react-csv-importer/actions/workflows/test.yml/badge.svg)
+
 This library combines an uploader + CSV parser + raw file preview + UI for custom user column
 mapping, all in one. Relies on the popular PapaParse CSV library to preview and process file contents directly in the browser.
 
