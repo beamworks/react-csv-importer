@@ -10,6 +10,7 @@ export const ColumnDragCard: React.FC<{
   column?: Column;
   rowCount?: number;
   hasError?: boolean;
+  isAssigned?: boolean;
   isShadow?: boolean;
   isDraggable?: boolean;
   isDragged?: boolean;
@@ -18,6 +19,7 @@ export const ColumnDragCard: React.FC<{
   column: optionalColumn,
   rowCount = PREVIEW_ROW_COUNT,
   hasError,
+  isAssigned,
   isShadow,
   isDraggable,
   isDragged,
@@ -59,7 +61,7 @@ export const ColumnDragCard: React.FC<{
         ) : (
           <var role="text">Column {column.code}</var>
         )}
-        {isDummy ? '\u00a0' : <b aria-hidden>{column.code}</b>}
+        {isDummy || isAssigned ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>
 
       {headerValue !== undefined ? (

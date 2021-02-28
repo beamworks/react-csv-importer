@@ -47,6 +47,7 @@ const SourceBox: React.FC<{
       <div {...(isAssigned ? {} : eventHandlers)}>
         <ColumnDragCard
           column={column}
+          isAssigned={isAssigned}
           isShadow={isDragged || isAssigned}
           isDraggable={!dragState && !isDragged && !isAssigned}
         />
