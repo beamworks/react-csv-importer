@@ -21,6 +21,52 @@ export const ColumnPicker: React.FC<{
     preview
   ]);
 
+  const initialAssignments = useMemo<FieldAssignmentMap>(() => {
+    // prep insensitive/fuzzy match stems for known columns
+    const columnStems = columns.map((column) => {
+      const trimmed = column.header && column.header.trim();
+
+      if (!trimmed) {
+        return undefined;
+      }
+
+      return trimmed.toLowerCase();
+    });
+
+    // pre-assign corresponding fields
+    const result: FieldAssignmentMap = {};
+    const assignedColumnIndexes: boolean[] = [];
+
+    fields.forEach((field) => {
+      // find by field stem
+      const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
+
+      const matchingColumnIndex = columnStems.findIndex(
+        (columnStem, columnIndex) => {
+          // no headers or no meaningful stem value
+          if (columnStem === undefined) {
+            return false;
+          }
+
+          // always check against assigning twice
+          if (assignedColumnIndexes[columnIndex]) {
+            return false;
+          }
+
+          return columnStem === fieldLabelStem;
+        }
+      );
+
+      // assign if found
+      if (matchingColumnIndex !== -1) {
+        assignedColumnIndexes[matchingColumnIndex] = true;
+        result[field.name] = matchingColumnIndex;
+      }
+    });
+
+    return result;
+  }, [fields, columns]);
+
   // track which fields need to show validation warning
   const [fieldTouched, setFieldTouched] = useState<FieldTouchedMap>({});
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -33,7 +79,7 @@ export const ColumnPicker: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(fields, (fieldName) => {
+  } = useColumnDragState(fields, initialAssignments, (fieldName) => {
     setFieldTouched((prev) => {
       if (prev[fieldName]) {
         return prev;
