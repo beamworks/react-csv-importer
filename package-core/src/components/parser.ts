@@ -116,9 +116,9 @@ export function parsePreview(
       },
       complete: reportSuccess
     });
-  }).catch(() => {
+  }).catch((error) => {
     return {
-      parseError: new Error('Internal error while generating preview')
+      parseError: new Error('Internal error while generating preview ' + error)
     };
   });
 }
@@ -153,12 +153,10 @@ export function processFile<Row extends BaseRow>(
         parser.pause();
 
         const skipped = skipLine && data.length > 0;
-
         const rows = (skipped ? data.slice(1) : data).map((row) => {
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
-
           // perform BOM skip on first value
           if (skipBOM && stringRow.length > 0) {
             skipBOM = false;

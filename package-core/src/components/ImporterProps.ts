@@ -1,9 +1,15 @@
-import { CustomizablePapaParseConfig, ParseCallback, BaseRow } from './parser';
+import {
+  CustomizablePapaParseConfig,
+  ParseCallback,
+  BaseRow,
+  FieldAssignmentMap
+} from './parser';
 
 // separate props definition to safely include in tests
 export interface ImportInfo {
   file: File;
   fields: string[];
+  fieldAssignments: FieldAssignmentMap;
 }
 
 export interface ImporterFieldProps {

@@ -51,7 +51,8 @@ export function ProgressDisplay<Row extends BaseRow>({
   const importInfo = useMemo<ImportInfo>(() => {
     return {
       file: preview.file,
-      fields: Object.keys(fieldAssignments)
+      fields: Object.keys(fieldAssignments),
+      fieldAssignments
     };
   }, [preview, fieldAssignments]);
 
