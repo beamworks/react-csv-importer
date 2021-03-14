@@ -1,6 +1,6 @@
 {
-  "name": "react-csv-importer",
-  "version": "0.4.0",
+  "name": "react-csv-importer-v2",
+  "version": "0.1.0",
   "description": "React CSV import widget with user-customizable mapping",
   "keywords": [
     "react",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/beamworks/react-csv-importer"
+    "url": "https://github.com/extendfuture/react-csv-importer"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
     "build-storybook": "build-storybook",
     "dist": "webpack --mode production && dts-bundle-generator -o dist/index.d.ts src/index.ts"
   },
-  "author": "Nick Matantsev <nick.matantsev@beamworks.io>",
+  "author": "Amol Patil <amol@extendfuture.com>",
   "license": "MIT",
   "lint-staged": {
     "src/**/*.{ts,tsx}": "eslint --max-warnings=0",
