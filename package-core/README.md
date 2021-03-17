@@ -30,6 +30,16 @@ Feature summary:
 - screen reader a11y
 - keyboard a11y
 
+## Install
+
+```sh
+# using NPM
+npm install --save react-csv-importer
+
+# using Yarn
+yarn add react-csv-importer
+```
+
 ## Example Usage
 
 ```js
