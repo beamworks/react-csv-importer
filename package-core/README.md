@@ -125,6 +125,9 @@ yarn test
 
 ## Changes
 
+- 0.4.1
+  - clearer error display
+  - add more information about ongoing import
 - 0.4.0
   - auto-assign column headers
 - 0.3.0
