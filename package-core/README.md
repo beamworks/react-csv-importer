@@ -53,7 +53,7 @@ import 'react-csv-importer/dist/index.css';
   chunkSize={10000} // optional, internal parsing chunk size in bytes
   assumeNoHeaders={false} // optional, keeps "data has headers" checkbox off by default
   restartable={false} // optional, lets user choose to upload another file when import is complete
-  onStart={() => {
+  onStart={({ file, fields, columns, skipHeaders }) => {
     // optional, invoked when user has mapped columns and started import
     prepMyAppForIncomingData();
   }}
@@ -65,11 +65,11 @@ import 'react-csv-importer/dist/index.css';
       await myAppMethod(row);
     }
   }}
-  onComplete={() => {
+  onComplete={({ file, fields, columns, skipHeaders }) => {
     // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
     showMyAppToastNotification();
   }}
-  onClose={() => {
+  onClose={({ file, fields, columns, skipHeaders }) => {
     // optional, invoked when import is done and user clicked "Finish"
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();
