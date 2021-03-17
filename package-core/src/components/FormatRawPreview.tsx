@@ -26,7 +26,7 @@ export const FormatRawPreview: React.FC<{
 
       {warning ? (
         <FormatErrorMessage onCancelClick={onCancelClick}>
-          {warning.message}: please check data formatting
+          {warning.message || String(warning)}: please check data formatting
         </FormatErrorMessage>
       ) : null}
     </div>

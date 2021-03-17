@@ -166,7 +166,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     <ImporterFrame
       fileName={preview.file.name}
       subtitle="Import"
-      error={error && (error.message || error.toString())}
+      error={error && (error.message || String(error))}
       secondaryDisabled={!isComplete || isDismissed}
       secondaryLabel={onRestart && onClose ? 'Upload More' : undefined}
       onSecondary={onRestart && onClose ? onRestart : undefined}

@@ -116,9 +116,9 @@ export function parsePreview(
       },
       complete: reportSuccess
     });
-  }).catch(() => {
+  }).catch((error) => {
     return {
-      parseError: new Error('Internal error while generating preview')
+      parseError: error // delegate message display to UI logic
     };
   });
 }
