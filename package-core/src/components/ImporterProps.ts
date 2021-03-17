@@ -3,7 +3,9 @@ import { CustomizablePapaParseConfig, ParseCallback, BaseRow } from './parser';
 // separate props definition to safely include in tests
 export interface ImportInfo {
   file: File;
-  fields: string[];
+  fields: string[]; // list of fields that user has assigned
+  columns: (string | undefined)[]; // per-column list of field names (or undefined if unassigned)
+  skipHeaders: boolean; // true when user has indicated that data has headers
 }
 
 export interface ImporterFieldProps {

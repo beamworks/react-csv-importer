@@ -78,7 +78,8 @@ export const FormatPreview: React.FC<{
       return (
         <div className="CSVImporter_FormatPreview__mainResultBlock">
           <FormatErrorMessage onCancelClick={onCancel}>
-            Import error: <b>{preview.parseError.message}</b>
+            Import error:{' '}
+            <b>{preview.parseError.message || String(preview.parseError)}</b>
           </FormatErrorMessage>
         </div>
       );
