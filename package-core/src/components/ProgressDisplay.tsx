@@ -49,9 +49,21 @@ export function ProgressDisplay<Row extends BaseRow>({
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
 
   const importInfo = useMemo<ImportInfo>(() => {
+    const fieldList = Object.keys(fieldAssignments);
+
+    const columnSparseList: (string | undefined)[] = [];
+    fieldList.forEach((field) => {
+      const col = fieldAssignments[field];
+      if (col !== undefined) {
+        columnSparseList[col] = field;
+      }
+    });
+
     return {
       file: preview.file,
-      fields: Object.keys(fieldAssignments)
+      fields: fieldList,
+      columns: [...columnSparseList],
+      skipHeaders: preview.hasHeaders
     };
   }, [preview, fieldAssignments]);
 

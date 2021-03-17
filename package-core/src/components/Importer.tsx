@@ -9,12 +9,14 @@ import { ImporterProps, ImporterFieldProps } from './ImporterProps';
 
 import './Importer.scss';
 
+// internal context for registering field definitions
 type FieldListSetter = (prev: Field[]) => Field[];
 
 const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
 
+// defines a field to be filled from file column during import
 export const ImporterField: React.FC<ImporterFieldProps> = ({
   name,
   label,
