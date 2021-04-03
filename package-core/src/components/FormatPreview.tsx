@@ -22,13 +22,15 @@ export const FormatPreview: React.FC<{
   file: File;
   assumeNoHeaders?: boolean;
   currentPreview: Preview | null;
-  onAccept: (preview: Preview) => void;
+  onChange: (preview: Preview | null) => void;
+  onAccept: () => void;
   onCancel: () => void;
 }> = ({
   customConfig,
   file,
   assumeNoHeaders,
   currentPreview,
+  onChange,
   onAccept,
   onCancel
 }) => {
@@ -52,6 +54,13 @@ export const FormatPreview: React.FC<{
   customConfigRef.current = customConfig;
   const assumeNoHeadersRef = useRef(assumeNoHeaders);
   assumeNoHeadersRef.current = assumeNoHeaders;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // notify of current state
+  useEffect(() => {
+    onChangeRef.current(preview && !preview.parseError ? preview : null);
+  }, [preview]);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
@@ -151,7 +160,7 @@ export const FormatPreview: React.FC<{
           throw new Error('unexpected missing preview info');
         }
 
-        onAccept(preview);
+        onAccept();
       }}
       onCancel={onCancel}
     >
