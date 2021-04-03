@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 import {
   processFile,
-  PreviewInfo,
   FieldAssignmentMap,
   ParseCallback,
   BaseRow
 } from './parser';
 import { ImportInfo } from './ImporterProps';
+import { Preview } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
 
 import './ProgressDisplay.scss';
@@ -34,7 +34,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   onRestart,
   onClose
 }: React.PropsWithChildren<{
-  preview: PreviewInfo;
+  preview: Preview;
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;

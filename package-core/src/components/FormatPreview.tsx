@@ -2,8 +2,8 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 
 import {
   parsePreview,
-  PreviewResults,
-  PreviewInfo,
+  PreviewError,
+  PreviewBase,
   CustomizablePapaParseConfig
 } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -13,12 +13,16 @@ import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FormatPreview.scss';
 
+export interface Preview extends PreviewBase {
+  hasHeaders: boolean;
+}
+
 export const FormatPreview: React.FC<{
   customConfig: CustomizablePapaParseConfig;
   file: File;
   assumeNoHeaders?: boolean;
-  currentPreview: PreviewInfo | null;
-  onAccept: (preview: PreviewInfo) => void;
+  currentPreview: Preview | null;
+  onAccept: (preview: Preview) => void;
   onCancel: () => void;
 }> = ({
   customConfig,
@@ -28,7 +32,14 @@ export const FormatPreview: React.FC<{
   onAccept,
   onCancel
 }) => {
-  const [preview, setPreview] = useState<PreviewResults | null>(
+  // augmented PreviewResults from parser
+  const [preview, setPreview] = useState<
+    | PreviewError
+    | ({
+        parseError: undefined;
+      } & Preview)
+    | null
+  >(
     () =>
       currentPreview && {
         parseError: undefined,

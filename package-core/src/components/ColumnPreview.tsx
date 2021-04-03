@@ -1,5 +1,3 @@
-import { PreviewInfo } from './parser';
-
 // information for displaying a spreadsheet-style column
 export interface Column {
   index: number; // position inside spreadsheet
@@ -43,14 +41,17 @@ function generateColumnCode(value: number) {
 }
 
 // prepare spreadsheet-like column display information for given raw data preview
-export function generatePreviewColumns(preview: PreviewInfo): Column[] {
-  const columnStubs = [...new Array(preview.firstRows[0].length)];
+export function generatePreviewColumns(
+  firstRows: string[][],
+  hasHeaders: boolean
+): Column[] {
+  const columnStubs = [...new Array(firstRows[0].length)];
 
   return columnStubs.map((empty, index) => {
-    const values = preview.firstRows.map((row) => row[index] || '');
+    const values = firstRows.map((row) => row[index] || '');
 
     const dataValues = [...values];
-    const headerValue = preview.hasHeaders ? values.shift() : undefined;
+    const headerValue = hasHeaders ? values.shift() : undefined;
 
     return {
       index,

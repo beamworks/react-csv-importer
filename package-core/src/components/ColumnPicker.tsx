@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 
-import { PreviewInfo, FieldAssignmentMap } from './parser';
+import { FieldAssignmentMap } from './parser';
+import { Preview } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
 import { generatePreviewColumns, Column } from './ColumnPreview';
 import { useColumnDragState, Field as DragField } from './ColumnDragState';
@@ -13,13 +14,14 @@ export type Field = DragField;
 
 export const ColumnPicker: React.FC<{
   fields: Field[];
-  preview: PreviewInfo;
+  preview: Preview;
   onAccept: (fieldAssignments: FieldAssignmentMap) => void;
   onCancel: () => void;
 }> = ({ fields, preview, onAccept, onCancel }) => {
-  const columns = useMemo<Column[]>(() => generatePreviewColumns(preview), [
-    preview
-  ]);
+  const columns = useMemo<Column[]>(
+    () => generatePreviewColumns(preview.firstRows, preview.hasHeaders),
+    [preview]
+  );
 
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
     // prep insensitive/fuzzy match stems for known columns

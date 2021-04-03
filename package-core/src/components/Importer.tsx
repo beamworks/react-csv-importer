@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 
-import { PreviewInfo, FieldAssignmentMap, BaseRow } from './parser';
+import { FieldAssignmentMap, BaseRow } from './parser';
 import { FileSelector } from './FileSelector';
-import { FormatPreview } from './FormatPreview';
+import { FormatPreview, Preview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 import { ImporterProps, ImporterFieldProps } from './ImporterProps';
@@ -68,7 +68,7 @@ function ImporterCore<Row extends BaseRow>({
 >) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const [preview, setPreview] = useState<PreviewInfo | null>(null);
+  const [preview, setPreview] = useState<Preview | null>(null);
   const [editFormat, setEditFormat] = useState<boolean>(false);
 
   const [
