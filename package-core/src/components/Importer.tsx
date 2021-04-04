@@ -1,11 +1,23 @@
-import React, { useState, useCallback, useEffect, useContext } from 'react';
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useContext
+} from 'react';
 
 import { FieldAssignmentMap, BaseRow } from './parser';
 import { FileSelector } from './FileSelector';
 import { FormatPreview, Preview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
-import { ImporterProps, ImporterFieldProps } from './ImporterProps';
+import {
+  ImporterFilePreview,
+  ImporterPreviewColumn,
+  ImporterContentRenderProp,
+  ImporterProps,
+  ImporterFieldProps
+} from './ImporterProps';
 
 import './Importer.scss';
 
@@ -51,16 +63,58 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   return null;
 };
 
+// prepare spreadsheet-like column display information for given raw data preview
+export function generatePreviewColumns(
+  firstRows: string[][],
+  hasHeaders: boolean
+): ImporterPreviewColumn[] {
+  const columnStubs = [...new Array(firstRows[0].length)];
+
+  return columnStubs.map((empty, index) => {
+    const values = firstRows.map((row) => row[index] || '');
+
+    const dataValues = [...values];
+    const headerValue = hasHeaders ? values.shift() : undefined;
+
+    return {
+      index,
+      header: headerValue,
+      values: dataValues
+    };
+  });
+}
+
 const ContentWrapper: React.FC<{
   setFields: React.Dispatch<React.SetStateAction<Field[]>>;
-  content: React.ReactNode;
-}> = ({ setFields, content, children }) => {
+  preview: Preview | null;
+  content: ImporterContentRenderProp | React.ReactNode;
+}> = ({ setFields, preview, content, children }) => {
+  const finalContent = useMemo(() => {
+    // generate stable externally-visible data objects
+    const externalColumns =
+      preview && generatePreviewColumns(preview.firstRows, preview.hasHeaders);
+    const externalPreview: ImporterFilePreview | null = preview &&
+      externalColumns && {
+        rawData: preview.firstChunk,
+        columns: externalColumns,
+        skipHeaders: !preview.hasHeaders,
+        parseWarning: preview.parseWarning
+      };
+
+    return typeof content === 'function'
+      ? content({
+          file: preview && preview.file,
+          preview: externalPreview
+        })
+      : content;
+  }, [preview, content]);
+
   return (
     <div className="CSVImporter_Importer">
       {children}
 
       <FieldDefinitionContext.Provider value={setFields}>
-        {content}
+        {finalContent}
       </FieldDefinitionContext.Provider>
     </div>
   );
@@ -96,7 +150,7 @@ export function Importer<Row extends BaseRow>({
 
   if (selectedFile === null) {
     return (
-      <ContentWrapper setFields={setFields} content={content}>
+      <ContentWrapper setFields={setFields} preview={preview} content={content}>
         <FileSelector onSelected={fileHandler} />
       </ContentWrapper>
     );
@@ -104,7 +158,7 @@ export function Importer<Row extends BaseRow>({
 
   if (!formatAccepted || preview === null) {
     return (
-      <ContentWrapper setFields={setFields} content={content}>
+      <ContentWrapper setFields={setFields} preview={preview} content={content}>
         <FormatPreview
           customConfig={customPapaParseConfig}
           file={selectedFile}
@@ -126,7 +180,7 @@ export function Importer<Row extends BaseRow>({
 
   if (fieldAssignments === null) {
     return (
-      <ContentWrapper setFields={setFields} content={content}>
+      <ContentWrapper setFields={setFields} preview={preview} content={content}>
         <ColumnPicker
           fields={fields}
           preview={preview}
@@ -143,7 +197,7 @@ export function Importer<Row extends BaseRow>({
   }
 
   return (
-    <ContentWrapper setFields={setFields} content={content}>
+    <ContentWrapper setFields={setFields} preview={preview} content={content}>
       <ProgressDisplay
         preview={preview}
         fieldAssignments={fieldAssignments}
