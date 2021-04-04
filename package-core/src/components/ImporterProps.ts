@@ -43,5 +43,5 @@ export interface ImporterProps<Row extends BaseRow>
   onStart?: (info: ImportInfo) => void;
   onComplete?: (info: ImportInfo) => void;
   onClose?: (info: ImportInfo) => void;
-  children: ImporterContentRenderProp | React.ReactNode;
+  children?: ImporterContentRenderProp | React.ReactNode;
 }
