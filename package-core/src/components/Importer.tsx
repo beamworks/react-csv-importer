@@ -151,6 +151,7 @@ export function Importer<Row extends BaseRow>({
           }}
           onCancel={() => {
             setSelectedFile(null);
+            setPreview(null);
           }}
         />
       </ContentWrapper>
