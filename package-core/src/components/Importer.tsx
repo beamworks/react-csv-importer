@@ -22,11 +22,14 @@ import {
 import './Importer.scss';
 
 // internal context for registering field definitions
-type FieldListSetter = (prev: Field[]) => Field[];
+type FieldDef = Field & { id: number };
+type FieldListSetter = (prev: FieldDef[]) => FieldDef[];
 
 const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
+
+let fieldIdCount = 0;
 
 // defines a field to be filled from file column during import
 export const ImporterField: React.FC<ImporterFieldProps> = ({
@@ -34,6 +37,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   label,
   optional
 }) => {
+  const fieldId = useMemo(() => (fieldIdCount += 1), []);
   const fieldSetter = useContext(FieldDefinitionContext);
 
   // update central list as needed
@@ -44,12 +48,13 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
     }
 
     fieldSetter((prev) => {
-      const newField = { name, label, isOptional: !!optional };
+      const newField = { id: fieldId, name, label, isOptional: !!optional };
 
       const copy = [...prev];
       const existingIndex = copy.findIndex((item) => item.name === name);
 
       // preserve existing array position if possible
+      // @todo keep both copies in a map to deal with dynamic fields better
       if (existingIndex === -1) {
         copy.push(newField);
       } else {
@@ -58,13 +63,27 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
       return copy;
     });
-  }, [fieldSetter, name, label, optional]);
+  }, [fieldId, fieldSetter, name, label, optional]);
+
+  // on component unmount, remove this field from list by ID
+  useEffect(() => {
+    if (!fieldSetter) {
+      console.error('importer field must be a child of importer'); // @todo
+      return;
+    }
+
+    return () => {
+      fieldSetter((prev) => {
+        return prev.filter((field) => field.id !== fieldId);
+      });
+    };
+  }, [fieldId, fieldSetter]);
 
   return null;
 };
 
 const ContentWrapper: React.FC<{
-  setFields: React.Dispatch<React.SetStateAction<Field[]>>;
+  setFields: React.Dispatch<React.SetStateAction<FieldDef[]>>;
   preview: Preview | null;
   content: ImporterContentRenderProp | React.ReactNode;
 }> = ({ setFields, preview, content, children }) => {
@@ -111,7 +130,7 @@ export function Importer<Row extends BaseRow>({
   ...customPapaParseConfig
 }: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
   // helper to combine our displayed content and the user code that provides field definitions
-  const [fields, setFields] = useState<Field[]>([]);
+  const [fields, setFields] = useState<FieldDef[]>([]);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
