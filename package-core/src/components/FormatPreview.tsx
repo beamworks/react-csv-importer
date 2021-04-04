@@ -65,6 +65,11 @@ export const FormatPreview: React.FC<{
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
+    // avoid re-parsing if already set up a preview for this file
+    if (preview && !preview.parseError && preview.file === file) {
+      return;
+    }
+
     const oplock = asyncLockRef.current;
 
     parsePreview(file, customConfigRef.current).then((results) => {
@@ -87,7 +92,7 @@ export const FormatPreview: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [file]);
+  }, [file, preview]);
 
   const report = useMemo(() => {
     if (!preview) {
