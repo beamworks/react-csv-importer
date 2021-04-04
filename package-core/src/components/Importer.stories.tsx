@@ -41,16 +41,22 @@ export const RenderProp: Story<SampleImporterProps> = (
 ) => {
   return (
     <Importer {...args}>
-      {({ file, preview }) => {
-        console.log(file, preview);
+      {({ preview }) => {
         return (
           <>
-            <ImporterField name="date" label="Date" />
-            <ImporterField name="clientName" label="Client" />
-            <ImporterField name="projectName" label="Project" />
-            <ImporterField name="projectCode" label="Project Code" optional />
-            <ImporterField name="taskName" label="Task" />
-            <ImporterField name="notes" label="Notes" optional />
+            <ImporterField name="coreFieldA" label="Field A" />
+            <ImporterField name="coreFieldB" label="Field B" />
+
+            {preview &&
+              preview.columns.map(({ header, index }) =>
+                header ? (
+                  <ImporterField
+                    key={index}
+                    name={`uploaded_${header}`}
+                    label={`Field ${header}`}
+                  />
+                ) : null
+              )}
           </>
         );
       }}
