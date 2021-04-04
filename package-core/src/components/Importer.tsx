@@ -51,8 +51,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   return null;
 };
 
-function ImporterCore<Row extends BaseRow>({
-  fields,
+export function Importer<Row extends BaseRow>({
   chunkSize,
   assumeNoHeaders,
   restartable,
@@ -60,12 +59,12 @@ function ImporterCore<Row extends BaseRow>({
   onStart,
   onComplete,
   onClose,
+  children: content,
   ...customPapaParseConfig
-}: React.PropsWithChildren<
-  ImporterProps<Row> & {
-    fields: Field[];
-  }
->) {
+}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
+  // helper to combine our displayed content and the user code that provides field definitions
+  const [fields, setFields] = useState<Field[]>([]);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -80,82 +79,88 @@ function ImporterCore<Row extends BaseRow>({
     setSelectedFile(file);
   }, []);
 
+  const ContentWrapper = useCallback(
+    ({ children }: { children: React.ReactNode }) => (
+      <div className="CSVImporter_Importer">
+        {children}
+
+        <FieldDefinitionContext.Provider value={setFields}>
+          {content}
+        </FieldDefinitionContext.Provider>
+      </div>
+    ),
+    [content]
+  );
+
   if (selectedFile === null) {
-    return <FileSelector onSelected={fileHandler} />;
+    return (
+      <ContentWrapper>
+        <FileSelector onSelected={fileHandler} />
+      </ContentWrapper>
+    );
   }
 
   if (!formatAccepted || preview === null) {
     return (
-      <FormatPreview
-        customConfig={customPapaParseConfig}
-        file={selectedFile}
-        assumeNoHeaders={assumeNoHeaders}
-        currentPreview={preview}
-        onChange={(parsedPreview) => {
-          setPreview(parsedPreview);
-        }}
-        onAccept={() => {
-          setFormatAccepted(true);
-        }}
-        onCancel={() => {
-          setSelectedFile(null);
-        }}
-      />
+      <ContentWrapper>
+        <FormatPreview
+          customConfig={customPapaParseConfig}
+          file={selectedFile}
+          assumeNoHeaders={assumeNoHeaders}
+          currentPreview={preview}
+          onChange={(parsedPreview) => {
+            setPreview(parsedPreview);
+          }}
+          onAccept={() => {
+            setFormatAccepted(true);
+          }}
+          onCancel={() => {
+            setSelectedFile(null);
+          }}
+        />
+      </ContentWrapper>
     );
   }
 
   if (fieldAssignments === null) {
     return (
-      <ColumnPicker
-        fields={fields}
-        preview={preview}
-        onAccept={(assignments) => {
-          setFieldAssignments(assignments);
-        }}
-        onCancel={() => {
-          // keep existing preview data
-          setFormatAccepted(false);
-        }}
-      />
+      <ContentWrapper>
+        <ColumnPicker
+          fields={fields}
+          preview={preview}
+          onAccept={(assignments) => {
+            setFieldAssignments(assignments);
+          }}
+          onCancel={() => {
+            // keep existing preview data
+            setFormatAccepted(false);
+          }}
+        />
+      </ContentWrapper>
     );
   }
 
   return (
-    <ProgressDisplay
-      preview={preview}
-      fieldAssignments={fieldAssignments}
-      chunkSize={chunkSize}
-      processChunk={processChunk}
-      onStart={onStart}
-      onRestart={
-        restartable
-          ? () => {
-              // reset all state
-              setSelectedFile(null);
-              setPreview(null); // not bothering with editFormat flag
-              setFieldAssignments(null);
-            }
-          : undefined
-      }
-      onComplete={onComplete}
-      onClose={onClose}
-    />
-  );
-}
-
-export function Importer<Row extends BaseRow>({
-  children,
-  ...props
-}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
-  const [fields, setFields] = useState<Field[]>([]);
-
-  return (
-    <div className="CSVImporter_Importer">
-      <ImporterCore fields={fields} {...props} />
-
-      <FieldDefinitionContext.Provider value={setFields}>
-        {children}
-      </FieldDefinitionContext.Provider>
-    </div>
+    <ContentWrapper>
+      <ProgressDisplay
+        preview={preview}
+        fieldAssignments={fieldAssignments}
+        chunkSize={chunkSize}
+        processChunk={processChunk}
+        onStart={onStart}
+        onRestart={
+          restartable
+            ? () => {
+                // reset all state
+                setSelectedFile(null);
+                setPreview(null); // not bothering with editFormat flag
+                setFieldAssignments(null);
+              }
+            : undefined
+        }
+        onComplete={onComplete}
+        onClose={onClose}
+      />
+    </ContentWrapper>
   );
 }
