@@ -1,13 +1,11 @@
-// information for displaying a spreadsheet-style column
-export interface Column {
-  index: number; // position inside spreadsheet
-  code: string; // A, B, ..., AA, AB, etc
-  header?: string; // header, if present
-  values: string[]; // sample preview values
+import { ImporterPreviewColumn } from './ImporterProps';
+
+export interface Column extends ImporterPreviewColumn {
+  code: string;
 }
 
 // spreadsheet-style column code computation (A, B, ..., Z, AA, AB, ..., etc)
-function generateColumnCode(value: number) {
+export function generateColumnCode(value: number): string {
   // ignore dummy index
   if (value < 0) {
     return '';
@@ -44,7 +42,7 @@ function generateColumnCode(value: number) {
 export function generatePreviewColumns(
   firstRows: string[][],
   hasHeaders: boolean
-): Column[] {
+): ImporterPreviewColumn[] {
   const columnStubs = [...new Array(firstRows[0].length)];
 
   return columnStubs.map((empty, index) => {
@@ -55,7 +53,6 @@ export function generatePreviewColumns(
 
     return {
       index,
-      code: generateColumnCode(index),
       header: headerValue,
       values: dataValues
     };

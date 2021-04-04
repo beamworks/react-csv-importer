@@ -3,7 +3,11 @@ import React, { useState, useMemo } from 'react';
 import { FieldAssignmentMap } from './parser';
 import { Preview } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
-import { generatePreviewColumns, Column } from './ColumnPreview';
+import {
+  generatePreviewColumns,
+  generateColumnCode,
+  Column
+} from './ColumnPreview';
 import { useColumnDragState, Field as DragField } from './ColumnDragState';
 import { ColumnDragObject } from './ColumnDragObject';
 import { ColumnDragSourceArea } from './ColumnDragSourceArea';
@@ -19,7 +23,11 @@ export const ColumnPicker: React.FC<{
   onCancel: () => void;
 }> = ({ fields, preview, onAccept, onCancel }) => {
   const columns = useMemo<Column[]>(
-    () => generatePreviewColumns(preview.firstRows, preview.hasHeaders),
+    () =>
+      generatePreviewColumns(
+        preview.firstRows,
+        preview.hasHeaders
+      ).map((item) => ({ ...item, code: generateColumnCode(item.index) })),
     [preview]
   );
 

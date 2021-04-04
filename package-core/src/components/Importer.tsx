@@ -7,13 +7,13 @@ import React, {
 } from 'react';
 
 import { FieldAssignmentMap, BaseRow } from './parser';
+import { generatePreviewColumns } from './ColumnPreview';
 import { FileSelector } from './FileSelector';
 import { FormatPreview, Preview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
-  ImporterPreviewColumn,
   ImporterContentRenderProp,
   ImporterProps,
   ImporterFieldProps
@@ -62,27 +62,6 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
   return null;
 };
-
-// prepare spreadsheet-like column display information for given raw data preview
-export function generatePreviewColumns(
-  firstRows: string[][],
-  hasHeaders: boolean
-): ImporterPreviewColumn[] {
-  const columnStubs = [...new Array(firstRows[0].length)];
-
-  return columnStubs.map((empty, index) => {
-    const values = firstRows.map((row) => row[index] || '');
-
-    const dataValues = [...values];
-    const headerValue = hasHeaders ? values.shift() : undefined;
-
-    return {
-      index,
-      header: headerValue,
-      values: dataValues
-    };
-  });
-}
 
 const ContentWrapper: React.FC<{
   setFields: React.Dispatch<React.SetStateAction<Field[]>>;
