@@ -153,7 +153,8 @@ export function Importer<Row extends BaseRow>({
             ? () => {
                 // reset all state
                 setSelectedFile(null);
-                setPreview(null); // not bothering with editFormat flag
+                setPreview(null);
+                setFormatAccepted(false);
                 setFieldAssignments(null);
               }
             : undefined
