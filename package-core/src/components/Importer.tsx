@@ -51,6 +51,21 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   return null;
 };
 
+const ContentWrapper: React.FC<{
+  setFields: React.Dispatch<React.SetStateAction<Field[]>>;
+  content: React.ReactNode;
+}> = ({ setFields, content, children }) => {
+  return (
+    <div className="CSVImporter_Importer">
+      {children}
+
+      <FieldDefinitionContext.Provider value={setFields}>
+        {content}
+      </FieldDefinitionContext.Provider>
+    </div>
+  );
+};
+
 export function Importer<Row extends BaseRow>({
   chunkSize,
   assumeNoHeaders,
@@ -79,22 +94,9 @@ export function Importer<Row extends BaseRow>({
     setSelectedFile(file);
   }, []);
 
-  const ContentWrapper = useCallback(
-    ({ children }: { children: React.ReactNode }) => (
-      <div className="CSVImporter_Importer">
-        {children}
-
-        <FieldDefinitionContext.Provider value={setFields}>
-          {content}
-        </FieldDefinitionContext.Provider>
-      </div>
-    ),
-    [content]
-  );
-
   if (selectedFile === null) {
     return (
-      <ContentWrapper>
+      <ContentWrapper setFields={setFields} content={content}>
         <FileSelector onSelected={fileHandler} />
       </ContentWrapper>
     );
@@ -102,7 +104,7 @@ export function Importer<Row extends BaseRow>({
 
   if (!formatAccepted || preview === null) {
     return (
-      <ContentWrapper>
+      <ContentWrapper setFields={setFields} content={content}>
         <FormatPreview
           customConfig={customPapaParseConfig}
           file={selectedFile}
@@ -124,7 +126,7 @@ export function Importer<Row extends BaseRow>({
 
   if (fieldAssignments === null) {
     return (
-      <ContentWrapper>
+      <ContentWrapper setFields={setFields} content={content}>
         <ColumnPicker
           fields={fields}
           preview={preview}
@@ -141,7 +143,7 @@ export function Importer<Row extends BaseRow>({
   }
 
   return (
-    <ContentWrapper>
+    <ContentWrapper setFields={setFields} content={content}>
       <ProgressDisplay
         preview={preview}
         fieldAssignments={fieldAssignments}
