@@ -35,3 +35,25 @@ export const Timesheet: Story<SampleImporterProps> = (
     </Importer>
   );
 };
+
+export const RenderProp: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <Importer {...args}>
+      {({ file, preview }) => {
+        console.log(file, preview);
+        return (
+          <>
+            <ImporterField name="date" label="Date" />
+            <ImporterField name="clientName" label="Client" />
+            <ImporterField name="projectName" label="Project" />
+            <ImporterField name="projectCode" label="Project Code" optional />
+            <ImporterField name="taskName" label="Task" />
+            <ImporterField name="notes" label="Notes" optional />
+          </>
+        );
+      }}
+    </Importer>
+  );
+};
