@@ -48,13 +48,12 @@ export function generatePreviewColumns(
   return columnStubs.map((empty, index) => {
     const values = firstRows.map((row) => row[index] || '');
 
-    const dataValues = [...values];
     const headerValue = hasHeaders ? values.shift() : undefined;
 
     return {
       index,
       header: headerValue,
-      values: dataValues
+      values
     };
   });
 }
