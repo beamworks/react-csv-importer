@@ -35,3 +35,31 @@ export const Timesheet: Story<SampleImporterProps> = (
     </Importer>
   );
 };
+
+export const RenderProp: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <Importer {...args}>
+      {({ preview }) => {
+        return (
+          <>
+            <ImporterField name="coreFieldA" label="Field A" />
+            <ImporterField name="coreFieldB" label="Field B" />
+
+            {preview &&
+              preview.columns.map(({ header, index }) =>
+                header ? (
+                  <ImporterField
+                    key={index}
+                    name={`uploaded_${header}`}
+                    label={`Field ${header}`}
+                  />
+                ) : null
+              )}
+          </>
+        );
+      }}
+    </Importer>
+  );
+};

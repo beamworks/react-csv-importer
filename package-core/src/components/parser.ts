@@ -13,22 +13,23 @@ export interface CustomizablePapaParseConfig {
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
 }
 
-export interface PreviewInfo {
+export interface PreviewBase {
   file: File;
   firstChunk: string;
   firstRows: string[][]; // always PREVIEW_ROWS count
   isSingleLine: boolean;
-  hasHeaders: boolean;
+  parseWarning?: Papa.ParseError;
+}
+
+export interface PreviewError {
+  parseError: Error | Papa.ParseError;
 }
 
 export type PreviewResults =
+  | PreviewError
   | ({
       parseError: undefined;
-      parseWarning?: Papa.ParseError;
-    } & PreviewInfo)
-  | {
-      parseError: Error | Papa.ParseError;
-    };
+    } & PreviewBase);
 
 export const PREVIEW_ROW_COUNT = 5;
 
@@ -72,8 +73,7 @@ export function parsePreview(
         parseWarning: firstWarning || undefined,
         firstChunk: firstChunk || '',
         firstRows: rowAccumulator,
-        isSingleLine,
-        hasHeaders: true // placeholder to modify downstream
+        isSingleLine
       });
     }
 

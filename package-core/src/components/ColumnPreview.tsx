@@ -1,15 +1,11 @@
-import { PreviewInfo } from './parser';
+import { ImporterPreviewColumn } from './ImporterProps';
 
-// information for displaying a spreadsheet-style column
-export interface Column {
-  index: number; // position inside spreadsheet
-  code: string; // A, B, ..., AA, AB, etc
-  header?: string; // header, if present
-  values: string[]; // sample preview values
+export interface Column extends ImporterPreviewColumn {
+  code: string;
 }
 
 // spreadsheet-style column code computation (A, B, ..., Z, AA, AB, ..., etc)
-function generateColumnCode(value: number) {
+export function generateColumnCode(value: number): string {
   // ignore dummy index
   if (value < 0) {
     return '';
@@ -43,20 +39,21 @@ function generateColumnCode(value: number) {
 }
 
 // prepare spreadsheet-like column display information for given raw data preview
-export function generatePreviewColumns(preview: PreviewInfo): Column[] {
-  const columnStubs = [...new Array(preview.firstRows[0].length)];
+export function generatePreviewColumns(
+  firstRows: string[][],
+  hasHeaders: boolean
+): ImporterPreviewColumn[] {
+  const columnStubs = [...new Array(firstRows[0].length)];
 
   return columnStubs.map((empty, index) => {
-    const values = preview.firstRows.map((row) => row[index] || '');
+    const values = firstRows.map((row) => row[index] || '');
 
-    const dataValues = [...values];
-    const headerValue = preview.hasHeaders ? values.shift() : undefined;
+    const headerValue = hasHeaders ? values.shift() : undefined;
 
     return {
       index,
-      code: generateColumnCode(index),
       header: headerValue,
-      values: dataValues
+      values
     };
   });
 }

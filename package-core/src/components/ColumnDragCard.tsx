@@ -39,8 +39,8 @@ export const ColumnDragCard: React.FC<{
 
   const headerValue = column.header;
   const dataValues = column.values.slice(
-    headerValue === undefined ? 0 : 1,
-    rowCount
+    0,
+    headerValue === undefined ? rowCount : rowCount - 1
   );
 
   return (

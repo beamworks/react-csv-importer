@@ -2,8 +2,8 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 
 import {
   parsePreview,
-  PreviewResults,
-  PreviewInfo,
+  PreviewError,
+  PreviewBase,
   CustomizablePapaParseConfig
 } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -13,22 +13,35 @@ import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FormatPreview.scss';
 
+export interface Preview extends PreviewBase {
+  hasHeaders: boolean;
+}
+
 export const FormatPreview: React.FC<{
   customConfig: CustomizablePapaParseConfig;
   file: File;
   assumeNoHeaders?: boolean;
-  currentPreview: PreviewInfo | null;
-  onAccept: (preview: PreviewInfo) => void;
+  currentPreview: Preview | null;
+  onChange: (preview: Preview | null) => void;
+  onAccept: () => void;
   onCancel: () => void;
 }> = ({
   customConfig,
   file,
   assumeNoHeaders,
   currentPreview,
+  onChange,
   onAccept,
   onCancel
 }) => {
-  const [preview, setPreview] = useState<PreviewResults | null>(
+  // augmented PreviewResults from parser
+  const [preview, setPreview] = useState<
+    | PreviewError
+    | ({
+        parseError: undefined;
+      } & Preview)
+    | null
+  >(
     () =>
       currentPreview && {
         parseError: undefined,
@@ -41,10 +54,22 @@ export const FormatPreview: React.FC<{
   customConfigRef.current = customConfig;
   const assumeNoHeadersRef = useRef(assumeNoHeaders);
   assumeNoHeadersRef.current = assumeNoHeaders;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // notify of current state
+  useEffect(() => {
+    onChangeRef.current(preview && !preview.parseError ? preview : null);
+  }, [preview]);
 
   // perform async preview parse
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
+    // avoid re-parsing if already set up a preview for this file
+    if (preview && !preview.parseError && preview.file === file) {
+      return;
+    }
+
     const oplock = asyncLockRef.current;
 
     parsePreview(file, customConfigRef.current).then((results) => {
@@ -67,7 +92,7 @@ export const FormatPreview: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [file]);
+  }, [file, preview]);
 
   const report = useMemo(() => {
     if (!preview) {
@@ -140,7 +165,7 @@ export const FormatPreview: React.FC<{
           throw new Error('unexpected missing preview info');
         }
 
-        onAccept(preview);
+        onAccept();
       }}
       onCancel={onCancel}
     >
