@@ -6,7 +6,7 @@ import {
   ParseCallback,
   BaseRow
 } from './parser';
-import { ImportInfo } from './ImporterProps';
+import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { Preview } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
 
@@ -26,6 +26,7 @@ function countUTF8Bytes(item: string) {
 
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
+  externalPreview,
   chunkSize,
   fieldAssignments,
   processChunk,
@@ -35,6 +36,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   onClose
 }: React.PropsWithChildren<{
   preview: Preview;
+  externalPreview: ImporterFilePreview;
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
@@ -61,11 +63,11 @@ export function ProgressDisplay<Row extends BaseRow>({
 
     return {
       file: preview.file,
+      preview: externalPreview,
       fields: fieldList,
-      columns: [...columnSparseList],
-      skipHeaders: preview.hasHeaders
+      columnFields: [...columnSparseList]
     };
-  }, [preview, fieldAssignments]);
+  }, [preview, externalPreview, fieldAssignments]);
 
   // estimate number of rows
   const estimatedRowCount = useMemo(() => {

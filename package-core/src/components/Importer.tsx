@@ -85,27 +85,17 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 const ContentWrapper: React.FC<{
   setFields: React.Dispatch<React.SetStateAction<FieldDef[]>>;
   preview: Preview | null;
+  externalPreview: ImporterFilePreview | null;
   content: ImporterContentRenderProp | React.ReactNode;
-}> = ({ setFields, preview, content, children }) => {
+}> = ({ setFields, preview, externalPreview, content, children }) => {
   const finalContent = useMemo(() => {
-    // generate stable externally-visible data objects
-    const externalColumns =
-      preview && generatePreviewColumns(preview.firstRows, preview.hasHeaders);
-    const externalPreview: ImporterFilePreview | null = preview &&
-      externalColumns && {
-        rawData: preview.firstChunk,
-        columns: externalColumns,
-        skipHeaders: !preview.hasHeaders,
-        parseWarning: preview.parseWarning
-      };
-
     return typeof content === 'function'
       ? content({
           file: preview && preview.file,
           preview: externalPreview
         })
       : content;
-  }, [preview, content]);
+  }, [preview, externalPreview, content]);
 
   return (
     <div className="CSVImporter_Importer">
@@ -146,17 +136,42 @@ export function Importer<Row extends BaseRow>({
     setSelectedFile(file);
   }, []);
 
+  const externalPreview = useMemo<ImporterFilePreview | null>(() => {
+    // generate stable externally-visible data objects
+    const externalColumns =
+      preview && generatePreviewColumns(preview.firstRows, preview.hasHeaders);
+    return (
+      preview &&
+      externalColumns && {
+        rawData: preview.firstChunk,
+        columns: externalColumns,
+        skipHeaders: !preview.hasHeaders,
+        parseWarning: preview.parseWarning
+      }
+    );
+  }, [preview]);
+
   if (selectedFile === null) {
     return (
-      <ContentWrapper setFields={setFields} preview={preview} content={content}>
+      <ContentWrapper
+        setFields={setFields}
+        preview={preview}
+        externalPreview={externalPreview}
+        content={content}
+      >
         <FileSelector onSelected={fileHandler} />
       </ContentWrapper>
     );
   }
 
-  if (!formatAccepted || preview === null) {
+  if (!formatAccepted || preview === null || externalPreview === null) {
     return (
-      <ContentWrapper setFields={setFields} preview={preview} content={content}>
+      <ContentWrapper
+        setFields={setFields}
+        preview={preview}
+        externalPreview={externalPreview}
+        content={content}
+      >
         <FormatPreview
           customConfig={customPapaParseConfig}
           file={selectedFile}
@@ -179,7 +194,12 @@ export function Importer<Row extends BaseRow>({
 
   if (fieldAssignments === null) {
     return (
-      <ContentWrapper setFields={setFields} preview={preview} content={content}>
+      <ContentWrapper
+        setFields={setFields}
+        preview={preview}
+        externalPreview={externalPreview}
+        content={content}
+      >
         <ColumnPicker
           fields={fields}
           preview={preview}
@@ -196,9 +216,15 @@ export function Importer<Row extends BaseRow>({
   }
 
   return (
-    <ContentWrapper setFields={setFields} preview={preview} content={content}>
+    <ContentWrapper
+      setFields={setFields}
+      preview={preview}
+      externalPreview={externalPreview}
+      content={content}
+    >
       <ProgressDisplay
         preview={preview}
+        externalPreview={externalPreview}
         fieldAssignments={fieldAssignments}
         chunkSize={chunkSize}
         processChunk={processChunk}
