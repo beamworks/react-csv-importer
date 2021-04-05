@@ -57,7 +57,7 @@ import 'react-csv-importer/dist/index.css';
     // optional, invoked when user has mapped columns and started import
     prepMyAppForIncomingData();
   }}
-  processChunk={async (rows) => {
+  processChunk={async (rows, { startIndex }) => {
     // required, receives a list of parsed objects based on defined fields and user column mapping;
     // may be called several times if file is large
     // (if this callback returns a promise, the widget will wait for it before parsing more data)
@@ -65,11 +65,11 @@ import 'react-csv-importer/dist/index.css';
       await myAppMethod(row);
     }
   }}
-  onComplete={({ file, fields, columns, skipHeaders }) => {
+  onComplete={({ file, preview, fields, columnFields }) => {
     // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
     showMyAppToastNotification();
   }}
-  onClose={({ file, fields, columns, skipHeaders }) => {
+  onClose={({ file, preview, fields, columnFields }) => {
     // optional, invoked when import is done and user clicked "Finish"
     // (if this is not specified, the widget lets the user upload another file)
     goToMyAppNextPage();
@@ -92,6 +92,19 @@ import 'react-csv-importer/dist/index.css';
 ```
 
 In the above example, if the user uploads a CSV file with column headers "Name", "Email" and so on, the columns will be automatically matched to fields with same labels. If any of the headers do not match, the user will have an opportunity to manually remap columns to the defined fields.
+
+The `preview` object contains a snippet of CSV file information (only the first portion of the file is read, not the entire thing). The structure is:
+
+```js
+{
+  rawData: '...', // raw string contents of first file chunk
+  columns: [ // array of preview columns, e.g.:
+    { index: 0, header: 'Date', values: [ '2020-09-20', '2020-09-25' ] },
+    { index: 1, header: 'Name', values: [ 'Alice', 'Bob' ] }
+  ],
+  skipHeaders: false // true when user selected that data has no headers
+}
+```
 
 ## Dependencies
 

@@ -42,11 +42,15 @@ describe('importer basics', () => {
           React.createElement(
             ReactCSVImporter,
             {
-              processChunk: (rows) => {
+              processChunk: (rows, info) => {
                 ((window as unknown) as Record<
                   string,
                   unknown
                 >).TEST_PROCESS_CHUNK_ROWS = rows;
+                ((window as unknown) as Record<
+                  string,
+                  unknown
+                >).TEST_PROCESS_CHUNK_INFO = info;
 
                 return new Promise((resolve) => {
                   ((window as unknown) as Record<
@@ -310,11 +314,15 @@ describe('importer basics', () => {
               const parsedData = await getDriver().executeScript(
                 'return window.TEST_PROCESS_CHUNK_ROWS'
               );
+              const chunkInfo = await getDriver().executeScript(
+                'return window.TEST_PROCESS_CHUNK_INFO'
+              );
 
               expect(parsedData).to.deep.equal([
                 { fieldA: 'AAAA' },
                 { fieldA: 'EEEE' }
               ]);
+              expect(chunkInfo).to.deep.equal({ startIndex: 0 });
             });
           });
         });
