@@ -7,7 +7,7 @@ import { Importer, ImporterField } from './Importer';
 export default {
   title: 'Importer',
   component: Importer,
-  parameters: { actions: { argTypesRegex: '^on.*' } }
+  parameters: { actions: { argTypesRegex: '^on.*|processChunk' } }
 } as Meta;
 
 type SampleImporterProps = ImporterProps<{ fieldA: string }>;

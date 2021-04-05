@@ -38,7 +38,10 @@ export type FieldAssignmentMap = { [name: string]: number | undefined };
 export type BaseRow = { [name: string]: unknown };
 
 export type ParseCallback<Row extends BaseRow> = (
-  rows: Row[]
+  rows: Row[],
+  info: {
+    startIndex: number;
+  }
 ) => void | Promise<void>;
 
 export function parsePreview(
@@ -128,7 +131,7 @@ export function processFile<Row extends BaseRow>(
   hasHeaders: boolean,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
-  callback: (rows: Row[]) => void | Promise<void>,
+  callback: ParseCallback<Row>,
   chunkSize?: number
 ): Promise<void> {
   const fieldNames = Object.keys(fieldAssignments);
@@ -138,6 +141,7 @@ export function processFile<Row extends BaseRow>(
     // skip first line if needed
     let skipLine = hasHeaders;
     let skipBOM = !hasHeaders;
+    let processedCount = 0;
 
     // true streaming support for local files (@todo wait for upstream fix)
     const nodeStream = new ReadableWebToNodeStream(file.stream());
@@ -185,13 +189,20 @@ export function processFile<Row extends BaseRow>(
           skipLine = false;
         }
 
+        // info snapshot for processing callback
+        const info = {
+          startIndex: processedCount
+        };
+
+        processedCount += rows.length;
+
         // @todo collect errors
         reportProgress(rows.length);
 
         // wrap sync errors in promise
         // (avoid invoking callback if there are no rows to consume)
         const whenConsumed = new Promise<void>((resolve) => {
-          const result = rows.length ? callback(rows) : undefined;
+          const result = rows.length ? callback(rows, info) : undefined;
 
           // introduce delay to allow a frame render
           setTimeout(() => resolve(result), 0);
