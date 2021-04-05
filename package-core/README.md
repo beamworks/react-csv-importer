@@ -106,6 +106,8 @@ The `preview` object contains a snippet of CSV file information (only the first 
 }
 ```
 
+Importer component children may be defined as a render-prop function that receives the above `preview` and also the original file reference. It can then, for example, dynamically return different fields depending which headers are present in the CSV.
+
 ## Dependencies
 
 - [Papa Parse](https://www.papaparse.com/) for CSV parsing
@@ -138,6 +140,9 @@ yarn test
 
 ## Changes
 
+- 0.5.0
+  - report file preview to callbacks and render-prop
+  - report startIndex in processChunk callback
 - 0.4.1
   - clearer error display
   - add more information about ongoing import
