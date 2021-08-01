@@ -126,14 +126,23 @@ export function parsePreview(
   });
 }
 
-export function processFile<Row extends BaseRow>(
-  file: File,
-  hasHeaders: boolean,
-  fieldAssignments: FieldAssignmentMap,
-  reportProgress: (deltaCount: number) => void,
-  callback: ParseCallback<Row>,
-  chunkSize?: number
-): Promise<void> {
+export function processFile<Row extends BaseRow>({
+  file,
+  hasHeaders,
+  fieldAssignments,
+  reportProgress,
+  callback,
+  chunkSize,
+  customConfig = {}
+}: {
+  file: File;
+  hasHeaders: boolean;
+  fieldAssignments: FieldAssignmentMap;
+  reportProgress: (deltaCount: number) => void;
+  callback: ParseCallback<Row>;
+  chunkSize?: number;
+  customConfig: CustomizablePapaParseConfig;
+}): Promise<void> {
   const fieldNames = Object.keys(fieldAssignments);
 
   // wrap synchronous errors in promise
@@ -146,6 +155,8 @@ export function processFile<Row extends BaseRow>(
     // true streaming support for local files (@todo wait for upstream fix)
     const nodeStream = new ReadableWebToNodeStream(file.stream());
     Papa.parse(nodeStream, {
+      ...customConfig,
+
       chunkSize: chunkSize || 10000,
       skipEmptyLines: true,
       error: (error) => {

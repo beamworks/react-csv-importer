@@ -4,7 +4,8 @@ import {
   processFile,
   FieldAssignmentMap,
   ParseCallback,
-  BaseRow
+  BaseRow,
+  CustomizablePapaParseConfig
 } from './parser';
 import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { Preview } from './FormatPreview';
@@ -29,6 +30,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   externalPreview,
   chunkSize,
   fieldAssignments,
+  customConfig,
   processChunk,
   onStart,
   onComplete,
@@ -39,6 +41,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   externalPreview: ImporterFilePreview;
   chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
+  customConfig: CustomizablePapaParseConfig;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
   onComplete?: (info: ImportInfo) => void;
@@ -123,11 +126,11 @@ export function ProgressDisplay<Row extends BaseRow>({
   useEffect(() => {
     const oplock = asyncLockRef.current;
 
-    processFile(
-      preview.file,
-      preview.hasHeaders,
+    processFile({
+      file: preview.file,
+      hasHeaders: preview.hasHeaders,
       fieldAssignments,
-      (deltaCount) => {
+      reportProgress: (deltaCount) => {
         // ignore if stale
         if (oplock !== asyncLockRef.current) {
           return; // @todo signal abort
@@ -135,9 +138,10 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      processChunkRef.current,
-      chunkSizeRef.current
-    ).then(
+      callback: processChunkRef.current,
+      chunkSize: chunkSizeRef.current,
+      customConfig
+    }).then(
       () => {
         // ignore if stale
         if (oplock !== asyncLockRef.current) {
@@ -160,7 +164,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [preview, fieldAssignments]);
+  }, [preview, fieldAssignments, customConfig]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {

@@ -223,6 +223,7 @@ export function Importer<Row extends BaseRow>({
       content={content}
     >
       <ProgressDisplay
+        customConfig={customPapaParseConfig}
         preview={preview}
         externalPreview={externalPreview}
         fieldAssignments={fieldAssignments}
