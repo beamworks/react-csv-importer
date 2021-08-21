@@ -3,10 +3,10 @@
 [![https://www.npmjs.com/package/react-csv-importer](https://img.shields.io/npm/v/react-csv-importer)](https://www.npmjs.com/package/react-csv-importer) [![https://github.com/beamworks/react-csv-importer/actions](https://github.com/beamworks/react-csv-importer/actions/workflows/test.yml/badge.svg)](https://github.com/beamworks/react-csv-importer/actions)
 
 This library combines an uploader + CSV parser + raw file preview + UI for custom user column
-mapping, all in one. Relies on the popular PapaParse CSV library to preview and process file contents directly in the browser.
+mapping, all in one. Relies on the popular PapaParse CSV library to preview and process file contents directly in-browser.
 
-Use this in your web app's bulk data import screen to allow users to drop a file for upload,
-preview the raw uploaded data before parsing and pick which columns to import. Your front-end application logic directly receives the resulting array of JSON objects in reasonable-sized chunks: you can then validate and send the data to the backend in any final format it requires instead of raw CSV.
+Use this to implement bulk data import in your app: let users to drop a file for upload,
+preview the raw uploaded data before parsing and pick which columns to import. Your front-end application logic directly receives the resulting array of JSON objects in streamed reasonable-sized chunks: you can then validate and send the data to the backend in any final format it requires instead of raw CSV.
 
 [Try the live editable code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox) or see the [themed demo app](https://react-csv-importer.vercel.app/).
 
@@ -16,11 +16,9 @@ The UI theme is standalone (no external dependencies such as Material UI) and ta
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
-**New:** this package is now easier to fork with your own customizations and install as a direct Git dependency.
-
 Feature summary:
 
-- uses Papa Parse library
+- uses Papa Parse CSV library
 - raw file preview
 - auto-map fields to matching column names
 - user-selectable column mapping (drag-drop UI)
@@ -31,6 +29,8 @@ Feature summary:
 - runs entirely in-browser
 - screen reader a11y
 - keyboard a11y
+
+**New:** this package is now easier to fork with your own customizations, so that you can use that fork as a [direct Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in your `package.json`. You may need to manually generate and commit the `dist` folder directly to your Git fork for convenience. Of course if your custom fixes could be useful to the rest of us then please submit a PR to this repo!
 
 ## Install
 
