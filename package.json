@@ -11,7 +11,7 @@
   "license": "MIT",
   "husky": {
     "hooks": {
-      "pre-commit": "cd package-core && node_modules/.bin/lint-staged && cd ../demo-app && node_modules/.bin/lint-staged"
+      "pre-commit": "cd package-core && node_modules/.bin/lint-staged"
     }
   },
   "devDependencies": {
