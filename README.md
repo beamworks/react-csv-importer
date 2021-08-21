@@ -16,6 +16,8 @@ The UI theme is standalone (no external dependencies such as Material UI) and ta
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
+**New:** this package is now easier to fork with your own customizations and install as a direct Git dependency.
+
 Feature summary:
 
 - uses Papa Parse library
@@ -119,12 +121,8 @@ Importer component children may be defined as a render-prop function that receiv
 Perform local `git clone`, etc. Then ensure modules are installed:
 
 ```sh
-yarn # root folder only needs this for Husky pre-commit triggers
-cd package-core
-yarn # main package dev dependencies
+yarn
 ```
-
-Most of the interesting stuff is inside `package-core` folder.
 
 To start Storybook to have a hot-reloaded local sandbox:
 
