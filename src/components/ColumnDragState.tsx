@@ -97,6 +97,9 @@ export function useColumnDragState(
   );
 
   const bindDrag = useDrag(({ first, last, event, xy, args }) => {
+    if (event) {
+      xy[1] = event.pageY;
+    }
     if (first && event) {
       event.preventDefault();
 
