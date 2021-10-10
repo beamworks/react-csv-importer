@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
-import { FieldAssignmentMap } from './parser';
-import { Preview } from './FormatPreview';
+import { FieldAssignmentMap, Preview } from './parser';
 import { ImporterFrame } from './ImporterFrame';
 import {
   generatePreviewColumns,
