@@ -50,6 +50,21 @@ export type ParseCallback<Row extends BaseRow> = (
   }
 ) => void | Promise<void>;
 
+// polyfill as implemented in https://github.com/eligrey/Blob.js/blob/master/Blob.js#L653
+// (this is for Safari pre v14.1)
+function streamForBlob(blob: Blob) {
+  if (blob.stream) {
+    return blob.stream();
+  }
+
+  const res = new Response(blob);
+  if (res.body) {
+    return res.body;
+  }
+
+  throw new Error('This browser does not support client-side file reads');
+}
+
 export function parsePreview(
   file: File,
   customConfig: CustomizablePapaParseConfig
@@ -88,7 +103,7 @@ export function parsePreview(
 
     // true streaming support for local files (@todo wait for upstream fix)
     // @todo close the stream
-    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
     Papa.parse(nodeStream, {
       ...customConfig,
 
@@ -149,7 +164,7 @@ export function processFile<Row extends BaseRow>(
     let processedCount = 0;
 
     // true streaming support for local files (@todo wait for upstream fix)
-    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
     Papa.parse(nodeStream, {
       ...papaParseConfig,
       chunkSize: papaParseConfig.chunkSize || 10000, // our own preferred default
