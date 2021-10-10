@@ -109,7 +109,6 @@ const ContentWrapper: React.FC<{
 };
 
 export function Importer<Row extends BaseRow>({
-  chunkSize,
   assumeNoHeaders,
   restartable,
   processChunk,
@@ -226,7 +225,6 @@ export function Importer<Row extends BaseRow>({
         preview={preview}
         externalPreview={externalPreview}
         fieldAssignments={fieldAssignments}
-        chunkSize={chunkSize}
         processChunk={processChunk}
         onStart={onStart}
         onRestart={

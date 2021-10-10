@@ -27,7 +27,6 @@ function countUTF8Bytes(item: string) {
 export function ProgressDisplay<Row extends BaseRow>({
   preview,
   externalPreview,
-  chunkSize,
   fieldAssignments,
   processChunk,
   onStart,
@@ -37,7 +36,6 @@ export function ProgressDisplay<Row extends BaseRow>({
 }: React.PropsWithChildren<{
   preview: Preview;
   externalPreview: ImporterFilePreview;
-  chunkSize?: number;
   fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
@@ -118,7 +116,6 @@ export function ProgressDisplay<Row extends BaseRow>({
   }, [isComplete, error]);
 
   // perform main async parse
-  const chunkSizeRef = useRef(chunkSize); // wrap in ref to avoid re-triggering
   const processChunkRef = useRef(processChunk); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
@@ -135,8 +132,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      processChunkRef.current,
-      chunkSizeRef.current
+      processChunkRef.current
     ).then(
       () => {
         // ignore if stale

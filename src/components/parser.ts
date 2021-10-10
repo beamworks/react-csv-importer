@@ -11,6 +11,7 @@ export interface CustomizablePapaParseConfig {
   comments?: Papa.ParseConfig['comments'];
   skipEmptyLines?: Papa.ParseConfig['skipEmptyLines'];
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
+  chunkSize?: Papa.ParseConfig['chunkSize'];
 }
 
 export interface PreviewReport {
@@ -135,8 +136,7 @@ export function processFile<Row extends BaseRow>(
   preview: Preview,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
-  callback: ParseCallback<Row>,
-  chunkSize?: number
+  callback: ParseCallback<Row>
 ): Promise<void> {
   const { file, hasHeaders, papaParseConfig } = preview;
   const fieldNames = Object.keys(fieldAssignments);
@@ -152,6 +152,7 @@ export function processFile<Row extends BaseRow>(
     const nodeStream = new ReadableWebToNodeStream(file.stream());
     Papa.parse(nodeStream, {
       ...papaParseConfig,
+      chunkSize: papaParseConfig.chunkSize || 10000, // our own preferred default
 
       error: (error) => {
         reject(error);
