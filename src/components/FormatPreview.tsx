@@ -2,8 +2,8 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 
 import {
   parsePreview,
-  PreviewError,
-  PreviewBase,
+  PreviewResults,
+  Preview,
   CustomizablePapaParseConfig
 } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -12,10 +12,6 @@ import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FormatPreview.scss';
-
-export interface Preview extends PreviewBase {
-  hasHeaders: boolean;
-}
 
 export const FormatPreview: React.FC<{
   customConfig: CustomizablePapaParseConfig;
@@ -35,13 +31,7 @@ export const FormatPreview: React.FC<{
   onCancel
 }) => {
   // augmented PreviewResults from parser
-  const [preview, setPreview] = useState<
-    | PreviewError
-    | ({
-        parseError: undefined;
-      } & Preview)
-    | null
-  >(
+  const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
         parseError: undefined,
@@ -72,7 +62,11 @@ export const FormatPreview: React.FC<{
 
     const oplock = asyncLockRef.current;
 
-    parsePreview(file, customConfigRef.current).then((results) => {
+    // lock in the current PapaParse config instance for use in multiple spots
+    const papaParseConfig = customConfigRef.current;
+
+    // kick off the preview parse
+    parsePreview(file, papaParseConfig).then((results) => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {
         return;
@@ -84,7 +78,7 @@ export const FormatPreview: React.FC<{
         // pre-fill headers flag (only possible with >1 lines)
         const hasHeaders = !assumeNoHeadersRef.current && !results.isSingleLine;
 
-        setPreview({ ...results, hasHeaders });
+        setPreview({ ...results, papaParseConfig, hasHeaders });
       }
     });
 

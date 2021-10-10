@@ -13,7 +13,7 @@ export interface CustomizablePapaParseConfig {
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
 }
 
-export interface PreviewBase {
+export interface PreviewReport {
   file: File;
   firstChunk: string;
   firstRows: string[][]; // always PREVIEW_ROWS count
@@ -21,15 +21,20 @@ export interface PreviewBase {
   parseWarning?: Papa.ParseError;
 }
 
-export interface PreviewError {
-  parseError: Error | Papa.ParseError;
-}
-
+// success/failure report from the preview parse attempt
 export type PreviewResults =
-  | PreviewError
+  | {
+      parseError: Error | Papa.ParseError;
+    }
   | ({
       parseError: undefined;
-    } & PreviewBase);
+    } & PreviewReport);
+
+// complete "workspace" for kicking off the full parse @todo rename
+export interface Preview extends PreviewReport {
+  papaParseConfig: CustomizablePapaParseConfig; // config that was used for preview parsing
+  hasHeaders: boolean;
+}
 
 export const PREVIEW_ROW_COUNT = 5;
 
@@ -127,13 +132,13 @@ export function parsePreview(
 }
 
 export function processFile<Row extends BaseRow>(
-  file: File,
-  hasHeaders: boolean,
+  preview: Preview,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
   callback: ParseCallback<Row>,
   chunkSize?: number
 ): Promise<void> {
+  const { file, hasHeaders, papaParseConfig } = preview;
   const fieldNames = Object.keys(fieldAssignments);
 
   // wrap synchronous errors in promise
@@ -146,8 +151,8 @@ export function processFile<Row extends BaseRow>(
     // true streaming support for local files (@todo wait for upstream fix)
     const nodeStream = new ReadableWebToNodeStream(file.stream());
     Papa.parse(nodeStream, {
-      chunkSize: chunkSize || 10000,
-      skipEmptyLines: true,
+      ...papaParseConfig,
+
       error: (error) => {
         reject(error);
       },

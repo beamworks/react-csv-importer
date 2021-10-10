@@ -4,10 +4,10 @@ import {
   processFile,
   FieldAssignmentMap,
   ParseCallback,
-  BaseRow
+  BaseRow,
+  Preview
 } from './parser';
 import { ImporterFilePreview, ImportInfo } from './ImporterProps';
-import { Preview } from './FormatPreview';
 import { ImporterFrame } from './ImporterFrame';
 
 import './ProgressDisplay.scss';
@@ -50,6 +50,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   const [error, setError] = useState<Error | null>(null);
   const [isDismissed, setIsDismissed] = useState(false); // prevents double-clicking finish
 
+  // info object exposed to the progress callbacks
   const importInfo = useMemo<ImportInfo>(() => {
     const fieldList = Object.keys(fieldAssignments);
 
@@ -124,8 +125,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     const oplock = asyncLockRef.current;
 
     processFile(
-      preview.file,
-      preview.hasHeaders,
+      preview,
       fieldAssignments,
       (deltaCount) => {
         // ignore if stale
