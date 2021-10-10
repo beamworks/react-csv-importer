@@ -1,15 +1,10 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import path from 'path';
-import ReactModule from 'react';
-import ReactDOMModule from 'react-dom';
-import {
-  ImporterProps,
-  ImporterFieldProps
-} from '../src/components/ImporterProps';
 
 import { runTestServer } from './testServer';
 import { runDriver } from './webdriver';
+import { runUI } from './uiSetup';
 
 // extra timeout allowance on CI
 const testTimeoutMs = process.env.CI ? 20000 : 10000;
@@ -17,76 +12,47 @@ const testTimeoutMs = process.env.CI ? 20000 : 10000;
 describe('importer basics', () => {
   const appUrl = runTestServer();
   const getDriver = runDriver();
-
-  async function runScript(
-    script: (
-      r: typeof ReactModule,
-      rd: typeof ReactDOMModule,
-      im: (
-        props: ImporterProps<Record<string, unknown>>
-      ) => ReactModule.ReactElement,
-      imf: (props: ImporterFieldProps) => ReactModule.ReactElement
-    ) => void
-  ) {
-    await getDriver().executeScript(
-      `(${script.toString()})(React, ReactDOM, ReactCSVImporter.Importer, ReactCSVImporter.ImporterField)`
-    );
-  }
+  const initUI = runUI(getDriver);
 
   beforeEach(async () => {
     await getDriver().get(appUrl);
 
-    await runScript(
-      (React, ReactDOM, ReactCSVImporter, ReactCSVImporterField) => {
-        ReactDOM.render(
-          React.createElement(
-            ReactCSVImporter,
-            {
-              processChunk: (rows, info) => {
+    await initUI((React, ReactDOM, ReactCSVImporter, ReactCSVImporterField) => {
+      ReactDOM.render(
+        React.createElement(
+          ReactCSVImporter,
+          {
+            processChunk: (rows, info) => {
+              ((window as unknown) as Record<
+                string,
+                unknown
+              >).TEST_PROCESS_CHUNK_ROWS = rows;
+              ((window as unknown) as Record<
+                string,
+                unknown
+              >).TEST_PROCESS_CHUNK_INFO = info;
+
+              return new Promise((resolve) => {
                 ((window as unknown) as Record<
                   string,
                   unknown
-                >).TEST_PROCESS_CHUNK_ROWS = rows;
-                ((window as unknown) as Record<
-                  string,
-                  unknown
-                >).TEST_PROCESS_CHUNK_INFO = info;
-
-                return new Promise((resolve) => {
-                  ((window as unknown) as Record<
-                    string,
-                    unknown
-                  >).TEST_PROCESS_CHUNK_RESOLVE = resolve;
-                });
-              }
-            },
-            [
-              React.createElement(ReactCSVImporterField, {
-                name: 'fieldA',
-                label: 'Field A'
-              }),
-              React.createElement(ReactCSVImporterField, {
-                name: 'fieldB',
-                label: 'Field B',
-                optional: true
-              })
-            ]
-          ),
-          document.getElementById('root')
-        );
-      }
-    );
-
-    await getDriver().wait(
-      until.elementLocated(By.xpath('//span[contains(., "Drag-and-drop")]')),
-      300 // a little extra time
-    );
-  });
-
-  afterEach(async () => {
-    await runScript((React, ReactDOM) => {
-      ReactDOM.unmountComponentAtNode(
-        document.getElementById('root') || document.body
+                >).TEST_PROCESS_CHUNK_RESOLVE = resolve;
+              });
+            }
+          },
+          [
+            React.createElement(ReactCSVImporterField, {
+              name: 'fieldA',
+              label: 'Field A'
+            }),
+            React.createElement(ReactCSVImporterField, {
+              name: 'fieldB',
+              label: 'Field B',
+              optional: true
+            })
+          ]
+        ),
+        document.getElementById('root')
       );
     });
   });

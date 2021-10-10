@@ -2,8 +2,8 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 
 import {
   parsePreview,
-  PreviewError,
-  PreviewBase,
+  PreviewResults,
+  Preview,
   CustomizablePapaParseConfig
 } from './parser';
 import { ImporterFrame } from './ImporterFrame';
@@ -12,10 +12,6 @@ import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FormatPreview.scss';
-
-export interface Preview extends PreviewBase {
-  hasHeaders: boolean;
-}
 
 export const FormatPreview: React.FC<{
   customConfig: CustomizablePapaParseConfig;
@@ -35,13 +31,7 @@ export const FormatPreview: React.FC<{
   onCancel
 }) => {
   // augmented PreviewResults from parser
-  const [preview, setPreview] = useState<
-    | PreviewError
-    | ({
-        parseError: undefined;
-      } & Preview)
-    | null
-  >(
+  const [preview, setPreview] = useState<PreviewResults<Preview> | null>(
     () =>
       currentPreview && {
         parseError: undefined,
@@ -62,17 +52,16 @@ export const FormatPreview: React.FC<{
     onChangeRef.current(preview && !preview.parseError ? preview : null);
   }, [preview]);
 
-  // perform async preview parse
+  // perform async preview parse once for the given file
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
-    // avoid re-parsing if already set up a preview for this file
-    if (preview && !preview.parseError && preview.file === file) {
-      return;
-    }
-
     const oplock = asyncLockRef.current;
 
-    parsePreview(file, customConfigRef.current).then((results) => {
+    // lock in the current PapaParse config instance for use in multiple spots
+    const papaParseConfig = customConfigRef.current;
+
+    // kick off the preview parse
+    parsePreview(file, papaParseConfig).then((results) => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {
         return;
@@ -84,7 +73,7 @@ export const FormatPreview: React.FC<{
         // pre-fill headers flag (only possible with >1 lines)
         const hasHeaders = !assumeNoHeadersRef.current && !results.isSingleLine;
 
-        setPreview({ ...results, hasHeaders });
+        setPreview({ ...results, papaParseConfig, hasHeaders });
       }
     });
 
@@ -92,9 +81,10 @@ export const FormatPreview: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [file, preview]);
+  }, [file]);
 
-  const report = useMemo(() => {
+  // preview result content to display
+  const reportBlock = useMemo(() => {
     if (!preview) {
       return null;
     }
@@ -169,7 +159,7 @@ export const FormatPreview: React.FC<{
       }}
       onCancel={onCancel}
     >
-      {report || (
+      {reportBlock || (
         <div className="CSVImporter_FormatPreview__mainPendingBlock">
           Loading preview...
         </div>

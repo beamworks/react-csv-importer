@@ -36,7 +36,6 @@ export interface ImporterFieldProps {
 
 export interface ImporterProps<Row extends BaseRow>
   extends CustomizablePapaParseConfig {
-  chunkSize?: number;
   assumeNoHeaders?: boolean;
   restartable?: boolean;
   processChunk: ParseCallback<Row>;

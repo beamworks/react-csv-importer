@@ -11,9 +11,10 @@ export interface CustomizablePapaParseConfig {
   comments?: Papa.ParseConfig['comments'];
   skipEmptyLines?: Papa.ParseConfig['skipEmptyLines'];
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
+  chunkSize?: Papa.ParseConfig['chunkSize'];
 }
 
-export interface PreviewBase {
+export interface PreviewReport {
   file: File;
   firstChunk: string;
   firstRows: string[][]; // always PREVIEW_ROWS count
@@ -21,15 +22,20 @@ export interface PreviewBase {
   parseWarning?: Papa.ParseError;
 }
 
-export interface PreviewError {
-  parseError: Error | Papa.ParseError;
-}
-
-export type PreviewResults =
-  | PreviewError
+// success/failure report from the preview parse attempt
+export type PreviewResults<Report extends PreviewReport = PreviewReport> =
+  | {
+      parseError: Error | Papa.ParseError;
+    }
   | ({
       parseError: undefined;
-    } & PreviewBase);
+    } & Report);
+
+// complete "workspace" for kicking off the full parse @todo rename
+export interface Preview extends PreviewReport {
+  papaParseConfig: CustomizablePapaParseConfig; // config that was used for preview parsing
+  hasHeaders: boolean;
+}
 
 export const PREVIEW_ROW_COUNT = 5;
 
@@ -43,6 +49,21 @@ export type ParseCallback<Row extends BaseRow> = (
     startIndex: number;
   }
 ) => void | Promise<void>;
+
+// polyfill as implemented in https://github.com/eligrey/Blob.js/blob/master/Blob.js#L653
+// (this is for Safari pre v14.1)
+function streamForBlob(blob: Blob) {
+  if (blob.stream) {
+    return blob.stream();
+  }
+
+  const res = new Response(blob);
+  if (res.body) {
+    return res.body;
+  }
+
+  throw new Error('This browser does not support client-side file reads');
+}
 
 export function parsePreview(
   file: File,
@@ -82,7 +103,7 @@ export function parsePreview(
 
     // true streaming support for local files (@todo wait for upstream fix)
     // @todo close the stream
-    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
     Papa.parse(nodeStream, {
       ...customConfig,
 
@@ -127,13 +148,12 @@ export function parsePreview(
 }
 
 export function processFile<Row extends BaseRow>(
-  file: File,
-  hasHeaders: boolean,
+  preview: Preview,
   fieldAssignments: FieldAssignmentMap,
   reportProgress: (deltaCount: number) => void,
-  callback: ParseCallback<Row>,
-  chunkSize?: number
+  callback: ParseCallback<Row>
 ): Promise<void> {
+  const { file, hasHeaders, papaParseConfig } = preview;
   const fieldNames = Object.keys(fieldAssignments);
 
   // wrap synchronous errors in promise
@@ -144,10 +164,11 @@ export function processFile<Row extends BaseRow>(
     let processedCount = 0;
 
     // true streaming support for local files (@todo wait for upstream fix)
-    const nodeStream = new ReadableWebToNodeStream(file.stream());
+    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
     Papa.parse(nodeStream, {
-      chunkSize: chunkSize || 10000,
-      skipEmptyLines: true,
+      ...papaParseConfig,
+      chunkSize: papaParseConfig.chunkSize || 10000, // our own preferred default
+
       error: (error) => {
         reject(error);
       },

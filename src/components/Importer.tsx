@@ -6,10 +6,10 @@ import React, {
   useContext
 } from 'react';
 
-import { FieldAssignmentMap, BaseRow } from './parser';
+import { FieldAssignmentMap, BaseRow, Preview } from './parser';
 import { generatePreviewColumns } from './ColumnPreview';
 import { FileSelector } from './FileSelector';
-import { FormatPreview, Preview } from './FormatPreview';
+import { FormatPreview } from './FormatPreview';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
@@ -109,7 +109,6 @@ const ContentWrapper: React.FC<{
 };
 
 export function Importer<Row extends BaseRow>({
-  chunkSize,
   assumeNoHeaders,
   restartable,
   processChunk,
@@ -226,7 +225,6 @@ export function Importer<Row extends BaseRow>({
         preview={preview}
         externalPreview={externalPreview}
         fieldAssignments={fieldAssignments}
-        chunkSize={chunkSize}
         processChunk={processChunk}
         onStart={onStart}
         onRestart={
