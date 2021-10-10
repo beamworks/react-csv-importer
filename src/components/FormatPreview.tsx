@@ -31,7 +31,7 @@ export const FormatPreview: React.FC<{
   onCancel
 }) => {
   // augmented PreviewResults from parser
-  const [preview, setPreview] = useState<PreviewResults | null>(
+  const [preview, setPreview] = useState<PreviewResults<Preview> | null>(
     () =>
       currentPreview && {
         parseError: undefined,

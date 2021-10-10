@@ -23,13 +23,13 @@ export interface PreviewReport {
 }
 
 // success/failure report from the preview parse attempt
-export type PreviewResults =
+export type PreviewResults<Report extends PreviewReport = PreviewReport> =
   | {
       parseError: Error | Papa.ParseError;
     }
   | ({
       parseError: undefined;
-    } & PreviewReport);
+    } & Report);
 
 // complete "workspace" for kicking off the full parse @todo rename
 export interface Preview extends PreviewReport {
