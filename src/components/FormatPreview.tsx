@@ -52,14 +52,9 @@ export const FormatPreview: React.FC<{
     onChangeRef.current(preview && !preview.parseError ? preview : null);
   }, [preview]);
 
-  // perform async preview parse
+  // perform async preview parse once for the given file
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
-    // avoid re-parsing if already set up a preview for this file
-    if (preview && !preview.parseError && preview.file === file) {
-      return;
-    }
-
     const oplock = asyncLockRef.current;
 
     // lock in the current PapaParse config instance for use in multiple spots
@@ -86,9 +81,10 @@ export const FormatPreview: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [file, preview]);
+  }, [file]);
 
-  const report = useMemo(() => {
+  // preview result content to display
+  const reportBlock = useMemo(() => {
     if (!preview) {
       return null;
     }
@@ -163,7 +159,7 @@ export const FormatPreview: React.FC<{
       }}
       onCancel={onCancel}
     >
-      {report || (
+      {reportBlock || (
         <div className="CSVImporter_FormatPreview__mainPendingBlock">
           Loading preview...
         </div>
