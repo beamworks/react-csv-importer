@@ -71,7 +71,7 @@ export function runTestServer(): string {
     // store reference for later cleanup
     testDevServer = devServer;
 
-    const serverListenPromise = new Promise((resolve, reject) => {
+    const serverListenPromise = new Promise<void>((resolve, reject) => {
       devServer.listen(TEST_SERVER_PORT, 'localhost', function (err) {
         if (err) {
           reject(err);
@@ -81,7 +81,7 @@ export function runTestServer(): string {
       });
     });
 
-    const serverCompilationPromise = new Promise((resolve) => {
+    const serverCompilationPromise = new Promise<void>((resolve) => {
       compiler.hooks.done.tap('_', () => {
         resolve();
       });
@@ -99,7 +99,7 @@ export function runTestServer(): string {
     }
 
     // wait for server to fully close
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       devServer.close(() => {
         resolve();
       });
