@@ -7,7 +7,9 @@ import { Importer, ImporterField } from './Importer';
 export default {
   title: 'Importer',
   component: Importer,
-  parameters: { actions: { argTypesRegex: '^on.*|processChunk' } }
+  parameters: {
+    actions: { argTypesRegex: '^on.*|processChunk' }
+  }
 } as Meta;
 
 type SampleImporterProps = ImporterProps<{ fieldA: string }>;
@@ -34,6 +36,21 @@ export const Timesheet: Story<SampleImporterProps> = (
       <ImporterField name="notes" label="Notes" optional />
     </Importer>
   );
+};
+
+export const CustomDelimiterConfig: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <Importer {...args}>
+      <ImporterField name="fieldA" label="Field A" />
+      <ImporterField name="fieldB" label="Field B" />
+    </Importer>
+  );
+};
+
+CustomDelimiterConfig.args = {
+  delimiter: '!' // use a truly unusual delimiter that PapaParse would not guess normally
 };
 
 export const RenderProp: Story<SampleImporterProps> = (
