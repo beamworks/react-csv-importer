@@ -137,6 +137,7 @@ export const ColumnPicker: React.FC<{
       />
 
       <ColumnDragTargetArea
+        hasHeaders={preview.hasHeaders}
         fields={fields}
         columns={columns}
         fieldTouched={fieldTouched}

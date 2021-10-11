@@ -12,6 +12,7 @@ export type FieldTouchedMap = { [name: string]: boolean | undefined };
 import './ColumnDragTargetArea.scss';
 
 const TargetBox: React.FC<{
+  hasHeaders: boolean; // for correct display of dummy card
   field: Field;
   touched?: boolean;
   assignedColumn: Column | null;
@@ -24,6 +25,7 @@ const TargetBox: React.FC<{
   onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
+  hasHeaders,
   field,
   touched,
   assignedColumn,
@@ -113,8 +115,14 @@ const TargetBox: React.FC<{
     }
 
     const hasError = touched && !field.isOptional;
-    return <ColumnDragCard rowCount={3} hasError={hasError} />;
-  }, [field, touched, assignedColumn, sourceColumn, isReDragged]);
+    return (
+      <ColumnDragCard
+        rowCount={3}
+        hasHeaders={hasHeaders}
+        hasError={hasError}
+      />
+    );
+  }, [hasHeaders, field, touched, assignedColumn, sourceColumn, isReDragged]);
 
   // @todo mouse cursor changes to reflect draggable state
   return (
@@ -171,6 +179,7 @@ const TargetBox: React.FC<{
 };
 
 export const ColumnDragTargetArea: React.FC<{
+  hasHeaders: boolean; // for correct display of dummy card
   fields: Field[];
   columns: Column[];
   fieldTouched: FieldTouchedMap;
@@ -185,6 +194,7 @@ export const ColumnDragTargetArea: React.FC<{
   onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
+  hasHeaders,
   fields,
   columns,
   fieldTouched,
@@ -208,6 +218,7 @@ export const ColumnDragTargetArea: React.FC<{
             key={field.name}
             field={field}
             touched={fieldTouched[field.name]}
+            hasHeaders={hasHeaders}
             assignedColumn={
               assignedColumnIndex !== undefined
                 ? columns[assignedColumnIndex]
