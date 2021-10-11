@@ -33,14 +33,21 @@ const TargetBox: React.FC<{
   onAssign,
   onUnassign
 }) => {
-  const mouseHoverHandlers =
-    dragState && dragState.pointerStartInfo
-      ? {
-          onMouseEnter: () => onHover(field.name, true),
-          onMouseLeave: () => onHover(field.name, false)
-        }
-      : {};
+  // respond to hover events when there is active mouse drag happening
+  // (not keyboard-emulated one)
+  const mouseHoverHandlers = useMemo(
+    () =>
+      dragState && dragState.pointerStartInfo
+        ? {
+            onMouseEnter: () => onHover(field.name, true),
+            onMouseLeave: () => onHover(field.name, false)
+          }
+        : {},
+    [dragState, onHover, field.name]
+  );
 
+  // if this field is the current highlighted drop target,
+  // get the originating column data for display
   const sourceColumn =
     dragState && dragState.dropFieldName === field.name
       ? dragState.column
@@ -49,7 +56,8 @@ const TargetBox: React.FC<{
   // see if currently assigned column is being dragged again
   const isReDragged = dragState ? dragState.column === assignedColumn : false;
 
-  const dragHandlers = useMemo(
+  // drag start handlers for columns that can be re-dragged (i.e. are assigned)
+  const dragStartHandlers = useMemo(
     () =>
       assignedColumn && !isReDragged
         ? eventBinder(assignedColumn, field.name)
@@ -103,7 +111,7 @@ const TargetBox: React.FC<{
           </div>
         )}
 
-        <div {...dragHandlers}>{valueContents}</div>
+        <div {...dragStartHandlers}>{valueContents}</div>
 
         {/* tab order after column contents */}
         {dragState && !dragState.pointerStartInfo ? (
