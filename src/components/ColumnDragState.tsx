@@ -19,7 +19,7 @@ export interface DragState {
 
   column: Column;
   dropFieldName: string | null;
-  updateListener: ((xy: number[]) => void) | null;
+  updateListeners: { [key: string]: (xy: number[]) => void };
 }
 
 export interface DragInfo {
@@ -98,6 +98,8 @@ export function useColumnDragState(
 
   const bindDrag = useDrag(({ first, last, event, xy, args }) => {
     if (first && event) {
+      // only prevent default inside first event
+      // (touchmove uses passive event handler and would trigger warning)
       event.preventDefault();
 
       const [column, startFieldName] = args as [Column, string | undefined];
@@ -112,7 +114,7 @@ export function useColumnDragState(
         },
         column,
         dropFieldName: startFieldName !== undefined ? startFieldName : null,
-        updateListener: null
+        updateListeners: {}
       });
     } else if (last) {
       setDragState(null);
@@ -123,10 +125,32 @@ export function useColumnDragState(
     }
 
     // @todo figure out a cleaner event stream solution
-    if (dragState && dragState.updateListener) {
-      dragState.updateListener(xy);
+    if (dragState) {
+      const listeners = dragState.updateListeners;
+      for (const key of Object.keys(listeners)) {
+        listeners[key](xy);
+      }
     }
   }, {});
+
+  // when dragging, set root-level user-select:none to prevent text selection, see Importer.scss
+  // (done via class toggle to avoid interfering with any other dynamic style changes)
+  useEffect(() => {
+    if (dragState) {
+      document.body.classList.add('CSVImporter_dragging');
+    } else {
+      // remove text selection prevention after a delay (otherwise on iOS it still selects something)
+      const timeoutId = setTimeout(() => {
+        document.body.classList.remove('CSVImporter_dragging');
+      }, 200);
+
+      return () => {
+        // if another drag state comes along then cancel our delay and just clean up class right away
+        clearTimeout(timeoutId);
+        document.body.classList.remove('CSVImporter_dragging');
+      };
+    }
+  }, [dragState]);
 
   const columnSelectHandler = useCallback((column: Column) => {
     setDragState((prev) => {
@@ -139,7 +163,7 @@ export function useColumnDragState(
         pointerStartInfo: null, // no draggable position information
         column,
         dropFieldName: null,
-        updateListener: null
+        updateListeners: {}
       };
     });
   }, []);

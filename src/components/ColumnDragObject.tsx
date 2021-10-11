@@ -16,9 +16,14 @@ export const ColumnDragObject: React.FC<{
   const dragObjectPortal =
     dragState && dragState.pointerStartInfo
       ? createPortal(
-          <div className="CSVImporter_ColumnDragObject" ref={dragBoxRef}>
-            <div className="CSVImporter_ColumnDragObject__holder">
-              <ColumnDragCard column={dragState.column} isDragged />
+          <div className="CSVImporter_ColumnDragObject">
+            <div
+              className="CSVImporter_ColumnDragObject__positioner"
+              ref={dragBoxRef}
+            >
+              <div className="CSVImporter_ColumnDragObject__holder">
+                <ColumnDragCard column={dragState.column} isDragged />
+              </div>
             </div>
           </div>,
           document.body
@@ -53,7 +58,7 @@ export const ColumnDragObject: React.FC<{
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
     if (dragState) {
-      dragState.updateListener = (xy: number[]) => {
+      dragState.updateListeners['dragObj'] = (xy: number[]) => {
         if (!dragBoxRef.current) {
           return;
         }

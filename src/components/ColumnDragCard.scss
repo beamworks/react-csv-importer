@@ -11,6 +11,9 @@
 
   &[data-draggable='true'] {
     cursor: grab;
+
+    // avoid triggering scroll on iOS Safari (needed despite preventDefault also being used)
+    touch-action: none;
   }
 
   &[data-dummy='true'] {

@@ -53,6 +53,21 @@ CustomDelimiterConfig.args = {
   delimiter: '!' // use a truly unusual delimiter that PapaParse would not guess normally
 };
 
+export const InsideScrolledPage: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <div>
+      Scroll below
+      <div style={{ paddingTop: '120vh' }}></div>
+      <Importer {...args}>
+        <ImporterField name="fieldA" label="Field A" />
+        <ImporterField name="fieldB" label="Field B" optional />
+      </Importer>
+    </div>
+  );
+};
+
 export const RenderProp: Story<SampleImporterProps> = (
   args: SampleImporterProps
 ) => {

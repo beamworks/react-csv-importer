@@ -27,7 +27,8 @@
   }
 
   &__boxValue {
-    position: relative; // for action
+    position: relative; // for action and placeholder
+    z-index: 0; // contain the z-indexes of contents (to prevent e.g. placeholder being above drag object)
   }
 
   &__boxValueAction {

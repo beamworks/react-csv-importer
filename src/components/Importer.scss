@@ -7,3 +7,10 @@
     box-sizing: border-box;
   }
 }
+
+// prevent text selection while dragging on mobile
+// (must be on body per https://www.reddit.com/r/webdev/comments/g1wvsb/ios_safari_how_to_disable_longpress_text_selection/)
+body.CSVImporter_dragging {
+  -webkit-user-select: none; // needed for Safari
+  user-select: none;
+}

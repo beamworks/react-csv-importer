@@ -7,6 +7,7 @@ import './ColumnDragCard.scss';
 
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 export const ColumnDragCard: React.FC<{
+  hasHeaders?: boolean; // for correct display of dummy card
   column?: Column;
   rowCount?: number;
   hasError?: boolean;
@@ -16,6 +17,7 @@ export const ColumnDragCard: React.FC<{
   isDragged?: boolean;
   isDropIndicator?: boolean;
 }> = ({
+  hasHeaders,
   column: optionalColumn,
   rowCount = PREVIEW_ROW_COUNT,
   hasError,
@@ -32,9 +34,10 @@ export const ColumnDragCard: React.FC<{
       optionalColumn || {
         index: -1,
         code: '',
+        header: hasHeaders ? '' : undefined,
         values: [...new Array(PREVIEW_ROW_COUNT)].map(() => '')
       },
-    [optionalColumn]
+    [optionalColumn, hasHeaders]
   );
 
   const headerValue = column.header;
