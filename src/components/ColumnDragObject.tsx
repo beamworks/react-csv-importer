@@ -58,7 +58,7 @@ export const ColumnDragObject: React.FC<{
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
     if (dragState) {
-      dragState.updateListener = (xy: number[]) => {
+      dragState.updateListeners['dragObj'] = (xy: number[]) => {
         if (!dragBoxRef.current) {
           return;
         }

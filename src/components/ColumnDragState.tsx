@@ -19,7 +19,7 @@ export interface DragState {
 
   column: Column;
   dropFieldName: string | null;
-  updateListener: ((xy: number[]) => void) | null;
+  updateListeners: { [key: string]: (xy: number[]) => void };
 }
 
 export interface DragInfo {
@@ -112,7 +112,7 @@ export function useColumnDragState(
         },
         column,
         dropFieldName: startFieldName !== undefined ? startFieldName : null,
-        updateListener: null
+        updateListeners: {}
       });
     } else if (last) {
       setDragState(null);
@@ -123,8 +123,11 @@ export function useColumnDragState(
     }
 
     // @todo figure out a cleaner event stream solution
-    if (dragState && dragState.updateListener) {
-      dragState.updateListener(xy);
+    if (dragState) {
+      const listeners = dragState.updateListeners;
+      for (const key of Object.keys(listeners)) {
+        listeners[key](xy);
+      }
     }
   }, {});
 
@@ -139,7 +142,7 @@ export function useColumnDragState(
         pointerStartInfo: null, // no draggable position information
         column,
         dropFieldName: null,
-        updateListener: null
+        updateListeners: {}
       };
     });
   }, []);
