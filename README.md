@@ -16,6 +16,8 @@ The UI theme is standalone (no external dependencies such as Material UI) and ta
 universally fit within most application design frameworks. Interface elements are tested for screen
 reader accessibility and keyboard-only usage.
 
+This package is easy to fork with your own customizations, and you can use your fork directly as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in any of your projects. See below.
+
 Feature summary:
 
 - uses Papa Parse CSV library
@@ -29,8 +31,6 @@ Feature summary:
 - runs entirely in-browser
 - screen reader a11y
 - keyboard a11y
-
-**New:** this package is now easier to fork with your own customizations, so that you can use that fork as a [direct Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in your `package.json`. You may need to manually generate and commit the `dist` folder directly to your Git fork for convenience. Of course if your custom fixes could be useful to the rest of us then please submit a PR to this repo!
 
 ## Install
 
@@ -135,6 +135,8 @@ To run the end-to-end test suite:
 ```sh
 yarn test
 ```
+
+You can use your own fork of this library in your own project by referencing the forked repo as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies). NPM will then run the `prepare` script, which runs the same Webpack/dist command as when the NPM package is published, so your custom dependency should work just as conveniently as the stock NPM version. Of course if your custom fixes could be useful to the rest of us then please submit a PR to this repo!
 
 ## Changes
 
