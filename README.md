@@ -138,6 +138,10 @@ yarn test
 
 ## Changes
 
+- 0.5.1
+  - correctly use custom Papa Parse config for the main processing stream
+  - drag-drop fixes on scrolled pages
+  - bug fixes for older Safari, mobile issues
 - 0.5.0
   - report file preview to callbacks and render-prop
   - report startIndex in processChunk callback
