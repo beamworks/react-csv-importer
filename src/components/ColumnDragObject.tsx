@@ -16,9 +16,14 @@ export const ColumnDragObject: React.FC<{
   const dragObjectPortal =
     dragState && dragState.pointerStartInfo
       ? createPortal(
-          <div className="CSVImporter_ColumnDragObject" ref={dragBoxRef}>
-            <div className="CSVImporter_ColumnDragObject__holder">
-              <ColumnDragCard column={dragState.column} isDragged />
+          <div className="CSVImporter_ColumnDragObject">
+            <div
+              className="CSVImporter_ColumnDragObject__positioner"
+              ref={dragBoxRef}
+            >
+              <div className="CSVImporter_ColumnDragObject__holder">
+                <ColumnDragCard column={dragState.column} isDragged />
+              </div>
             </div>
           </div>,
           document.body

@@ -1,11 +1,21 @@
 .CSVImporter_ColumnDragObject {
-  position: absolute; // @todo this is not working with scroll
+  // scroll-independent container
+  position: fixed;
   top: 0;
   left: 0;
-  min-width: 8em; // in case could not compute
-  width: 0; // dynamically set at drag start
-  height: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: none; // clipping to avoid triggering scrollbar when dragging near edges
   pointer-events: none;
+
+  &__positioner {
+    position: absolute; // @todo this is not working with scroll
+    top: 0;
+    left: 0;
+    min-width: 8em; // in case could not compute
+    width: 0; // dynamically set at drag start
+    height: 0;
+  }
 
   &__holder {
     position: absolute;
