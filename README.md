@@ -140,6 +140,9 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- 0.5.2
+  - update readable-web-to-node-stream to have stream shim
+  - use npm prepare script for easier fork installs
 - 0.5.1
   - correctly use custom Papa Parse config for the main processing stream
   - drag-drop fixes on scrolled pages
