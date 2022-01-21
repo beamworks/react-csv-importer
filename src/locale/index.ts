@@ -133,3 +133,74 @@ export const enUS: ImporterLocale = {
     }
   }
 };
+
+export const deDE: ImporterLocale = {
+  components: {
+    ColumnDragCard: {
+      dummyHeaderText: 'Nicht zugewiesenes Feld',
+      getHeaderText: (code) => `Spalte ${code}`
+    },
+    ColumnDragSourceArea: {
+      ariaLabelText: 'Zu importierende Spalte',
+      getPageIndicatorText: (currentPage: number, pageCount: number) =>
+        `Seite ${currentPage} von ${pageCount}`,
+      getAssigningColumnText: (columnCode: string) =>
+        `Spalte ${columnCode} zuweisen`,
+      nextColumnsText: 'Nächste Spalten anzeigen',
+      previousColumnsText: 'Vorherige Spalten anzeigen'
+    },
+    ColumnDragTargetArea: {
+      ariaLabelText: 'Zielfelder'
+    },
+    ColumnPicker: {
+      requiredFieldsErrorText:
+        'Bitte weise allen nicht optionalen Spalten einen Wert zu',
+      subtitleText: 'Spalten auswählen'
+    },
+    FileSelector: {
+      defaultText:
+        'CSV-Datei auf dieses Feld ziehen, oder klicken um eine Datei auszuwählen',
+      dragActiveText: 'CSV-Datei auf dieses Feld ziehen...'
+    },
+    FileStep: {
+      importErrorText: 'Fehler beim Import:',
+      rawFileContentsText: 'Originaler Datei-Inhalt',
+      previewImportText: 'Import-Vorschau',
+      hasHeadersText: 'Mit Kopfzeile',
+      loadingPreviewText: 'Vorschau wird geladen...'
+    },
+    FormatRawPreview: {
+      getWarningText: (warningMessage: string) =>
+        `${warningMessage}: bitte Datenformat überprüfen`
+    },
+    FormatErrorMessage: {
+      backText: 'Zurück'
+    },
+    ImporterFrame: {
+      previousStepText: 'Zum vorherigen Schritt',
+      nextStepText: 'Weiter'
+    },
+    ProgressDisplay: {
+      subtitleText: 'Importieren',
+      uploadMoreText: 'Weitere hochladen',
+      finishText: 'Abschließen',
+      statusErrorText: 'Konnte nicht importiert werden',
+      statusCompleteText: 'Fertig',
+      statusPendingText: 'Wird importiert...',
+      processedRowsText: 'Verarbeitete Zeilen:'
+    },
+    SourceBox: {
+      clearAssignmentText: 'Zugewiesene Spalte entfernen',
+      selectColumnText: 'Spalte zum Zuweisen auswählen',
+      unselectColumnText: 'Spalte abwählen'
+    },
+    TargetBox: {
+      optionalAriaLabelText: 'optional',
+      requiredAriaLabelText: 'erforderlich',
+      boxPlaceholderText: 'Spalte hierher ziehen',
+      getBoxValueActionText: (columnCode: string) =>
+        `Spalte ${columnCode} zuweisen`,
+      clearText: 'Zugewiesene Spalte entfernen'
+    }
+  }
+};
