@@ -12,6 +12,8 @@ import {
 } from './ImporterProps';
 
 import './Importer.scss';
+import { LocaleContext } from '../locale/LocaleContext';
+import { enUS } from '../locale';
 
 // internal context for registering field definitions
 type FieldDef = Field & { id: number };
@@ -83,6 +85,7 @@ export function Importer<Row extends BaseRow>({
   onComplete,
   onClose,
   children: content,
+  locale,
   ...customPapaParseConfig
 }: ImporterProps<Row>): React.ReactElement {
   // helper to combine our displayed content and the user code that provides field definitions
@@ -133,74 +136,83 @@ export function Importer<Row extends BaseRow>({
     </FieldDefinitionContext.Provider>
   );
 
+  // fall back to enUS if no default locale provided
+  locale = locale ?? enUS;
+
   if (!fileAccepted || fileState === null || externalPreview === null) {
     return (
-      <div className="CSVImporter_Importer">
-        <FileStep
-          customConfig={customPapaParseConfig}
-          assumeNoHeaders={assumeNoHeaders}
-          prevState={fileState}
-          onChange={(parsedPreview) => {
-            setFileState(parsedPreview);
-          }}
-          onAccept={() => {
-            setFileAccepted(true);
-          }}
-        />
+      <LocaleContext.Provider value={locale}>
+        <div className="CSVImporter_Importer">
+          <FileStep
+            customConfig={customPapaParseConfig}
+            assumeNoHeaders={assumeNoHeaders}
+            prevState={fileState}
+            onChange={(parsedPreview) => {
+              setFileState(parsedPreview);
+            }}
+            onAccept={() => {
+              setFileAccepted(true);
+            }}
+          />
 
-        {contentWrap}
-      </div>
+          {contentWrap}
+        </div>
+      </LocaleContext.Provider>
     );
   }
 
   if (!fieldsAccepted || fieldsState === null) {
     return (
-      <div className="CSVImporter_Importer">
-        <FieldsStep
-          fileState={fileState}
-          fields={fields}
-          prevState={fieldsState}
-          onChange={(state) => {
-            setFieldsState(state);
-          }}
-          onAccept={() => {
-            setFieldsAccepted(true);
-          }}
-          onCancel={() => {
-            // keep existing preview data and assignments
-            setFileAccepted(false);
-          }}
-        />
+      <LocaleContext.Provider value={locale}>
+        <div className="CSVImporter_Importer">
+          <FieldsStep
+            fileState={fileState}
+            fields={fields}
+            prevState={fieldsState}
+            onChange={(state) => {
+              setFieldsState(state);
+            }}
+            onAccept={() => {
+              setFieldsAccepted(true);
+            }}
+            onCancel={() => {
+              // keep existing preview data and assignments
+              setFileAccepted(false);
+            }}
+          />
 
-        {contentWrap}
-      </div>
+          {contentWrap}
+        </div>
+      </LocaleContext.Provider>
     );
   }
 
   return (
-    <div className="CSVImporter_Importer">
-      <ProgressDisplay
-        fileState={fileState}
-        fieldsState={fieldsState}
-        externalPreview={externalPreview}
-        processChunk={processChunk}
-        onStart={onStart}
-        onRestart={
-          restartable
-            ? () => {
-                // reset all state
-                setFileState(null);
-                setFileAccepted(false);
-                setFieldsState(null);
-                setFieldsAccepted(false);
-              }
-            : undefined
-        }
-        onComplete={onComplete}
-        onClose={onClose}
-      />
+    <LocaleContext.Provider value={locale}>
+      <div className="CSVImporter_Importer">
+        <ProgressDisplay
+          fileState={fileState}
+          fieldsState={fieldsState}
+          externalPreview={externalPreview}
+          processChunk={processChunk}
+          onStart={onStart}
+          onRestart={
+            restartable
+              ? () => {
+                  // reset all state
+                  setFileState(null);
+                  setFileAccepted(false);
+                  setFieldsState(null);
+                  setFieldsAccepted(false);
+                }
+              : undefined
+          }
+          onComplete={onComplete}
+          onClose={onClose}
+        />
 
-      {contentWrap}
-    </div>
+        {contentWrap}
+      </div>
+    </LocaleContext.Provider>
   );
 }
