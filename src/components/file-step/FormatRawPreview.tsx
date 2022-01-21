@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocale } from '../../locale/LocaleContext';
 
 import { FormatErrorMessage } from './FormatErrorMessage';
 
@@ -15,6 +16,8 @@ export const FormatRawPreview: React.FC<{
   const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
   const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
 
+  const { getWarningText } = useLocale('FormatRawPreview');
+
   return (
     <div className="CSVImporter_FormatRawPreview">
       <div className="CSVImporter_FormatRawPreview__scroll">
@@ -26,7 +29,7 @@ export const FormatRawPreview: React.FC<{
 
       {warning ? (
         <FormatErrorMessage onCancelClick={onCancelClick}>
-          {warning.message || String(warning)}: please check data formatting
+          {getWarningText(warning.message || String(warning))}
         </FormatErrorMessage>
       ) : null}
     </div>

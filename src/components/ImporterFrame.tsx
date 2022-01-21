@@ -4,6 +4,7 @@ import { TextButton } from './TextButton';
 import { IconButton } from './IconButton';
 
 import './ImporterFrame.scss';
+import { useLocale } from '../locale/LocaleContext';
 
 export const ImporterFrame: React.FC<{
   fileName: string;
@@ -40,11 +41,13 @@ export const ImporterFrame: React.FC<{
     }
   }, []);
 
+  const { previousStepText, nextStepText } = useLocale('ImporterFrame');
+
   return (
     <div className="CSVImporter_ImporterFrame">
       <div className="CSVImporter_ImporterFrame__header">
         <IconButton
-          label="Go to previous step"
+          label={previousStepText}
           type="arrowBack"
           disabled={!onCancel}
           onClick={onCancel}
@@ -92,7 +95,7 @@ export const ImporterFrame: React.FC<{
           </div>
         ) : null}
         <TextButton disabled={!!nextDisabled} onClick={onNext}>
-          {nextLabel || 'Next'}
+          {nextLabel || nextStepText}
         </TextButton>
       </div>
     </div>

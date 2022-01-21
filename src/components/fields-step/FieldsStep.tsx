@@ -12,6 +12,7 @@ import { useColumnDragState, Field as DragField } from './ColumnDragState';
 import { ColumnDragObject } from './ColumnDragObject';
 import { ColumnDragSourceArea } from './ColumnDragSourceArea';
 import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
+import { useLocale } from '../../locale/LocaleContext';
 
 // re-export from a central spot
 export type Field = DragField;
@@ -120,10 +121,12 @@ export const FieldsStep: React.FC<{
     onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
   }, [fieldAssignments]);
 
+  const { requiredFieldsErrorText, subtitleText } = useLocale('ColumnPicker');
+
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle="Select Columns"
+      subtitle={subtitleText}
       error={validationError}
       onCancel={onCancel}
       onNext={() => {
@@ -143,7 +146,7 @@ export const FieldsStep: React.FC<{
         if (!hasUnassignedRequired) {
           onAccept();
         } else {
-          setValidationError('Please assign all required fields');
+          setValidationError(requiredFieldsErrorText);
         }
       }}
     >
