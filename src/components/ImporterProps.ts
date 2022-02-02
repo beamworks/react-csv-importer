@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomizablePapaParseConfig, ParseCallback, BaseRow } from './parser';
+import { CustomizablePapaParseConfig, ParseCallback, BaseRow } from '../parser';
 
 // information for displaying a spreadsheet-style column
 export interface ImporterPreviewColumn {

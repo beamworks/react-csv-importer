@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { PREVIEW_ROW_COUNT } from './parser';
+import { PREVIEW_ROW_COUNT } from '../parser';
 import { Column } from './ColumnPreview';
 
 import './ColumnDragCard.scss';

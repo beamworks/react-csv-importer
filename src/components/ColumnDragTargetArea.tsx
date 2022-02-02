@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useDrag } from 'react-use-gesture';
 
-import { FieldAssignmentMap } from './parser';
+import { FieldAssignmentMap } from '../parser';
 import { Column } from './ColumnPreview';
 import { DragState, Field } from './ColumnDragState';
 import { ColumnDragCard } from './ColumnDragCard';

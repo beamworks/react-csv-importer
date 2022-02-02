@@ -5,7 +5,7 @@ import {
   PreviewResults,
   Preview,
   CustomizablePapaParseConfig
-} from './parser';
+} from '../parser';
 import { ImporterFrame } from './ImporterFrame';
 import { FormatRawPreview } from './FormatRawPreview';
 import { FormatDataRowPreview } from './FormatDataRowPreview';
