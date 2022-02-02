@@ -6,7 +6,7 @@ import {
   ParseCallback,
   BaseRow,
   Preview
-} from './parser';
+} from '../parser';
 import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { ImporterFrame } from './ImporterFrame';
 

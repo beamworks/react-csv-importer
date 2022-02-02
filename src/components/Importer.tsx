@@ -6,7 +6,7 @@ import React, {
   useContext
 } from 'react';
 
-import { FieldAssignmentMap, BaseRow, Preview } from './parser';
+import { FieldAssignmentMap, BaseRow, Preview } from '../parser';
 import { generatePreviewColumns } from './ColumnPreview';
 import { FileSelector } from './FileSelector';
 import { FormatPreview } from './FormatPreview';
