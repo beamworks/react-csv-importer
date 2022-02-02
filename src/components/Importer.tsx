@@ -14,7 +14,6 @@ import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
-  ImporterContentRenderProp,
   ImporterProps,
   ImporterFieldProps
 } from './ImporterProps';
@@ -37,6 +36,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   label,
   optional
 }) => {
+  // @todo this is not SSR-compatible
   const fieldId = useMemo(() => (fieldIdCount += 1), []);
   const fieldSetter = useContext(FieldDefinitionContext);
 
@@ -82,32 +82,6 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   return null;
 };
 
-const ContentWrapper: React.FC<{
-  setFields: React.Dispatch<React.SetStateAction<FieldDef[]>>;
-  preview: Preview | null;
-  externalPreview: ImporterFilePreview | null;
-  content: ImporterContentRenderProp | React.ReactNode;
-}> = ({ setFields, preview, externalPreview, content, children }) => {
-  const finalContent = useMemo(() => {
-    return typeof content === 'function'
-      ? content({
-          file: preview && preview.file,
-          preview: externalPreview
-        })
-      : content;
-  }, [preview, externalPreview, content]);
-
-  return (
-    <div className="CSVImporter_Importer">
-      {children}
-
-      <FieldDefinitionContext.Provider value={setFields}>
-        {finalContent}
-      </FieldDefinitionContext.Provider>
-    </div>
-  );
-};
-
 export function Importer<Row extends BaseRow>({
   assumeNoHeaders,
   restartable,
@@ -117,7 +91,7 @@ export function Importer<Row extends BaseRow>({
   onClose,
   children: content,
   ...customPapaParseConfig
-}: React.PropsWithChildren<ImporterProps<Row>>): React.ReactElement {
+}: ImporterProps<Row>): React.ReactElement {
   // helper to combine our displayed content and the user code that provides field definitions
   const [fields, setFields] = useState<FieldDef[]>([]);
 
@@ -150,27 +124,33 @@ export function Importer<Row extends BaseRow>({
     );
   }, [preview]);
 
+  // render provided child content that defines the fields
+  const contentNodes = useMemo(() => {
+    return typeof content === 'function'
+      ? content({
+          file: preview && preview.file,
+          preview: externalPreview
+        })
+      : content;
+  }, [preview, externalPreview, content]);
+  const contentWrap = (
+    <FieldDefinitionContext.Provider value={setFields}>
+      {contentNodes}
+    </FieldDefinitionContext.Provider>
+  );
+
   if (selectedFile === null) {
     return (
-      <ContentWrapper
-        setFields={setFields}
-        preview={preview}
-        externalPreview={externalPreview}
-        content={content}
-      >
+      <div className="CSVImporter_Importer">
         <FileSelector onSelected={fileHandler} />
-      </ContentWrapper>
+        {contentWrap}
+      </div>
     );
   }
 
   if (!formatAccepted || preview === null || externalPreview === null) {
     return (
-      <ContentWrapper
-        setFields={setFields}
-        preview={preview}
-        externalPreview={externalPreview}
-        content={content}
-      >
+      <div className="CSVImporter_Importer">
         <FormatPreview
           customConfig={customPapaParseConfig}
           file={selectedFile}
@@ -187,18 +167,15 @@ export function Importer<Row extends BaseRow>({
             setPreview(null);
           }}
         />
-      </ContentWrapper>
+
+        {contentWrap}
+      </div>
     );
   }
 
   if (fieldAssignments === null) {
     return (
-      <ContentWrapper
-        setFields={setFields}
-        preview={preview}
-        externalPreview={externalPreview}
-        content={content}
-      >
+      <div className="CSVImporter_Importer">
         <ColumnPicker
           fields={fields}
           preview={preview}
@@ -210,17 +187,14 @@ export function Importer<Row extends BaseRow>({
             setFormatAccepted(false);
           }}
         />
-      </ContentWrapper>
+
+        {contentWrap}
+      </div>
     );
   }
 
   return (
-    <ContentWrapper
-      setFields={setFields}
-      preview={preview}
-      externalPreview={externalPreview}
-      content={content}
-    >
+    <div className="CSVImporter_Importer">
       <ProgressDisplay
         preview={preview}
         externalPreview={externalPreview}
@@ -241,6 +215,8 @@ export function Importer<Row extends BaseRow>({
         onComplete={onComplete}
         onClose={onClose}
       />
-    </ContentWrapper>
+
+      {contentWrap}
+    </div>
   );
 }
