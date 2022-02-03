@@ -114,7 +114,8 @@ export function parsePreview(
       skipEmptyLines: true,
       error: (error) => {
         resolve({
-          parseError: error
+          parseError: error,
+          file
         });
       },
       beforeFirstChunk: (chunk) => {
