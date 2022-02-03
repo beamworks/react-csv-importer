@@ -153,6 +153,7 @@ export function Importer<Row extends BaseRow>({
           fields={fields}
           preview={preview}
           onAccept={(assignments) => {
+            // @todo use onChange to preserve this state if going back and toggling hasHeaders
             setFieldAssignments(assignments);
           }}
           onCancel={() => {
