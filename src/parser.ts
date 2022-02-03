@@ -32,12 +32,6 @@ export type PreviewResults =
       parseError: undefined;
     } & PreviewReport);
 
-// complete "workspace" for kicking off the full parse @todo rename
-export interface Preview extends PreviewReport {
-  papaParseConfig: CustomizablePapaParseConfig; // config that was used for preview parsing
-  hasHeaders: boolean;
-}
-
 export const PREVIEW_ROW_COUNT = 5;
 
 export type FieldAssignmentMap = { [name: string]: number | undefined };
@@ -151,13 +145,19 @@ export function parsePreview(
   });
 }
 
+export interface ParserInput {
+  file: File;
+  papaParseConfig: CustomizablePapaParseConfig;
+  hasHeaders: boolean;
+  fieldAssignments: FieldAssignmentMap;
+}
+
 export function processFile<Row extends BaseRow>(
-  preview: Preview,
-  fieldAssignments: FieldAssignmentMap,
+  input: ParserInput,
   reportProgress: (deltaCount: number) => void,
   callback: ParseCallback<Row>
 ): Promise<void> {
-  const { file, hasHeaders, papaParseConfig } = preview;
+  const { file, hasHeaders, papaParseConfig, fieldAssignments } = input;
   const fieldNames = Object.keys(fieldAssignments);
 
   // wrap synchronous errors in promise

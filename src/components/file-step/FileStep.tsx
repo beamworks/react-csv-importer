@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import {
   parsePreview,
   PreviewResults,
-  Preview,
+  PreviewReport,
   CustomizablePapaParseConfig
 } from '../../parser';
 import { ImporterFrame } from '../ImporterFrame';
@@ -14,38 +14,37 @@ import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FileStep.scss';
 
+export interface FileStepState extends PreviewReport {
+  papaParseConfig: CustomizablePapaParseConfig; // config that was used for preview parsing
+  hasHeaders: boolean;
+}
+
 export const FileStep: React.FC<{
   customConfig: CustomizablePapaParseConfig;
   assumeNoHeaders?: boolean;
-  currentPreview: Preview | null;
-  onChange: (preview: Preview | null) => void;
+  prevState: FileStepState | null;
+  onChange: (state: FileStepState | null) => void;
   onAccept: () => void;
-}> = ({
-  customConfig,
-  assumeNoHeaders,
-  currentPreview,
-  onChange,
-  onAccept
-}) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(() =>
-    currentPreview ? currentPreview.file : null
+}> = ({ customConfig, assumeNoHeaders, prevState, onChange, onAccept }) => {
+  // seed from previous state as needed
+  const [selectedFile, setSelectedFile] = useState<File | null>(
+    prevState ? prevState.file : null
   );
 
-  // augmented PreviewResults from parser
   const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
-      currentPreview && {
+      prevState && {
         parseError: undefined,
-        ...currentPreview
+        ...prevState
       }
   );
 
-  const [papaParseConfig, setPapaParseConfig] = useState(() =>
-    currentPreview ? currentPreview.papaParseConfig : customConfig
+  const [papaParseConfig, setPapaParseConfig] = useState(
+    prevState ? prevState.papaParseConfig : customConfig
   );
 
-  const [hasHeaders, setHasHeaders] = useState(() =>
-    currentPreview ? currentPreview.hasHeaders : false
+  const [hasHeaders, setHasHeaders] = useState(
+    prevState ? prevState.hasHeaders : false
   );
 
   // wrap in ref to avoid triggering effect

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 
-import { FieldAssignmentMap, Preview } from '../../parser';
+import { FieldAssignmentMap } from '../../parser';
+import { FileStepState } from '../file-step/FileStep';
 import { ImporterFrame } from '../ImporterFrame';
 import {
   generatePreviewColumns,
@@ -16,18 +17,18 @@ import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
 export type Field = DragField;
 
 export const FieldsStep: React.FC<{
+  fileState: FileStepState;
   fields: Field[];
-  preview: Preview;
   onAccept: (fieldAssignments: FieldAssignmentMap) => void;
   onCancel: () => void;
-}> = ({ fields, preview, onAccept, onCancel }) => {
+}> = ({ fileState, fields, onAccept, onCancel }) => {
   const columns = useMemo<Column[]>(
     () =>
       generatePreviewColumns(
-        preview.firstRows,
-        preview.hasHeaders
+        fileState.firstRows,
+        fileState.hasHeaders
       ).map((item) => ({ ...item, code: generateColumnCode(item.index) })),
-    [preview]
+    [fileState]
   );
 
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
@@ -102,7 +103,7 @@ export const FieldsStep: React.FC<{
 
   return (
     <ImporterFrame
-      fileName={preview.file.name}
+      fileName={fileState.file.name}
       subtitle="Select Columns"
       error={validationError}
       onCancel={onCancel}
@@ -137,7 +138,7 @@ export const FieldsStep: React.FC<{
       />
 
       <ColumnDragTargetArea
-        hasHeaders={preview.hasHeaders}
+        hasHeaders={fileState.hasHeaders}
         fields={fields}
         columns={columns}
         fieldTouched={fieldTouched}
