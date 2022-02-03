@@ -5,38 +5,47 @@ import {
   PreviewResults,
   Preview,
   CustomizablePapaParseConfig
-} from '../parser';
-import { ImporterFrame } from './ImporterFrame';
+} from '../../parser';
+import { ImporterFrame } from '../ImporterFrame';
+import { FileSelector } from './FileSelector';
 import { FormatRawPreview } from './FormatRawPreview';
 import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
-import './FormatPreview.scss';
+import './FileStep.scss';
 
-export const FormatPreview: React.FC<{
+export const FileStep: React.FC<{
   customConfig: CustomizablePapaParseConfig;
-  file: File;
   assumeNoHeaders?: boolean;
   currentPreview: Preview | null;
   onChange: (preview: Preview | null) => void;
   onAccept: () => void;
-  onCancel: () => void;
 }> = ({
   customConfig,
-  file,
   assumeNoHeaders,
   currentPreview,
   onChange,
-  onAccept,
-  onCancel
+  onAccept
 }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(() =>
+    currentPreview ? currentPreview.file : null
+  );
+
   // augmented PreviewResults from parser
-  const [preview, setPreview] = useState<PreviewResults<Preview> | null>(
+  const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
         parseError: undefined,
         ...currentPreview
       }
+  );
+
+  const [papaParseConfig, setPapaParseConfig] = useState(() =>
+    currentPreview ? currentPreview.papaParseConfig : customConfig
+  );
+
+  const [hasHeaders, setHasHeaders] = useState(() =>
+    currentPreview ? currentPreview.hasHeaders : false
   );
 
   // wrap in ref to avoid triggering effect
@@ -49,40 +58,58 @@ export const FormatPreview: React.FC<{
 
   // notify of current state
   useEffect(() => {
-    onChangeRef.current(preview && !preview.parseError ? preview : null);
-  }, [preview]);
+    onChangeRef.current(
+      preview && !preview.parseError
+        ? { ...preview, papaParseConfig, hasHeaders }
+        : null
+    );
+  }, [preview, papaParseConfig, hasHeaders]);
 
   // perform async preview parse once for the given file
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
+    // clear other state when file selector is reset
+    if (!selectedFile) {
+      setPreview(null);
+      return;
+    }
+
+    // preserve existing state when parsing for this file is already complete
+    if (preview && preview.file === selectedFile) {
+      return;
+    }
+
     const oplock = asyncLockRef.current;
 
     // lock in the current PapaParse config instance for use in multiple spots
-    const papaParseConfig = customConfigRef.current;
+    const config = customConfigRef.current;
 
     // kick off the preview parse
-    parsePreview(file, papaParseConfig).then((results) => {
+    parsePreview(selectedFile, config).then((results) => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {
         return;
       }
 
-      if (results.parseError) {
-        setPreview(results);
-      } else {
-        // pre-fill headers flag (only possible with >1 lines)
-        const hasHeaders = !assumeNoHeadersRef.current && !results.isSingleLine;
+      // save the results and the original config
+      setPreview(results);
+      setPapaParseConfig(config);
 
-        setPreview({ ...results, papaParseConfig, hasHeaders });
-      }
+      // pre-fill headers flag (only possible with >1 lines)
+      setHasHeaders(
+        results.parseError
+          ? false
+          : !assumeNoHeadersRef.current && !results.isSingleLine
+      );
     });
 
     return () => {
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [file]);
+  }, [selectedFile, preview]);
 
+  // clear selected file
   // preview result content to display
   const reportBlock = useMemo(() => {
     if (!preview) {
@@ -91,8 +118,8 @@ export const FormatPreview: React.FC<{
 
     if (preview.parseError) {
       return (
-        <div className="CSVImporter_FormatPreview__mainResultBlock">
-          <FormatErrorMessage onCancelClick={onCancel}>
+        <div className="CSVImporter_FileStep__mainResultBlock">
+          <FormatErrorMessage onCancelClick={() => setSelectedFile(null)}>
             Import error:{' '}
             <b>{preview.parseError.message || String(preview.parseError)}</b>
           </FormatErrorMessage>
@@ -101,35 +128,26 @@ export const FormatPreview: React.FC<{
     }
 
     return (
-      <div className="CSVImporter_FormatPreview__mainResultBlock">
-        <div className="CSVImporter_FormatPreview__header">
-          Raw File Contents
-        </div>
+      <div className="CSVImporter_FileStep__mainResultBlock">
+        <div className="CSVImporter_FileStep__header">Raw File Contents</div>
 
         <FormatRawPreview
           chunk={preview.firstChunk}
           warning={preview.parseWarning}
-          onCancelClick={onCancel}
+          onCancelClick={() => setSelectedFile(null)}
         />
 
         {preview.parseWarning ? null : (
           <>
-            <div className="CSVImporter_FormatPreview__header">
+            <div className="CSVImporter_FileStep__header">
               Preview Import
               {!preview.isSingleLine && ( // hide setting if only one line anyway
-                <label className="CSVImporter_FormatPreview__headerToggle">
+                <label className="CSVImporter_FileStep__headerToggle">
                   <input
                     type="checkbox"
-                    checked={preview.hasHeaders}
+                    checked={hasHeaders}
                     onChange={() => {
-                      setPreview((prev) =>
-                        prev && !prev.parseError // appease type safety
-                          ? {
-                              ...prev,
-                              hasHeaders: !prev.hasHeaders
-                            }
-                          : prev
-                      );
+                      setHasHeaders((prev) => !prev);
                     }}
                   />
                   <span>Data has headers</span>
@@ -137,18 +155,22 @@ export const FormatPreview: React.FC<{
               )}
             </div>
             <FormatDataRowPreview
-              hasHeaders={preview.hasHeaders}
+              hasHeaders={hasHeaders}
               rows={preview.firstRows}
             />
           </>
         )}
       </div>
     );
-  }, [preview, onCancel]);
+  }, [preview, hasHeaders]);
+
+  if (!selectedFile) {
+    return <FileSelector onSelected={(file) => setSelectedFile(file)} />;
+  }
 
   return (
     <ImporterFrame
-      fileName={file.name}
+      fileName={selectedFile.name}
       nextDisabled={!preview || !!preview.parseError || !!preview.parseWarning}
       onNext={() => {
         if (!preview || preview.parseError) {
@@ -157,10 +179,10 @@ export const FormatPreview: React.FC<{
 
         onAccept();
       }}
-      onCancel={onCancel}
+      onCancel={() => setSelectedFile(null)}
     >
       {reportBlock || (
-        <div className="CSVImporter_FormatPreview__mainPendingBlock">
+        <div className="CSVImporter_FileStep__mainPendingBlock">
           Loading preview...
         </div>
       )}

@@ -1,4 +1,4 @@
-import { ImporterPreviewColumn } from './ImporterProps';
+import { ImporterPreviewColumn } from '../ImporterProps';
 
 export interface Column extends ImporterPreviewColumn {
   code: string;
