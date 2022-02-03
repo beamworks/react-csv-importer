@@ -31,12 +31,20 @@ export const FormatPreview: React.FC<{
   onCancel
 }) => {
   // augmented PreviewResults from parser
-  const [preview, setPreview] = useState<PreviewResults<Preview> | null>(
+  const [preview, setPreview] = useState<PreviewResults | null>(
     () =>
       currentPreview && {
         parseError: undefined,
         ...currentPreview
       }
+  );
+
+  const [papaParseConfig, setPapaParseConfig] = useState(() =>
+    currentPreview ? currentPreview.papaParseConfig : customConfig
+  );
+
+  const [hasHeaders, setHasHeaders] = useState(() =>
+    currentPreview ? currentPreview.hasHeaders : false
   );
 
   // wrap in ref to avoid triggering effect
@@ -49,8 +57,12 @@ export const FormatPreview: React.FC<{
 
   // notify of current state
   useEffect(() => {
-    onChangeRef.current(preview && !preview.parseError ? preview : null);
-  }, [preview]);
+    onChangeRef.current(
+      preview && !preview.parseError
+        ? { ...preview, papaParseConfig, hasHeaders }
+        : null
+    );
+  }, [preview, papaParseConfig, hasHeaders]);
 
   // perform async preview parse once for the given file
   const asyncLockRef = useRef<number>(0);
@@ -58,23 +70,25 @@ export const FormatPreview: React.FC<{
     const oplock = asyncLockRef.current;
 
     // lock in the current PapaParse config instance for use in multiple spots
-    const papaParseConfig = customConfigRef.current;
+    const config = customConfigRef.current;
 
     // kick off the preview parse
-    parsePreview(file, papaParseConfig).then((results) => {
+    parsePreview(file, config).then((results) => {
       // ignore if stale
       if (oplock !== asyncLockRef.current) {
         return;
       }
 
-      if (results.parseError) {
-        setPreview(results);
-      } else {
-        // pre-fill headers flag (only possible with >1 lines)
-        const hasHeaders = !assumeNoHeadersRef.current && !results.isSingleLine;
+      // save the results and the original config
+      setPreview(results);
+      setPapaParseConfig(config);
 
-        setPreview({ ...results, papaParseConfig, hasHeaders });
-      }
+      // pre-fill headers flag (only possible with >1 lines)
+      setHasHeaders(
+        results.parseError
+          ? false
+          : !assumeNoHeadersRef.current && !results.isSingleLine
+      );
     });
 
     return () => {
@@ -120,16 +134,9 @@ export const FormatPreview: React.FC<{
                 <label className="CSVImporter_FormatPreview__headerToggle">
                   <input
                     type="checkbox"
-                    checked={preview.hasHeaders}
+                    checked={hasHeaders}
                     onChange={() => {
-                      setPreview((prev) =>
-                        prev && !prev.parseError // appease type safety
-                          ? {
-                              ...prev,
-                              hasHeaders: !prev.hasHeaders
-                            }
-                          : prev
-                      );
+                      setHasHeaders((prev) => !prev);
                     }}
                   />
                   <span>Data has headers</span>
@@ -137,14 +144,14 @@ export const FormatPreview: React.FC<{
               )}
             </div>
             <FormatDataRowPreview
-              hasHeaders={preview.hasHeaders}
+              hasHeaders={hasHeaders}
               rows={preview.firstRows}
             />
           </>
         )}
       </div>
     );
-  }, [preview, onCancel]);
+  }, [preview, hasHeaders, onCancel]);
 
   return (
     <ImporterFrame
