@@ -26,6 +26,7 @@ export interface PreviewReport {
 export type PreviewResults<Report extends PreviewReport = PreviewReport> =
   | {
       parseError: Error | Papa.ParseError;
+      file: File;
     }
   | ({
       parseError: undefined;
@@ -79,7 +80,8 @@ export function parsePreview(
       // PapaParse normally complains first anyway, but might as well flag it
       if (rowAccumulator.length === 0) {
         return {
-          parseError: new Error('File is empty')
+          parseError: new Error('File is empty'),
+          file
         };
       }
 
@@ -142,7 +144,8 @@ export function parsePreview(
     });
   }).catch((error) => {
     return {
-      parseError: error // delegate message display to UI logic
+      parseError: error, // delegate message display to UI logic
+      file
     };
   });
 }

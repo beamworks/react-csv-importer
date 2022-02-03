@@ -68,9 +68,14 @@ export const FileStep: React.FC<{
   // perform async preview parse once for the given file
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
+    // clear other state when file selector is reset
     if (!selectedFile) {
-      // clear current state
       setPreview(null);
+      return;
+    }
+
+    // preserve existing state when parsing for this file is already complete
+    if (preview && preview.file === selectedFile) {
       return;
     }
 
@@ -102,7 +107,7 @@ export const FileStep: React.FC<{
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [selectedFile]);
+  }, [selectedFile, preview]);
 
   // clear selected file
   // preview result content to display
