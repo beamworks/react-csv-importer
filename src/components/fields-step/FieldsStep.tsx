@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 
-import { FieldAssignmentMap, Preview } from '../parser';
-import { ImporterFrame } from './ImporterFrame';
+import { FieldAssignmentMap, Preview } from '../../parser';
+import { ImporterFrame } from '../ImporterFrame';
 import {
   generatePreviewColumns,
   generateColumnCode,
@@ -15,7 +15,7 @@ import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
 // re-export from a central spot
 export type Field = DragField;
 
-export const ColumnPicker: React.FC<{
+export const FieldsStep: React.FC<{
   fields: Field[];
   preview: Preview;
   onAccept: (fieldAssignments: FieldAssignmentMap) => void;

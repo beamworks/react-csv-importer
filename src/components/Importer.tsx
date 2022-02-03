@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useContext } from 'react';
 
 import { FieldAssignmentMap, BaseRow, Preview } from '../parser';
-import { generatePreviewColumns } from './ColumnPreview';
 import { FileStep } from './file-step/FileStep';
-import { ColumnPicker, Field } from './ColumnPicker';
+import { generatePreviewColumns } from './fields-step/ColumnPreview';
+import { FieldsStep, Field } from './fields-step/FieldsStep';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
@@ -149,7 +149,7 @@ export function Importer<Row extends BaseRow>({
   if (fieldAssignments === null) {
     return (
       <div className="CSVImporter_Importer">
-        <ColumnPicker
+        <FieldsStep
           fields={fields}
           preview={preview}
           onAccept={(assignments) => {
