@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useContext } from 'react';
 
-import { FieldAssignmentMap, BaseRow } from '../parser';
+import { BaseRow } from '../parser';
 import { FileStep, FileStepState } from './file-step/FileStep';
 import { generatePreviewColumns } from './fields-step/ColumnPreview';
-import { FieldsStep, Field } from './fields-step/FieldsStep';
+import { FieldsStep, Field, FieldsStepState } from './fields-step/FieldsStep';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
@@ -91,10 +91,16 @@ export function Importer<Row extends BaseRow>({
   const [fileState, setFileState] = useState<FileStepState | null>(null);
   const [fileAccepted, setFileAccepted] = useState<boolean>(false);
 
-  const [
-    fieldAssignments,
-    setFieldAssignments
-  ] = useState<FieldAssignmentMap | null>(null);
+  const [fieldsState, setFieldsState] = useState<FieldsStepState | null>(null);
+  const [fieldsAccepted, setFieldsAccepted] = useState<boolean>(false);
+
+  // reset field assignments when file changes
+  const activeFile = fileState && fileState.file;
+  useEffect(() => {
+    if (activeFile) {
+      setFieldsState(null);
+    }
+  }, [activeFile]);
 
   const externalPreview = useMemo<ImporterFilePreview | null>(() => {
     // generate stable externally-visible data objects
@@ -147,18 +153,21 @@ export function Importer<Row extends BaseRow>({
     );
   }
 
-  if (fieldAssignments === null) {
+  if (!fieldsAccepted || fieldsState === null) {
     return (
       <div className="CSVImporter_Importer">
         <FieldsStep
           fileState={fileState}
           fields={fields}
-          onAccept={(assignments) => {
-            // @todo use onChange to preserve this state if going back and toggling hasHeaders
-            setFieldAssignments(assignments);
+          prevState={fieldsState}
+          onChange={(state) => {
+            setFieldsState(state);
+          }}
+          onAccept={() => {
+            setFieldsAccepted(true);
           }}
           onCancel={() => {
-            // keep existing preview data
+            // keep existing preview data and assignments
             setFileAccepted(false);
           }}
         />
@@ -172,8 +181,8 @@ export function Importer<Row extends BaseRow>({
     <div className="CSVImporter_Importer">
       <ProgressDisplay
         fileState={fileState}
+        fieldsState={fieldsState}
         externalPreview={externalPreview}
-        fieldAssignments={fieldAssignments}
         processChunk={processChunk}
         onStart={onStart}
         onRestart={
@@ -182,7 +191,8 @@ export function Importer<Row extends BaseRow>({
                 // reset all state
                 setFileState(null);
                 setFileAccepted(false);
-                setFieldAssignments(null);
+                setFieldsState(null);
+                setFieldsAccepted(false);
               }
             : undefined
         }

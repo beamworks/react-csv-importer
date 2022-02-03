@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { FileStepState } from '../file-step/FileStep';
@@ -16,12 +16,21 @@ import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
 // re-export from a central spot
 export type Field = DragField;
 
+export interface FieldsStepState {
+  fieldAssignments: FieldAssignmentMap;
+}
+
 export const FieldsStep: React.FC<{
   fileState: FileStepState;
   fields: Field[];
-  onAccept: (fieldAssignments: FieldAssignmentMap) => void;
+  prevState: FieldsStepState | null;
+  onChange: (state: FieldsStepState) => void;
+  onAccept: () => void;
   onCancel: () => void;
-}> = ({ fileState, fields, onAccept, onCancel }) => {
+}> = ({ fileState, fields, prevState, onChange, onAccept, onCancel }) => {
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const columns = useMemo<Column[]>(
     () =>
       generatePreviewColumns(
@@ -33,6 +42,7 @@ export const FieldsStep: React.FC<{
 
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
     // prep insensitive/fuzzy match stems for known columns
+    // (this is ignored if there is already previous state to seed from)
     const columnStems = columns.map((column) => {
       const trimmed = column.header && column.header.trim();
 
@@ -89,17 +99,26 @@ export const FieldsStep: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(fields, initialAssignments, (fieldName) => {
-    setFieldTouched((prev) => {
-      if (prev[fieldName]) {
-        return prev;
-      }
+  } = useColumnDragState(
+    fields,
+    prevState ? prevState.fieldAssignments : initialAssignments,
+    (fieldName) => {
+      setFieldTouched((prev) => {
+        if (prev[fieldName]) {
+          return prev;
+        }
 
-      const copy = { ...prev };
-      copy[fieldName] = true;
-      return copy;
-    });
-  });
+        const copy = { ...prev };
+        copy[fieldName] = true;
+        return copy;
+      });
+    }
+  );
+
+  // notify of current state
+  useEffect(() => {
+    onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
+  }, [fieldAssignments]);
 
   return (
     <ImporterFrame
@@ -122,7 +141,7 @@ export const FieldsStep: React.FC<{
         );
 
         if (!hasUnassignedRequired) {
-          onAccept({ ...fieldAssignments });
+          onAccept();
         } else {
           setValidationError('Please assign all required fields');
         }

@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import {
-  processFile,
-  FieldAssignmentMap,
-  ParseCallback,
-  BaseRow
-} from '../parser';
+import { processFile, ParseCallback, BaseRow } from '../parser';
 import { FileStepState } from './file-step/FileStep';
+import { FieldsStepState } from './fields-step/FieldsStep';
 import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { ImporterFrame } from './ImporterFrame';
 
@@ -26,8 +22,8 @@ function countUTF8Bytes(item: string) {
 
 export function ProgressDisplay<Row extends BaseRow>({
   fileState,
+  fieldsState,
   externalPreview,
-  fieldAssignments,
   processChunk,
   onStart,
   onComplete,
@@ -35,8 +31,8 @@ export function ProgressDisplay<Row extends BaseRow>({
   onClose
 }: React.PropsWithChildren<{
   fileState: FileStepState;
+  fieldsState: FieldsStepState;
   externalPreview: ImporterFilePreview;
-  fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
   onComplete?: (info: ImportInfo) => void;
@@ -50,11 +46,11 @@ export function ProgressDisplay<Row extends BaseRow>({
 
   // info object exposed to the progress callbacks
   const importInfo = useMemo<ImportInfo>(() => {
-    const fieldList = Object.keys(fieldAssignments);
+    const fieldList = Object.keys(fieldsState.fieldAssignments);
 
     const columnSparseList: (string | undefined)[] = [];
     fieldList.forEach((field) => {
-      const col = fieldAssignments[field];
+      const col = fieldsState.fieldAssignments[field];
       if (col !== undefined) {
         columnSparseList[col] = field;
       }
@@ -66,7 +62,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       fields: fieldList,
       columnFields: [...columnSparseList]
     };
-  }, [fileState, externalPreview, fieldAssignments]);
+  }, [fileState, fieldsState, externalPreview]);
 
   // estimate number of rows
   const estimatedRowCount = useMemo(() => {
@@ -125,7 +121,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     const oplock = asyncLockRef.current;
 
     processFile(
-      { ...fileState, fieldAssignments },
+      { ...fileState, fieldAssignments: fieldsState.fieldAssignments },
       (deltaCount) => {
         // ignore if stale
         if (oplock !== asyncLockRef.current) {
@@ -158,7 +154,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [fileState, fieldAssignments]);
+  }, [fileState, fieldsState]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {
