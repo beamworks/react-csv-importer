@@ -1,15 +1,8 @@
-import React, {
-  useMemo,
-  useState,
-  useCallback,
-  useEffect,
-  useContext
-} from 'react';
+import React, { useMemo, useState, useEffect, useContext } from 'react';
 
 import { FieldAssignmentMap, BaseRow, Preview } from '../parser';
 import { generatePreviewColumns } from './ColumnPreview';
-import { FileSelector } from './FileSelector';
-import { FormatPreview } from './FormatPreview';
+import { FileStep } from './file-step/FileStep';
 import { ColumnPicker, Field } from './ColumnPicker';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
@@ -95,8 +88,6 @@ export function Importer<Row extends BaseRow>({
   // helper to combine our displayed content and the user code that provides field definitions
   const [fields, setFields] = useState<FieldDef[]>([]);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
   const [preview, setPreview] = useState<Preview | null>(null);
   const [formatAccepted, setFormatAccepted] = useState<boolean>(false);
 
@@ -104,10 +95,6 @@ export function Importer<Row extends BaseRow>({
     fieldAssignments,
     setFieldAssignments
   ] = useState<FieldAssignmentMap | null>(null);
-
-  const fileHandler = useCallback((file: File) => {
-    setSelectedFile(file);
-  }, []);
 
   const externalPreview = useMemo<ImporterFilePreview | null>(() => {
     // generate stable externally-visible data objects
@@ -139,21 +126,11 @@ export function Importer<Row extends BaseRow>({
     </FieldDefinitionContext.Provider>
   );
 
-  if (selectedFile === null) {
-    return (
-      <div className="CSVImporter_Importer">
-        <FileSelector onSelected={fileHandler} />
-        {contentWrap}
-      </div>
-    );
-  }
-
   if (!formatAccepted || preview === null || externalPreview === null) {
     return (
       <div className="CSVImporter_Importer">
-        <FormatPreview
+        <FileStep
           customConfig={customPapaParseConfig}
-          file={selectedFile}
           assumeNoHeaders={assumeNoHeaders}
           currentPreview={preview}
           onChange={(parsedPreview) => {
@@ -161,10 +138,6 @@ export function Importer<Row extends BaseRow>({
           }}
           onAccept={() => {
             setFormatAccepted(true);
-          }}
-          onCancel={() => {
-            setSelectedFile(null);
-            setPreview(null);
           }}
         />
 
@@ -205,7 +178,6 @@ export function Importer<Row extends BaseRow>({
           restartable
             ? () => {
                 // reset all state
-                setSelectedFile(null);
                 setPreview(null);
                 setFormatAccepted(false);
                 setFieldAssignments(null);

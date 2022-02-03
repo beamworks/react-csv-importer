@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TextButton } from './TextButton';
+import { TextButton } from '../TextButton';
 
 import './FormatErrorMessage.scss';
 
