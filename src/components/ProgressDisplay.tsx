@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import {
-  processFile,
-  FieldAssignmentMap,
-  ParseCallback,
-  BaseRow,
-  Preview
-} from '../parser';
+import { processFile, ParseCallback, BaseRow } from '../parser';
+import { FileStepState } from './file-step/FileStep';
+import { FieldsStepState } from './fields-step/FieldsStep';
 import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { ImporterFrame } from './ImporterFrame';
 
@@ -25,18 +21,18 @@ function countUTF8Bytes(item: string) {
 }
 
 export function ProgressDisplay<Row extends BaseRow>({
-  preview,
+  fileState,
+  fieldsState,
   externalPreview,
-  fieldAssignments,
   processChunk,
   onStart,
   onComplete,
   onRestart,
   onClose
 }: React.PropsWithChildren<{
-  preview: Preview;
+  fileState: FileStepState;
+  fieldsState: FieldsStepState;
   externalPreview: ImporterFilePreview;
-  fieldAssignments: FieldAssignmentMap;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
   onComplete?: (info: ImportInfo) => void;
@@ -50,43 +46,46 @@ export function ProgressDisplay<Row extends BaseRow>({
 
   // info object exposed to the progress callbacks
   const importInfo = useMemo<ImportInfo>(() => {
-    const fieldList = Object.keys(fieldAssignments);
+    const fieldList = Object.keys(fieldsState.fieldAssignments);
 
     const columnSparseList: (string | undefined)[] = [];
     fieldList.forEach((field) => {
-      const col = fieldAssignments[field];
+      const col = fieldsState.fieldAssignments[field];
       if (col !== undefined) {
         columnSparseList[col] = field;
       }
     });
 
     return {
-      file: preview.file,
+      file: fileState.file,
       preview: externalPreview,
       fields: fieldList,
       columnFields: [...columnSparseList]
     };
-  }, [preview, externalPreview, fieldAssignments]);
+  }, [fileState, fieldsState, externalPreview]);
 
   // estimate number of rows
   const estimatedRowCount = useMemo(() => {
     // sum up sizes of all the parsed preview rows and get estimated average
-    const totalPreviewRowBytes = preview.firstRows.reduce((prevCount, row) => {
-      const rowBytes = row.reduce((prev, item) => {
-        return prev + countUTF8Bytes(item) + 1; // add a byte for separator or newline
-      }, 0);
+    const totalPreviewRowBytes = fileState.firstRows.reduce(
+      (prevCount, row) => {
+        const rowBytes = row.reduce((prev, item) => {
+          return prev + countUTF8Bytes(item) + 1; // add a byte for separator or newline
+        }, 0);
 
-      return prevCount + rowBytes;
-    }, 0);
+        return prevCount + rowBytes;
+      },
+      0
+    );
 
     const averagePreviewRowSize =
-      totalPreviewRowBytes / preview.firstRows.length;
+      totalPreviewRowBytes / fileState.firstRows.length;
 
     // divide file size by estimated row size (or fall back to a sensible amount)
     return averagePreviewRowSize > 1
-      ? preview.file.size / averagePreviewRowSize
+      ? fileState.file.size / averagePreviewRowSize
       : 100;
-  }, [preview]);
+  }, [fileState]);
 
   // notify on start of processing
   // (separate effect in case of errors)
@@ -122,8 +121,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     const oplock = asyncLockRef.current;
 
     processFile(
-      preview,
-      fieldAssignments,
+      { ...fileState, fieldAssignments: fieldsState.fieldAssignments },
       (deltaCount) => {
         // ignore if stale
         if (oplock !== asyncLockRef.current) {
@@ -156,7 +154,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [preview, fieldAssignments]);
+  }, [fileState, fieldsState]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {
@@ -174,7 +172,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
   return (
     <ImporterFrame
-      fileName={preview.file.name}
+      fileName={fileState.file.name}
       subtitle="Import"
       error={error && (error.message || String(error))}
       secondaryDisabled={!isComplete || isDismissed}

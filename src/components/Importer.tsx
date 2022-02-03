@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useContext } from 'react';
 
-import { FieldAssignmentMap, BaseRow, Preview } from '../parser';
-import { FileStep } from './file-step/FileStep';
+import { BaseRow } from '../parser';
+import { FileStep, FileStepState } from './file-step/FileStep';
 import { generatePreviewColumns } from './fields-step/ColumnPreview';
-import { FieldsStep, Field } from './fields-step/FieldsStep';
+import { FieldsStep, Field, FieldsStepState } from './fields-step/FieldsStep';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
@@ -88,56 +88,63 @@ export function Importer<Row extends BaseRow>({
   // helper to combine our displayed content and the user code that provides field definitions
   const [fields, setFields] = useState<FieldDef[]>([]);
 
-  const [preview, setPreview] = useState<Preview | null>(null);
-  const [formatAccepted, setFormatAccepted] = useState<boolean>(false);
+  const [fileState, setFileState] = useState<FileStepState | null>(null);
+  const [fileAccepted, setFileAccepted] = useState<boolean>(false);
 
-  const [
-    fieldAssignments,
-    setFieldAssignments
-  ] = useState<FieldAssignmentMap | null>(null);
+  const [fieldsState, setFieldsState] = useState<FieldsStepState | null>(null);
+  const [fieldsAccepted, setFieldsAccepted] = useState<boolean>(false);
+
+  // reset field assignments when file changes
+  const activeFile = fileState && fileState.file;
+  useEffect(() => {
+    if (activeFile) {
+      setFieldsState(null);
+    }
+  }, [activeFile]);
 
   const externalPreview = useMemo<ImporterFilePreview | null>(() => {
     // generate stable externally-visible data objects
     const externalColumns =
-      preview && generatePreviewColumns(preview.firstRows, preview.hasHeaders);
+      fileState &&
+      generatePreviewColumns(fileState.firstRows, fileState.hasHeaders);
     return (
-      preview &&
+      fileState &&
       externalColumns && {
-        rawData: preview.firstChunk,
+        rawData: fileState.firstChunk,
         columns: externalColumns,
-        skipHeaders: !preview.hasHeaders,
-        parseWarning: preview.parseWarning
+        skipHeaders: !fileState.hasHeaders,
+        parseWarning: fileState.parseWarning
       }
     );
-  }, [preview]);
+  }, [fileState]);
 
   // render provided child content that defines the fields
   const contentNodes = useMemo(() => {
     return typeof content === 'function'
       ? content({
-          file: preview && preview.file,
+          file: fileState && fileState.file,
           preview: externalPreview
         })
       : content;
-  }, [preview, externalPreview, content]);
+  }, [fileState, externalPreview, content]);
   const contentWrap = (
     <FieldDefinitionContext.Provider value={setFields}>
       {contentNodes}
     </FieldDefinitionContext.Provider>
   );
 
-  if (!formatAccepted || preview === null || externalPreview === null) {
+  if (!fileAccepted || fileState === null || externalPreview === null) {
     return (
       <div className="CSVImporter_Importer">
         <FileStep
           customConfig={customPapaParseConfig}
           assumeNoHeaders={assumeNoHeaders}
-          currentPreview={preview}
+          prevState={fileState}
           onChange={(parsedPreview) => {
-            setPreview(parsedPreview);
+            setFileState(parsedPreview);
           }}
           onAccept={() => {
-            setFormatAccepted(true);
+            setFileAccepted(true);
           }}
         />
 
@@ -146,19 +153,22 @@ export function Importer<Row extends BaseRow>({
     );
   }
 
-  if (fieldAssignments === null) {
+  if (!fieldsAccepted || fieldsState === null) {
     return (
       <div className="CSVImporter_Importer">
         <FieldsStep
+          fileState={fileState}
           fields={fields}
-          preview={preview}
-          onAccept={(assignments) => {
-            // @todo use onChange to preserve this state if going back and toggling hasHeaders
-            setFieldAssignments(assignments);
+          prevState={fieldsState}
+          onChange={(state) => {
+            setFieldsState(state);
+          }}
+          onAccept={() => {
+            setFieldsAccepted(true);
           }}
           onCancel={() => {
-            // keep existing preview data
-            setFormatAccepted(false);
+            // keep existing preview data and assignments
+            setFileAccepted(false);
           }}
         />
 
@@ -170,18 +180,19 @@ export function Importer<Row extends BaseRow>({
   return (
     <div className="CSVImporter_Importer">
       <ProgressDisplay
-        preview={preview}
+        fileState={fileState}
+        fieldsState={fieldsState}
         externalPreview={externalPreview}
-        fieldAssignments={fieldAssignments}
         processChunk={processChunk}
         onStart={onStart}
         onRestart={
           restartable
             ? () => {
                 // reset all state
-                setPreview(null);
-                setFormatAccepted(false);
-                setFieldAssignments(null);
+                setFileState(null);
+                setFileAccepted(false);
+                setFieldsState(null);
+                setFieldsAccepted(false);
               }
             : undefined
         }

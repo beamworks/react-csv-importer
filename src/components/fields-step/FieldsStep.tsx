@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 
-import { FieldAssignmentMap, Preview } from '../../parser';
+import { FieldAssignmentMap } from '../../parser';
+import { FileStepState } from '../file-step/FileStep';
 import { ImporterFrame } from '../ImporterFrame';
 import {
   generatePreviewColumns,
@@ -15,23 +16,33 @@ import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
 // re-export from a central spot
 export type Field = DragField;
 
+export interface FieldsStepState {
+  fieldAssignments: FieldAssignmentMap;
+}
+
 export const FieldsStep: React.FC<{
+  fileState: FileStepState;
   fields: Field[];
-  preview: Preview;
-  onAccept: (fieldAssignments: FieldAssignmentMap) => void;
+  prevState: FieldsStepState | null;
+  onChange: (state: FieldsStepState) => void;
+  onAccept: () => void;
   onCancel: () => void;
-}> = ({ fields, preview, onAccept, onCancel }) => {
+}> = ({ fileState, fields, prevState, onChange, onAccept, onCancel }) => {
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const columns = useMemo<Column[]>(
     () =>
       generatePreviewColumns(
-        preview.firstRows,
-        preview.hasHeaders
+        fileState.firstRows,
+        fileState.hasHeaders
       ).map((item) => ({ ...item, code: generateColumnCode(item.index) })),
-    [preview]
+    [fileState]
   );
 
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
     // prep insensitive/fuzzy match stems for known columns
+    // (this is ignored if there is already previous state to seed from)
     const columnStems = columns.map((column) => {
       const trimmed = column.header && column.header.trim();
 
@@ -88,21 +99,30 @@ export const FieldsStep: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(fields, initialAssignments, (fieldName) => {
-    setFieldTouched((prev) => {
-      if (prev[fieldName]) {
-        return prev;
-      }
+  } = useColumnDragState(
+    fields,
+    prevState ? prevState.fieldAssignments : initialAssignments,
+    (fieldName) => {
+      setFieldTouched((prev) => {
+        if (prev[fieldName]) {
+          return prev;
+        }
 
-      const copy = { ...prev };
-      copy[fieldName] = true;
-      return copy;
-    });
-  });
+        const copy = { ...prev };
+        copy[fieldName] = true;
+        return copy;
+      });
+    }
+  );
+
+  // notify of current state
+  useEffect(() => {
+    onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
+  }, [fieldAssignments]);
 
   return (
     <ImporterFrame
-      fileName={preview.file.name}
+      fileName={fileState.file.name}
       subtitle="Select Columns"
       error={validationError}
       onCancel={onCancel}
@@ -121,7 +141,7 @@ export const FieldsStep: React.FC<{
         );
 
         if (!hasUnassignedRequired) {
-          onAccept({ ...fieldAssignments });
+          onAccept();
         } else {
           setValidationError('Please assign all required fields');
         }
@@ -137,7 +157,7 @@ export const FieldsStep: React.FC<{
       />
 
       <ColumnDragTargetArea
-        hasHeaders={preview.hasHeaders}
+        hasHeaders={fileState.hasHeaders}
         fields={fields}
         columns={columns}
         fieldTouched={fieldTouched}
