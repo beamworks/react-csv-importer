@@ -85,6 +85,7 @@ import 'react-csv-importer/dist/index.css';
   // skipEmptyLines={...}
   // delimitersToGuess={...}
   // chunkSize={...} // defaults to 10000
+  // encoding={...} // defaults to utf-8, see FileReader API
 >
   <ImporterField name="name" label="Name" />
   <ImporterField name="email" label="Email" />

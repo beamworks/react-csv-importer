@@ -11,6 +11,7 @@ export interface CustomizablePapaParseConfig {
   skipEmptyLines?: Papa.ParseConfig['skipEmptyLines'];
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
   chunkSize?: Papa.ParseConfig['chunkSize'];
+  encoding?: Papa.ParseConfig['encoding'];
 }
 
 export interface PreviewReport {
