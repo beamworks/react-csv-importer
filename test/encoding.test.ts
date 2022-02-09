@@ -8,9 +8,9 @@ import { runUI, uiHelperSetup } from './uiSetup';
 type RawWindow = Record<string, unknown>;
 
 // extra timeout allowance on CI
-const testTimeoutMs = process.env.CI ? 20000 : 10000;
+// @todo re-enable const testTimeoutMs = process.env.CI ? 20000 : 10000;
 
-describe('importer with custom encoding setting', () => {
+xdescribe('importer with custom encoding setting', () => {
   const appUrl = runTestServer();
   const getDriver = runDriver();
   const initUI = runUI(getDriver);
@@ -83,4 +83,4 @@ describe('importer with custom encoding setting', () => {
       });
     });
   });
-}).timeout(testTimeoutMs);
+});
