@@ -5,11 +5,14 @@ import path from 'path';
 import { runTestServer } from './testServer';
 import { runDriver } from './webdriver';
 import { runUI } from './uiSetup';
+import { ImportInfo } from '../src/components/ImporterProps';
 
 // extra timeout allowance on CI
 const testTimeoutMs = process.env.CI ? 20000 : 10000;
 
-describe('importer with custom encoding setting', () => {
+type RawWindow = Record<string, unknown>;
+
+describe('importer with input containing BOM character', () => {
   const appUrl = runTestServer();
   const getDriver = runDriver();
   const initUI = runUI(getDriver);
@@ -22,16 +25,12 @@ describe('importer with custom encoding setting', () => {
         React.createElement(
           ReactCSVImporter,
           {
-            encoding: 'windows-1250', // encoding incompatible with UTF-8
+            onStart: (info) => {
+              ((window as unknown) as RawWindow).TEST_ON_START_INFO = info;
+            },
             processChunk: (rows, info) => {
-              ((window as unknown) as Record<
-                string,
-                unknown
-              >).TEST_PROCESS_CHUNK_ROWS = rows;
-              ((window as unknown) as Record<
-                string,
-                unknown
-              >).TEST_PROCESS_CHUNK_INFO = info;
+              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_ROWS = rows;
+              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_INFO = info;
             }
           },
           [
@@ -53,10 +52,7 @@ describe('importer with custom encoding setting', () => {
 
   describe('at preview stage', () => {
     beforeEach(async () => {
-      const filePath = path.resolve(
-        __dirname,
-        './fixtures/encodingWindows1250.csv'
-      );
+      const filePath = path.resolve(__dirname, './fixtures/bom.csv');
 
       const fileInput = await getDriver().findElement(By.xpath('//input'));
       await fileInput.sendKeys(filePath);
@@ -78,7 +74,15 @@ describe('importer with custom encoding setting', () => {
         async (acc, col) => [...(await acc), await col.getText()],
         Promise.resolve([] as string[])
       );
-      expect(tableColStrings).to.deep.equal(['value1', 'value2']);
+      expect(tableColStrings).to.deep.equal([
+        'Date',
+        'Open',
+        'High',
+        'Low',
+        'Close',
+        'Adj Close',
+        'Volume'
+      ]);
 
       // first data row
       const firstDataCells = await tablePreview.findElements(
@@ -88,7 +92,15 @@ describe('importer with custom encoding setting', () => {
         async (acc, col) => [...(await acc), await col.getText()],
         Promise.resolve([] as string[])
       );
-      expect(firstDataCellStrings).to.deep.equal(['Montréal', 'Köppen']);
+      expect(firstDataCellStrings).to.deep.equal([
+        '2019-09-16',
+        '299.839996',
+        '301.140015',
+        '299.450012',
+        '300.160004',
+        '294.285339',
+        '58191200'
+      ]);
     });
 
     describe('after accepting and assigning fields', () => {
@@ -146,6 +158,28 @@ describe('importer with custom encoding setting', () => {
         );
       });
 
+      it('reports correct import info', async () => {
+        const importInfo = await getDriver().executeScript(
+          'return window.TEST_ON_START_INFO'
+        );
+
+        expect(importInfo).to.have.property('preview');
+
+        const { preview } = importInfo as ImportInfo;
+        expect(preview).to.have.property('columns');
+        expect(preview.columns).to.be.an('array');
+
+        expect(preview.columns.map((item) => item.header)).to.deep.equal([
+          'Date', // should not have BOM prefix
+          'Open',
+          'High',
+          'Low',
+          'Close',
+          'Adj Close',
+          'Volume'
+        ]);
+      });
+
       it('produces parsed data with correct fields', async () => {
         const parsedData = await getDriver().executeScript(
           'return window.TEST_PROCESS_CHUNK_ROWS'
@@ -154,7 +188,7 @@ describe('importer with custom encoding setting', () => {
           'return window.TEST_PROCESS_CHUNK_INFO'
         );
 
-        expect(parsedData).to.deep.equal([{ fieldA: 'Montréal' }]);
+        expect(parsedData).to.deep.equal([{ fieldA: '2019-09-16' }]);
         expect(chunkInfo).to.deep.equal({ startIndex: 0 });
       });
     });
