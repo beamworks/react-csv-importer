@@ -83,12 +83,13 @@ export function parsePreview(
     }
 
     // parse in file streaming mode, bail after first chunk
+    // (this used to add skipEmptyLines but that was hiding possible parse errors)
     Papa.parse(file, {
       ...customConfig,
 
       chunkSize: 10000, // not configurable, preview only
       preview: PREVIEW_ROW_COUNT,
-      skipEmptyLines: true,
+
       error: (error) => {
         resolve({
           parseError: error,
