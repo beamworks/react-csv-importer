@@ -110,7 +110,7 @@ export function parsePreview(
     // @todo close the stream
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(customConfig.encoding || 'utf-8');
+    nodeStream.setEncoding(customConfig.encoding || 'utf8');
 
     Papa.parse(nodeStream, {
       ...customConfig,
@@ -189,7 +189,7 @@ export function processFile<Row extends BaseRow>(
     // use our own multibyte-safe decoding streamer
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(papaParseConfig.encoding || 'utf-8');
+    nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
 
     Papa.parse(nodeStream, {
       ...papaParseConfig,
