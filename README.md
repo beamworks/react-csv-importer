@@ -28,6 +28,7 @@ Feature summary:
 - self-contained styling
 - strip leading BOM character in data
 - arbitrary CSV file size (true streaming support)
+- correctly handles multibyte streaming (see https://github.com/mholt/PapaParse/issues/908)
 - runs entirely in-browser
 - screen reader a11y
 - keyboard a11y
@@ -85,6 +86,7 @@ import 'react-csv-importer/dist/index.css';
   // skipEmptyLines={...}
   // delimitersToGuess={...}
   // chunkSize={...} // defaults to 10000
+  // encoding={...} // defaults to UTF-8, see NodeJS Buffer
 >
   <ImporterField name="name" label="Name" />
   <ImporterField name="email" label="Email" />

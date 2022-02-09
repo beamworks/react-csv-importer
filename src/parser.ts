@@ -12,6 +12,7 @@ export interface CustomizablePapaParseConfig {
   skipEmptyLines?: Papa.ParseConfig['skipEmptyLines'];
   delimitersToGuess?: Papa.ParseConfig['delimitersToGuess'];
   chunkSize?: Papa.ParseConfig['chunkSize'];
+  encoding?: Papa.ParseConfig['encoding'];
 }
 
 export interface PreviewReport {
@@ -60,6 +61,13 @@ function streamForBlob(blob: Blob) {
   throw new Error('This browser does not support client-side file reads');
 }
 
+// perform in-place BOM clean
+function cleanLeadingBOM(row: string[]) {
+  if (row.length > 0 && row[0].charCodeAt(0) === BOM_CODE) {
+    row[0] = row[0].substring(1);
+  }
+}
+
 export function parsePreview(
   file: File,
   customConfig: CustomizablePapaParseConfig
@@ -97,15 +105,19 @@ export function parsePreview(
       });
     }
 
-    // true streaming support for local files (@todo wait for upstream fix)
+    // use our own multibyte-safe streamer, bail after first chunk
+    // (this used to add skipEmptyLines but that was hiding possible parse errors)
     // @todo close the stream
+    // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    nodeStream.setEncoding(customConfig.encoding || 'utf8');
+
     Papa.parse(nodeStream, {
       ...customConfig,
 
-      chunkSize: 10000, // not configurable, preview only
+      chunkSize: 10000, // not configurable, preview only @todo make configurable
       preview: PREVIEW_ROW_COUNT,
-      skipEmptyLines: true,
+
       error: (error) => {
         resolve({
           parseError: error,
@@ -116,13 +128,20 @@ export function parsePreview(
         firstChunk = chunk;
       },
       chunk: ({ data, errors }, parser) => {
-        // ignoring possible leading BOM
+        let skipBOM = true;
         data.forEach((row) => {
-          rowAccumulator.push(
-            (row as unknown[]).map((item) =>
-              typeof item === 'string' ? item : ''
-            )
+          const stringRow = (row as unknown[]).map((item) =>
+            typeof item === 'string' ? item : ''
           );
+
+          // perform BOM skip on first value
+          if (skipBOM) {
+            // even if this row is zero-length, no need to skip on next one
+            skipBOM = false;
+            cleanLeadingBOM(stringRow);
+          }
+
+          rowAccumulator.push(stringRow);
         });
 
         if (errors.length > 0 && !firstWarning) {
@@ -167,8 +186,11 @@ export function processFile<Row extends BaseRow>(
     let skipBOM = !hasHeaders;
     let processedCount = 0;
 
-    // true streaming support for local files (@todo wait for upstream fix)
+    // use our own multibyte-safe decoding streamer
+    // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
+
     Papa.parse(nodeStream, {
       ...papaParseConfig,
       chunkSize: papaParseConfig.chunkSize || 10000, // our own preferred default
@@ -189,12 +211,10 @@ export function processFile<Row extends BaseRow>(
           );
 
           // perform BOM skip on first value
-          if (skipBOM && stringRow.length > 0) {
+          if (skipBOM) {
+            // even if this row is zero-length, no need to skip on next one
             skipBOM = false;
-            stringRow[0] =
-              stringRow[0].charCodeAt(0) === BOM_CODE
-                ? stringRow[0].substring(1)
-                : stringRow[0];
+            cleanLeadingBOM(stringRow);
           }
 
           const record = {} as { [name: string]: string | undefined };
