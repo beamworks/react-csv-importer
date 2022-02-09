@@ -105,15 +105,17 @@ export function parsePreview(
       });
     }
 
-    // true streaming support for local files, bail after first chunk (@todo wait for upstream fix)
+    // use our own multibyte-safe streamer, bail after first chunk
     // (this used to add skipEmptyLines but that was hiding possible parse errors)
     // @todo close the stream
+    // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    nodeStream.setEncoding(customConfig.encoding || 'utf-8');
 
     Papa.parse(nodeStream, {
       ...customConfig,
 
-      chunkSize: 10000, // not configurable, preview only
+      chunkSize: 10000, // not configurable, preview only @todo make configurable
       preview: PREVIEW_ROW_COUNT,
 
       error: (error) => {
@@ -184,8 +186,10 @@ export function processFile<Row extends BaseRow>(
     let skipBOM = !hasHeaders;
     let processedCount = 0;
 
-    // true streaming support for local files (@todo wait for upstream fix)
+    // use our own multibyte-safe decoding streamer
+    // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    nodeStream.setEncoding(papaParseConfig.encoding || 'utf-8');
 
     Papa.parse(nodeStream, {
       ...papaParseConfig,
