@@ -1,5 +1,4 @@
 import Papa from 'papaparse';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 const BOM_CODE = 65279; // 0xFEFF
 
@@ -45,21 +44,6 @@ export type ParseCallback<Row extends BaseRow> = (
   }
 ) => void | Promise<void>;
 
-// polyfill as implemented in https://github.com/eligrey/Blob.js/blob/master/Blob.js#L653
-// (this is for Safari pre v14.1)
-function streamForBlob(blob: Blob) {
-  if (blob.stream) {
-    return blob.stream();
-  }
-
-  const res = new Response(blob);
-  if (res.body) {
-    return res.body;
-  }
-
-  throw new Error('This browser does not support client-side file reads');
-}
-
 export function parsePreview(
   file: File,
   customConfig: CustomizablePapaParseConfig
@@ -97,10 +81,8 @@ export function parsePreview(
       });
     }
 
-    // true streaming support for local files (@todo wait for upstream fix)
-    // @todo close the stream
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    Papa.parse(nodeStream, {
+    // parse in file streaming mode, bail after first chunk
+    Papa.parse(file, {
       ...customConfig,
 
       chunkSize: 10000, // not configurable, preview only
@@ -130,7 +112,6 @@ export function parsePreview(
         }
 
         // finish parsing after first chunk
-        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
         parser.abort();
 
         reportSuccess();
@@ -167,9 +148,8 @@ export function processFile<Row extends BaseRow>(
     let skipBOM = !hasHeaders;
     let processedCount = 0;
 
-    // true streaming support for local files (@todo wait for upstream fix)
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    Papa.parse(nodeStream, {
+    // parse in file streaming mode
+    Papa.parse(file, {
       ...papaParseConfig,
       chunkSize: papaParseConfig.chunkSize || 10000, // our own preferred default
 
@@ -178,7 +158,6 @@ export function processFile<Row extends BaseRow>(
       },
       chunk: ({ data }, parser) => {
         // pause to wait until the rows are consumed
-        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
         parser.pause();
 
         const skipped = skipLine && data.length > 0;
@@ -236,12 +215,10 @@ export function processFile<Row extends BaseRow>(
         // unpause parsing when done
         whenConsumed.then(
           () => {
-            nodeStream.resume();
             parser.resume();
           },
           () => {
             // @todo collect errors
-            nodeStream.resume();
             parser.resume();
           }
         );
