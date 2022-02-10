@@ -1,6 +1,6 @@
 {
   "name": "react-csv-importer",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "React CSV import widget with user-customizable mapping",
   "keywords": [
     "react",
@@ -10,6 +10,7 @@
     "import",
     "preview",
     "raw preview",
+    "TextDecoder",
     "papa parse",
     "papaparse"
   ],

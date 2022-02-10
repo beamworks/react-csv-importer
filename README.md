@@ -142,6 +142,11 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- 0.6.0
+  - improve multibyte stream parsing safety
+  - support all browser encodings via TextDecoder
+  - remove readable-web-to-node-stream dependency
+  - bug fix for preview of short no-EOL files
 - 0.5.2
   - update readable-web-to-node-stream to have stream shim
   - use npm prepare script for easier fork installs
