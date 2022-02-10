@@ -262,11 +262,14 @@ export function parsePreview(
           firstWarning = errors[0];
         }
 
-        // finish parsing after first chunk
-        nodeStream.pause(); // parser does not pause source stream, do it here explicitly
-        parser.abort();
+        // finish parsing once we got enough data, otherwise try for more
+        // (in some cases PapaParse flushes out last line as separate chunk)
+        if (rowAccumulator.length >= PREVIEW_ROW_COUNT) {
+          nodeStream.pause(); // parser does not pause source stream, do it here explicitly
+          parser.abort();
 
-        reportSuccess();
+          reportSuccess();
+        }
       },
       complete: reportSuccess
     });
