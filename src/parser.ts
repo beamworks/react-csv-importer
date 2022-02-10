@@ -115,6 +115,7 @@ function nodeStreamWrapper(stream: ReadableStream, encoding: string): Readable {
   }
 
   const self = {
+    // marker properties to make PapaParse think this is a Readable object
     readable: true,
     read() {
       throw new Error('only flowing mode is emulated');
