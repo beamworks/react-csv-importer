@@ -1,6 +1,5 @@
 import Papa from 'papaparse';
 import { Readable } from 'stream';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 const BOM_CODE = 65279; // 0xFEFF
 
@@ -70,11 +69,59 @@ function cleanLeadingBOM(row: string[]) {
 }
 
 // incredibly cheap wrapper exposing a subset of stream.Readable interface just for PapaParse usage
+// @todo chunk size
 function nodeStreamWrapper(stream: ReadableStream): Readable {
   let dataHandler: ((chunk: string) => void) | null = null;
   let endHandler: ((unused: unknown) => void) | null = null;
   let errorHandler: ((error: unknown) => void) | null = null;
   let isStopped = false;
+
+  let pausePromise: Promise<void> | null = null;
+  let pauseResolver: (() => void) | null = null;
+
+  async function runReaderPump() {
+    // ensure this is truly in the next tick after uncorking
+    await Promise.resolve();
+
+    const streamReader = stream.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+      // main reader pump loop
+      while (!isStopped) {
+        // perform read from upstream
+        const { done, value } = await streamReader.read();
+
+        // wait if we became paused since last data event
+        if (pausePromise) {
+          await pausePromise;
+        }
+
+        // check again if stopped and unlistened
+        if (isStopped || !dataHandler || !endHandler) {
+          return;
+        }
+
+        // final data flush and end notification
+        if (done) {
+          const lastChunkString = decoder.decode(value); // value is empty but pass just in case
+          if (lastChunkString) {
+            dataHandler(lastChunkString);
+          }
+
+          endHandler(undefined);
+          return;
+        }
+
+        // otherwise, normal data event after stream-safe decoding
+        const chunkString = decoder.decode(value, { stream: true });
+        dataHandler(chunkString);
+      }
+    } finally {
+      // always release the lock
+      streamReader.releaseLock();
+    }
+  }
 
   const self = {
     readable: true,
@@ -90,11 +137,15 @@ function nodeStreamWrapper(stream: ReadableStream): Readable {
           }
           dataHandler = callback;
 
-          // now uncork
-          setTimeout(() => {
-            dataHandler!('MYDATA\nMYDATA1\n');
-            endHandler!(undefined);
-          }, 0);
+          // flowing state started, run the main pump loop
+          runReaderPump().catch((error) => {
+            if (errorHandler) {
+              errorHandler(error);
+            } else {
+              // rethrow to show error in console
+              throw error;
+            }
+          });
 
           return;
         case 'end':
@@ -114,17 +165,30 @@ function nodeStreamWrapper(stream: ReadableStream): Readable {
       throw new Error('unknown stream shim event: ' + event);
     },
 
-    removeListener(_event: string, _callback: (param: unknown) => void) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    removeListener(event: string, callback: (param: unknown) => void) {
+      // stop and clear everything for simplicity
       isStopped = true;
+      dataHandler = null;
+      endHandler = null;
+      errorHandler = null;
     },
 
     pause() {
-      // @todo
+      if (!pausePromise) {
+        pausePromise = new Promise((resolve) => {
+          pauseResolver = resolve;
+        });
+      }
       return self;
     },
 
     resume() {
-      // @todo
+      if (pauseResolver) {
+        pauseResolver(); // waiting code will proceed in next tick
+        pausePromise = null;
+        pauseResolver = null;
+      }
       return self;
     }
   };
@@ -178,7 +242,7 @@ export function parsePreview(
     // nodeStream.setEncoding(customConfig.encoding || 'utf8');
     const nodeStream = nodeStreamWrapper(streamForBlob(file));
 
-    Papa.parse(nodeStream as any, {
+    Papa.parse(nodeStream, {
       ...customConfig,
 
       chunkSize: 10000, // not configurable, preview only @todo make configurable
