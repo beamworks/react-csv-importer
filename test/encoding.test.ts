@@ -8,9 +8,9 @@ import { runUI, uiHelperSetup } from './uiSetup';
 type RawWindow = Record<string, unknown>;
 
 // extra timeout allowance on CI
-// @todo re-enable const testTimeoutMs = process.env.CI ? 20000 : 10000;
+const testTimeoutMs = process.env.CI ? 20000 : 10000;
 
-xdescribe('importer with custom encoding setting', () => {
+describe('importer with custom encoding setting', () => {
   const appUrl = runTestServer();
   const getDriver = runDriver();
   const initUI = runUI(getDriver);
@@ -29,6 +29,7 @@ xdescribe('importer with custom encoding setting', () => {
           ReactCSVImporter,
           {
             encoding: 'windows-1250', // encoding incompatible with UTF-8
+            delimiter: ',',
             processChunk: (rows, info) => {
               ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_ROWS = rows;
               ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_INFO = info;
@@ -83,4 +84,4 @@ xdescribe('importer with custom encoding setting', () => {
       });
     });
   });
-});
+}).timeout(testTimeoutMs);

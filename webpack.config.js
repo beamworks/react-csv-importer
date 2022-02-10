@@ -37,8 +37,7 @@ module.exports = {
     react: 'react',
     'react-dom': 'react-dom',
     'react-dropzone': 'react-dropzone',
-    'react-use-gesture': 'react-use-gesture',
-    'readable-web-to-node-stream': 'readable-web-to-node-stream'
+    'react-use-gesture': 'react-use-gesture'
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']

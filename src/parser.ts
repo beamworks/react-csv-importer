@@ -1,7 +1,5 @@
 import Papa from 'papaparse';
-import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
-
-const BOM_CODE = 65279; // 0xFEFF
+import { Readable } from 'stream';
 
 export interface CustomizablePapaParseConfig {
   delimiter?: Papa.ParseConfig['delimiter'];
@@ -61,11 +59,134 @@ function streamForBlob(blob: Blob) {
   throw new Error('This browser does not support client-side file reads');
 }
 
-// perform in-place BOM clean
-function cleanLeadingBOM(row: string[]) {
-  if (row.length > 0 && row[0].charCodeAt(0) === BOM_CODE) {
-    row[0] = row[0].substring(1);
+// incredibly cheap wrapper exposing a subset of stream.Readable interface just for PapaParse usage
+// @todo chunk size
+function nodeStreamWrapper(stream: ReadableStream, encoding: string): Readable {
+  let dataHandler: ((chunk: string) => void) | null = null;
+  let endHandler: ((unused: unknown) => void) | null = null;
+  let errorHandler: ((error: unknown) => void) | null = null;
+  let isStopped = false;
+
+  let pausePromise: Promise<void> | null = null;
+  let pauseResolver: (() => void) | null = null;
+
+  async function runReaderPump() {
+    // ensure this is truly in the next tick after uncorking
+    await Promise.resolve();
+
+    const streamReader = stream.getReader();
+    const decoder = new TextDecoder(encoding); // this also strips BOM by default
+
+    try {
+      // main reader pump loop
+      while (!isStopped) {
+        // perform read from upstream
+        const { done, value } = await streamReader.read();
+
+        // wait if we became paused since last data event
+        if (pausePromise) {
+          await pausePromise;
+        }
+
+        // check again if stopped and unlistened
+        if (isStopped || !dataHandler || !endHandler) {
+          return;
+        }
+
+        // final data flush and end notification
+        if (done) {
+          const lastChunkString = decoder.decode(value); // value is empty but pass just in case
+          if (lastChunkString) {
+            dataHandler(lastChunkString);
+          }
+
+          endHandler(undefined);
+          return;
+        }
+
+        // otherwise, normal data event after stream-safe decoding
+        const chunkString = decoder.decode(value, { stream: true });
+        dataHandler(chunkString);
+      }
+    } finally {
+      // always release the lock
+      streamReader.releaseLock();
+    }
   }
+
+  const self = {
+    // marker properties to make PapaParse think this is a Readable object
+    readable: true,
+    read() {
+      throw new Error('only flowing mode is emulated');
+    },
+
+    on(event: string, callback: (param: unknown) => void) {
+      switch (event) {
+        case 'data':
+          if (dataHandler) {
+            throw new Error('two data handlers not supported');
+          }
+          dataHandler = callback;
+
+          // flowing state started, run the main pump loop
+          runReaderPump().catch((error) => {
+            if (errorHandler) {
+              errorHandler(error);
+            } else {
+              // rethrow to show error in console
+              throw error;
+            }
+          });
+
+          return;
+        case 'end':
+          if (endHandler) {
+            throw new Error('two end handlers not supported');
+          }
+          endHandler = callback;
+          return;
+        case 'error':
+          if (errorHandler) {
+            throw new Error('two error handlers not supported');
+          }
+          errorHandler = callback;
+          return;
+      }
+
+      throw new Error('unknown stream shim event: ' + event);
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    removeListener(event: string, callback: (param: unknown) => void) {
+      // stop and clear everything for simplicity
+      isStopped = true;
+      dataHandler = null;
+      endHandler = null;
+      errorHandler = null;
+    },
+
+    pause() {
+      if (!pausePromise) {
+        pausePromise = new Promise((resolve) => {
+          pauseResolver = resolve;
+        });
+      }
+      return self;
+    },
+
+    resume() {
+      if (pauseResolver) {
+        pauseResolver(); // waiting code will proceed in next tick
+        pausePromise = null;
+        pauseResolver = null;
+      }
+      return self;
+    }
+  };
+
+  // pass ourselves off as a real Node stream
+  return (self as unknown) as Readable;
 }
 
 export function parsePreview(
@@ -107,10 +228,11 @@ export function parsePreview(
 
     // use our own multibyte-safe streamer, bail after first chunk
     // (this used to add skipEmptyLines but that was hiding possible parse errors)
-    // @todo close the stream
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(customConfig.encoding || 'utf8');
+    const nodeStream = nodeStreamWrapper(
+      streamForBlob(file),
+      customConfig.encoding || 'utf-8'
+    );
 
     Papa.parse(nodeStream, {
       ...customConfig,
@@ -128,18 +250,10 @@ export function parsePreview(
         firstChunk = chunk;
       },
       chunk: ({ data, errors }, parser) => {
-        let skipBOM = true;
         data.forEach((row) => {
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
-
-          // perform BOM skip on first value
-          if (skipBOM) {
-            // even if this row is zero-length, no need to skip on next one
-            skipBOM = false;
-            cleanLeadingBOM(stringRow);
-          }
 
           rowAccumulator.push(stringRow);
         });
@@ -183,13 +297,14 @@ export function processFile<Row extends BaseRow>(
   return new Promise<void>((resolve, reject) => {
     // skip first line if needed
     let skipLine = hasHeaders;
-    let skipBOM = !hasHeaders;
     let processedCount = 0;
 
     // use our own multibyte-safe decoding streamer
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
+    const nodeStream = nodeStreamWrapper(
+      streamForBlob(file),
+      papaParseConfig.encoding || 'utf-8'
+    );
 
     Papa.parse(nodeStream, {
       ...papaParseConfig,
@@ -209,13 +324,6 @@ export function processFile<Row extends BaseRow>(
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
-
-          // perform BOM skip on first value
-          if (skipBOM) {
-            // even if this row is zero-length, no need to skip on next one
-            skipBOM = false;
-            cleanLeadingBOM(stringRow);
-          }
 
           const record = {} as { [name: string]: string | undefined };
 
