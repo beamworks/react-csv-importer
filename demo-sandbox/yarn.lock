@@ -45,15 +45,14 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-react-csv-importer@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.4.0.tgz#56b800d20b9669ade6f84b5eb09d33c156a879a1"
-  integrity sha512-D+55rJDE7kqK9u8L3t8vMkrkG9mbeLQ3sL1Bg6QDlje/5Qsr8B/FJYIjguIBXMD490DKEhioFXSuHmwk/B3Edw==
+react-csv-importer@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.6.0.tgz#3ccee3538f0d1ac44296657713adbb3f49a61933"
+  integrity sha512-8VHyXnv/5jwKj2eHtncY6YV3moHNSW/OxxAGyqgy4vbkHCPSc2hPnNFsOOiZgMrRoB1xhEvD14LchnE+IoB6NQ==
   dependencies:
     papaparse "^5.3.0"
     react-dropzone "^11.0.3"
     react-use-gesture "^7.0.16"
-    readable-web-to-node-stream "^2.0.0"
 
 react-dom@^17.0.1:
   version "17.0.1"
@@ -90,11 +89,6 @@ react@^17.0.1:
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
-
-readable-web-to-node-stream@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/readable-web-to-node-stream/-/readable-web-to-node-stream-2.0.0.tgz#751e632f466552ac0d5c440cc01470352f93c4b7"
-  integrity sha512-+oZJurc4hXpaaqsN68GoZGQAQIA3qr09Or4fqEsargABnbe5Aau8hFn6ISVleT3cpY/0n/8drn7huyyEvTbghA==
 
 scheduler@^0.20.1:
   version "0.20.1"
