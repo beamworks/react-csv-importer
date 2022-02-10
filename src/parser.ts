@@ -70,7 +70,7 @@ function cleanLeadingBOM(row: string[]) {
 
 // incredibly cheap wrapper exposing a subset of stream.Readable interface just for PapaParse usage
 // @todo chunk size
-function nodeStreamWrapper(stream: ReadableStream): Readable {
+function nodeStreamWrapper(stream: ReadableStream, encoding: string): Readable {
   let dataHandler: ((chunk: string) => void) | null = null;
   let endHandler: ((unused: unknown) => void) | null = null;
   let errorHandler: ((error: unknown) => void) | null = null;
@@ -84,7 +84,7 @@ function nodeStreamWrapper(stream: ReadableStream): Readable {
     await Promise.resolve();
 
     const streamReader = stream.getReader();
-    const decoder = new TextDecoder();
+    const decoder = new TextDecoder(encoding); // @todo ignoreBOM
 
     try {
       // main reader pump loop
@@ -238,9 +238,10 @@ export function parsePreview(
     // (this used to add skipEmptyLines but that was hiding possible parse errors)
     // @todo close the stream
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    // const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    // nodeStream.setEncoding(customConfig.encoding || 'utf8');
-    const nodeStream = nodeStreamWrapper(streamForBlob(file));
+    const nodeStream = nodeStreamWrapper(
+      streamForBlob(file),
+      customConfig.encoding || 'utf-8'
+    );
 
     Papa.parse(nodeStream, {
       ...customConfig,
@@ -318,9 +319,10 @@ export function processFile<Row extends BaseRow>(
 
     // use our own multibyte-safe decoding streamer
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    // const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    // nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
-    const nodeStream = nodeStreamWrapper(streamForBlob(file));
+    const nodeStream = nodeStreamWrapper(
+      streamForBlob(file),
+      papaParseConfig.encoding || 'utf-8'
+    );
 
     Papa.parse(nodeStream, {
       ...papaParseConfig,
