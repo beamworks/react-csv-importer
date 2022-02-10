@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { Readable } from 'stream';
 import { ReadableWebToNodeStream } from 'readable-web-to-node-stream';
 
 const BOM_CODE = 65279; // 0xFEFF
@@ -68,6 +69,70 @@ function cleanLeadingBOM(row: string[]) {
   }
 }
 
+// incredibly cheap wrapper exposing a subset of stream.Readable interface just for PapaParse usage
+function nodeStreamWrapper(stream: ReadableStream): Readable {
+  let dataHandler: ((chunk: string) => void) | null = null;
+  let endHandler: ((unused: unknown) => void) | null = null;
+  let errorHandler: ((error: unknown) => void) | null = null;
+  let isStopped = false;
+
+  const self = {
+    readable: true,
+    read() {
+      throw new Error('only flowing mode is emulated');
+    },
+
+    on(event: string, callback: (param: unknown) => void) {
+      switch (event) {
+        case 'data':
+          if (dataHandler) {
+            throw new Error('two data handlers not supported');
+          }
+          dataHandler = callback;
+
+          // now uncork
+          setTimeout(() => {
+            dataHandler!('MYDATA\nMYDATA1\n');
+            endHandler!(undefined);
+          }, 0);
+
+          return;
+        case 'end':
+          if (endHandler) {
+            throw new Error('two end handlers not supported');
+          }
+          endHandler = callback;
+          return;
+        case 'error':
+          if (errorHandler) {
+            throw new Error('two error handlers not supported');
+          }
+          errorHandler = callback;
+          return;
+      }
+
+      throw new Error('unknown stream shim event: ' + event);
+    },
+
+    removeListener(_event: string, _callback: (param: unknown) => void) {
+      isStopped = true;
+    },
+
+    pause() {
+      // @todo
+      return self;
+    },
+
+    resume() {
+      // @todo
+      return self;
+    }
+  };
+
+  // pass ourselves off as a real Node stream
+  return (self as unknown) as Readable;
+}
+
 export function parsePreview(
   file: File,
   customConfig: CustomizablePapaParseConfig
@@ -109,10 +174,11 @@ export function parsePreview(
     // (this used to add skipEmptyLines but that was hiding possible parse errors)
     // @todo close the stream
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(customConfig.encoding || 'utf8');
+    // const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    // nodeStream.setEncoding(customConfig.encoding || 'utf8');
+    const nodeStream = nodeStreamWrapper(streamForBlob(file));
 
-    Papa.parse(nodeStream, {
+    Papa.parse(nodeStream as any, {
       ...customConfig,
 
       chunkSize: 10000, // not configurable, preview only @todo make configurable
@@ -188,8 +254,9 @@ export function processFile<Row extends BaseRow>(
 
     // use our own multibyte-safe decoding streamer
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
-    const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
-    nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
+    // const nodeStream = new ReadableWebToNodeStream(streamForBlob(file));
+    // nodeStream.setEncoding(papaParseConfig.encoding || 'utf8');
+    const nodeStream = nodeStreamWrapper(streamForBlob(file));
 
     Papa.parse(nodeStream, {
       ...papaParseConfig,
