@@ -1,8 +1,6 @@
 import Papa from 'papaparse';
 import { Readable } from 'stream';
 
-const BOM_CODE = 65279; // 0xFEFF
-
 export interface CustomizablePapaParseConfig {
   delimiter?: Papa.ParseConfig['delimiter'];
   newline?: Papa.ParseConfig['newline'];
@@ -61,13 +59,6 @@ function streamForBlob(blob: Blob) {
   throw new Error('This browser does not support client-side file reads');
 }
 
-// perform in-place BOM clean
-function cleanLeadingBOM(row: string[]) {
-  if (row.length > 0 && row[0].charCodeAt(0) === BOM_CODE) {
-    row[0] = row[0].substring(1);
-  }
-}
-
 // incredibly cheap wrapper exposing a subset of stream.Readable interface just for PapaParse usage
 // @todo chunk size
 function nodeStreamWrapper(stream: ReadableStream, encoding: string): Readable {
@@ -84,7 +75,7 @@ function nodeStreamWrapper(stream: ReadableStream, encoding: string): Readable {
     await Promise.resolve();
 
     const streamReader = stream.getReader();
-    const decoder = new TextDecoder(encoding); // @todo ignoreBOM
+    const decoder = new TextDecoder(encoding); // this also strips BOM by default
 
     try {
       // main reader pump loop
@@ -236,7 +227,6 @@ export function parsePreview(
 
     // use our own multibyte-safe streamer, bail after first chunk
     // (this used to add skipEmptyLines but that was hiding possible parse errors)
-    // @todo close the stream
     // @todo wait for upstream multibyte fix in PapaParse: https://github.com/mholt/PapaParse/issues/908
     const nodeStream = nodeStreamWrapper(
       streamForBlob(file),
@@ -259,18 +249,10 @@ export function parsePreview(
         firstChunk = chunk;
       },
       chunk: ({ data, errors }, parser) => {
-        let skipBOM = true;
         data.forEach((row) => {
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
-
-          // perform BOM skip on first value
-          if (skipBOM) {
-            // even if this row is zero-length, no need to skip on next one
-            skipBOM = false;
-            cleanLeadingBOM(stringRow);
-          }
 
           rowAccumulator.push(stringRow);
         });
@@ -314,7 +296,6 @@ export function processFile<Row extends BaseRow>(
   return new Promise<void>((resolve, reject) => {
     // skip first line if needed
     let skipLine = hasHeaders;
-    let skipBOM = !hasHeaders;
     let processedCount = 0;
 
     // use our own multibyte-safe decoding streamer
@@ -342,13 +323,6 @@ export function processFile<Row extends BaseRow>(
           const stringRow = (row as unknown[]).map((item) =>
             typeof item === 'string' ? item : ''
           );
-
-          // perform BOM skip on first value
-          if (skipBOM) {
-            // even if this row is zero-length, no need to skip on next one
-            skipBOM = false;
-            cleanLeadingBOM(stringRow);
-          }
 
           const record = {} as { [name: string]: string | undefined };
 
