@@ -3,64 +3,67 @@
 export interface ImporterLocale {
   components: {
     ColumnDragCard: {
-      dummyHeader: string;
-      getHeader: (code: string) => string;
+      columnCardDummyHeader: string;
+      getColumnCardHeader: (code: string) => string;
     };
     ColumnDragSourceArea: {
-      ariaLabel: string;
-      getPageIndicator: (currentPage: number, pageCount: number) => string;
-      getAssigningColumn: (columnCode: string) => string;
-      nextColumns: string;
-      previousColumns: string;
+      dragSourceAreaCaption: string;
+      getDragSourcePageIndicator: (
+        currentPage: number,
+        pageCount: number
+      ) => string;
+      getDragSourceActiveStatus: (columnCode: string) => string;
+      nextColumnsTooltip: string;
+      previousColumnsTooltip: string;
     };
     ColumnDragTargetArea: {
-      ariaLabel: string;
+      dragTargetAreaCaption: string;
     };
     ColumnPicker: {
       requiredFieldsError: string;
-      subtitle: string;
+      stepSubtitle: string;
     };
     FileSelector: {
-      default: string;
-      dragActive: string;
+      initialDragDropPrompt: string;
+      activeDragDropPrompt: string;
     };
     FormatErrorMessage: {
-      back: string;
+      goBackButton: string;
     };
     FileStep: {
-      importError: string;
-      rawFileContents: string;
-      previewImport: string;
-      hasHeaders: string;
-      loadingPreview: string;
+      getImportError: (message: string) => string;
+      rawFileContentsHeading: string;
+      previewImportHeading: string;
+      dataHasHeadersCheckbox: string;
+      previewLoadingStatus: string;
     };
     FormatRawPreview: {
-      getWarning: (warningMessage: string) => string;
+      getDataFormatError: (message: string) => string;
     };
     ImporterFrame: {
-      previousStep: string;
-      nextStep: string;
+      goToPreviousStepTooltip: string;
+      nextButton: string;
     };
     ProgressDisplay: {
-      subtitle: string;
-      uploadMore: string;
-      finish: string;
+      stepSubtitle: string;
+      uploadMoreButton: string;
+      finishButton: string;
       statusError: string;
       statusComplete: string;
       statusPending: string;
-      processedRows: string;
+      processedRowsLabel: string;
     };
     SourceBox: {
-      clearAssignment: string;
-      selectColumn: string;
-      unselectColumn: string;
+      clearAssignmentTooltip: string;
+      selectColumnTooltip: string;
+      unselectColumnTooltip: string;
     };
     TargetBox: {
-      optionalAriaLabel: string;
-      requiredAriaLabel: string;
-      boxPlaceholder: string;
-      getBoxValueAction: (columnCode: string) => string;
-      clear: string;
+      getDragTargetOptionalCaption: (field: string) => string;
+      getDragTargetRequiredCaption: (field: string) => string;
+      dragTargetPlaceholder: string;
+      getDragTargetAssignTooltip: (columnCode: string) => string;
+      dragTargetClearTooltip: string;
     };
   };
 }
@@ -68,67 +71,69 @@ export interface ImporterLocale {
 export const enUS: ImporterLocale = {
   components: {
     ColumnDragCard: {
-      dummyHeader: 'Unassigned field',
-      getHeader: (code) => `Column ${code}`
+      columnCardDummyHeader: 'Unassigned field',
+      getColumnCardHeader: (code) => `Column ${code}`
     },
     ColumnDragSourceArea: {
-      ariaLabel: 'Columns to import',
-      getPageIndicator: (currentPage: number, pageCount: number) =>
+      dragSourceAreaCaption: 'Columns to import',
+      getDragSourcePageIndicator: (currentPage: number, pageCount: number) =>
         `Page ${currentPage} of ${pageCount}`,
-      getAssigningColumn: (columnCode: string) =>
+      getDragSourceActiveStatus: (columnCode: string) =>
         `Assigning column ${columnCode}`,
-      nextColumns: 'Show next columns',
-      previousColumns: 'Show previous columns'
+      nextColumnsTooltip: 'Show next columns',
+      previousColumnsTooltip: 'Show previous columns'
     },
     ColumnDragTargetArea: {
-      ariaLabel: 'Target fields'
+      dragTargetAreaCaption: 'Target fields'
     },
     ColumnPicker: {
       requiredFieldsError: 'Please assign all required fields',
-      subtitle: 'Select Columns'
+      stepSubtitle: 'Select Columns'
     },
     FileSelector: {
-      default: 'Drag-and-drop CSV file here, or click to select in folder',
-      dragActive: 'Drop CSV file here...'
+      initialDragDropPrompt:
+        'Drag-and-drop CSV file here, or click to select in folder',
+      activeDragDropPrompt: 'Drop CSV file here...'
     },
     FileStep: {
-      importError: 'Import error:',
-      rawFileContents: 'Raw File Contents',
-      previewImport: 'Preview Import',
-      hasHeaders: 'Data has headers',
-      loadingPreview: 'Loading preview...'
+      getImportError: (message) => `Import error: ${message}`,
+      rawFileContentsHeading: 'Raw File Contents',
+      previewImportHeading: 'Preview Import',
+      dataHasHeadersCheckbox: 'Data has headers',
+      previewLoadingStatus: 'Loading preview...'
     },
     FormatRawPreview: {
-      getWarning: (warningMessage: string) =>
-        `${warningMessage}: please check data formatting`
+      getDataFormatError: (message) =>
+        `Please check data formatting: ${message}`
     },
     FormatErrorMessage: {
-      back: 'Go Back'
+      goBackButton: 'Go Back'
     },
     ImporterFrame: {
-      previousStep: 'Go to previous step',
-      nextStep: 'Next'
+      goToPreviousStepTooltip: 'Go to previous step',
+      nextButton: 'Next'
     },
     ProgressDisplay: {
-      subtitle: 'Import',
-      uploadMore: 'Upload More',
-      finish: 'Finish',
+      stepSubtitle: 'Import',
+      uploadMoreButton: 'Upload More',
+      finishButton: 'Finish',
       statusError: 'Could not import',
       statusComplete: 'Complete',
       statusPending: 'Importing...',
-      processedRows: 'Processed rows:'
+      processedRowsLabel: 'Processed rows:'
     },
     SourceBox: {
-      clearAssignment: 'Clear column assignment',
-      selectColumn: 'Select column for assignment',
-      unselectColumn: 'Unselect column'
+      clearAssignmentTooltip: 'Clear column assignment',
+      selectColumnTooltip: 'Select column for assignment',
+      unselectColumnTooltip: 'Unselect column'
     },
     TargetBox: {
-      optionalAriaLabel: 'optional',
-      requiredAriaLabel: 'required',
-      boxPlaceholder: 'Drag column here',
-      getBoxValueAction: (columnCode: string) => `Assign column ${columnCode}`,
-      clear: 'Clear column assignment'
+      getDragTargetOptionalCaption: (field) => `${field} (optional)`,
+      getDragTargetRequiredCaption: (field) => `${field} (required)`,
+      dragTargetPlaceholder: 'Drag column here',
+      getDragTargetAssignTooltip: (columnCode: string) =>
+        `Assign column ${columnCode}`,
+      dragTargetClearTooltip: 'Clear column assignment'
     }
   }
 };
@@ -136,70 +141,70 @@ export const enUS: ImporterLocale = {
 export const deDE: ImporterLocale = {
   components: {
     ColumnDragCard: {
-      dummyHeader: 'Nicht zugewiesenes Feld',
-      getHeader: (code) => `Spalte ${code}`
+      columnCardDummyHeader: 'Nicht zugewiesenes Feld',
+      getColumnCardHeader: (code) => `Spalte ${code}`
     },
     ColumnDragSourceArea: {
-      ariaLabel: 'Zu importierende Spalte',
-      getPageIndicator: (currentPage: number, pageCount: number) =>
+      dragSourceAreaCaption: 'Zu importierende Spalte',
+      getDragSourcePageIndicator: (currentPage: number, pageCount: number) =>
         `Seite ${currentPage} von ${pageCount}`,
-      getAssigningColumn: (columnCode: string) =>
+      getDragSourceActiveStatus: (columnCode: string) =>
         `Spalte ${columnCode} zuweisen`,
-      nextColumns: 'Nächste Spalten anzeigen',
-      previousColumns: 'Vorherige Spalten anzeigen'
+      nextColumnsTooltip: 'Nächste Spalten anzeigen',
+      previousColumnsTooltip: 'Vorherige Spalten anzeigen'
     },
     ColumnDragTargetArea: {
-      ariaLabel: 'Zielfelder'
+      dragTargetAreaCaption: 'Zielfelder'
     },
     ColumnPicker: {
       requiredFieldsError:
         'Bitte weise allen nicht optionalen Spalten einen Wert zu',
-      subtitle: 'Spalten auswählen'
+      stepSubtitle: 'Spalten auswählen'
     },
     FileSelector: {
-      default:
+      initialDragDropPrompt:
         'CSV-Datei auf dieses Feld ziehen, oder klicken um eine Datei auszuwählen',
-      dragActive: 'CSV-Datei auf dieses Feld ziehen...'
+      activeDragDropPrompt: 'CSV-Datei auf dieses Feld ziehen...'
     },
     FileStep: {
-      importError: 'Fehler beim Import:',
-      rawFileContents: 'Originaler Datei-Inhalt',
-      previewImport: 'Import-Vorschau',
-      hasHeaders: 'Mit Kopfzeile',
-      loadingPreview: 'Vorschau wird geladen...'
+      getImportError: (message) => `Fehler beim Import: ${message}`,
+      rawFileContentsHeading: 'Originaler Datei-Inhalt',
+      previewImportHeading: 'Import-Vorschau',
+      dataHasHeadersCheckbox: 'Mit Kopfzeile',
+      previewLoadingStatus: 'Vorschau wird geladen...'
     },
     FormatRawPreview: {
-      getWarning: (warningMessage: string) =>
-        `${warningMessage}: bitte Datenformat überprüfen`
+      getDataFormatError: (message: string) =>
+        `Bitte Datenformat überprüfen: ${message}`
     },
     FormatErrorMessage: {
-      back: 'Zurück'
+      goBackButton: 'Zurück'
     },
     ImporterFrame: {
-      previousStep: 'Zum vorherigen Schritt',
-      nextStep: 'Weiter'
+      goToPreviousStepTooltip: 'Zum vorherigen Schritt',
+      nextButton: 'Weiter'
     },
     ProgressDisplay: {
-      subtitle: 'Importieren',
-      uploadMore: 'Weitere hochladen',
-      finish: 'Abschließen',
+      stepSubtitle: 'Importieren',
+      uploadMoreButton: 'Weitere hochladen',
+      finishButton: 'Abschließen',
       statusError: 'Konnte nicht importiert werden',
       statusComplete: 'Fertig',
       statusPending: 'Wird importiert...',
-      processedRows: 'Verarbeitete Zeilen:'
+      processedRowsLabel: 'Verarbeitete Zeilen:'
     },
     SourceBox: {
-      clearAssignment: 'Zugewiesene Spalte entfernen',
-      selectColumn: 'Spalte zum Zuweisen auswählen',
-      unselectColumn: 'Spalte abwählen'
+      clearAssignmentTooltip: 'Zugewiesene Spalte entfernen',
+      selectColumnTooltip: 'Spalte zum Zuweisen auswählen',
+      unselectColumnTooltip: 'Spalte abwählen'
     },
     TargetBox: {
-      optionalAriaLabel: 'optional',
-      requiredAriaLabel: 'erforderlich',
-      boxPlaceholder: 'Spalte hierher ziehen',
-      getBoxValueAction: (columnCode: string) =>
+      getDragTargetOptionalCaption: (field) => `${field} (optional)`,
+      getDragTargetRequiredCaption: (field) => `${field} (erforderlich)`,
+      dragTargetPlaceholder: 'Spalte hierher ziehen',
+      getDragTargetAssignTooltip: (columnCode: string) =>
         `Spalte ${columnCode} zuweisen`,
-      clear: 'Zugewiesene Spalte entfernen'
+      dragTargetClearTooltip: 'Zugewiesene Spalte entfernen'
     }
   }
 };

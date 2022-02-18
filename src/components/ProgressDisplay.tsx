@@ -176,13 +176,15 @@ export function ProgressDisplay<Row extends BaseRow>({
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle={l10n.subtitle}
+      subtitle={l10n.stepSubtitle}
       error={error && (error.message || String(error))}
       secondaryDisabled={!isComplete || isDismissed}
-      secondaryLabel={onRestart && onClose ? l10n.uploadMore : undefined}
+      secondaryLabel={onRestart && onClose ? l10n.uploadMoreButton : undefined}
       onSecondary={onRestart && onClose ? onRestart : undefined}
       nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
-      nextLabel={!onClose && onRestart ? l10n.uploadMore : l10n.finish}
+      nextLabel={
+        !onClose && onRestart ? l10n.uploadMoreButton : l10n.finishButton
+      }
       onNext={() => {
         setIsDismissed(true);
 
@@ -213,7 +215,7 @@ export function ProgressDisplay<Row extends BaseRow>({
         )}
 
         <div className="CSVImporter_ProgressDisplay__count" role="text">
-          <var>{l10n.processedRows}</var> {progressCount}
+          <var>{l10n.processedRowsLabel}</var> {progressCount}
         </div>
 
         <div className="CSVImporter_ProgressDisplay__progressBar">

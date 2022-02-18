@@ -63,9 +63,9 @@ export const ColumnDragCard: React.FC<{
     >
       <div className="CSVImporter_ColumnDragCard__cardHeader">
         {isDummy ? (
-          <var role="text">{l10n.dummyHeader}</var>
+          <var role="text">{l10n.columnCardDummyHeader}</var>
         ) : (
-          <var role="text">{l10n.getHeader(column.code)}</var>
+          <var role="text">{l10n.getColumnCardHeader(column.code)}</var>
         )}
         {isDummy || isAssigned ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>

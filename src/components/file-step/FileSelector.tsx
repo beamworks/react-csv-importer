@@ -35,9 +35,9 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
       <input {...getInputProps()} />
 
       {isDragActive ? (
-        <span>{l10n.dragActive}</span>
+        <span>{l10n.activeDragDropPrompt}</span>
       ) : (
-        <span>{l10n.default}</span>
+        <span>{l10n.initialDragDropPrompt}</span>
       )}
     </div>
   );

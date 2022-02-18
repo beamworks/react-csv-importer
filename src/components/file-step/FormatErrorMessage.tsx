@@ -13,7 +13,7 @@ export const FormatErrorMessage: React.FC<{
   return (
     <div className="CSVImporter_FormatErrorMessage">
       <span>{children}</span>
-      <TextButton onClick={onCancelClick}>{l10n.back}</TextButton>
+      <TextButton onClick={onCancelClick}>{l10n.goBackButton}</TextButton>
     </div>
   );
 });

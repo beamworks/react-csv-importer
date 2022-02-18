@@ -126,7 +126,7 @@ export const FieldsStep: React.FC<{
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle={l10n.subtitle}
+      subtitle={l10n.stepSubtitle}
       error={validationError}
       onCancel={onCancel}
       onNext={() => {
