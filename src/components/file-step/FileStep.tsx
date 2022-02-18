@@ -109,13 +109,7 @@ export const FileStep: React.FC<{
     };
   }, [selectedFile, preview]);
 
-  const {
-    l10n_importError,
-    l10n_rawFileContents,
-    l10n_previewImport,
-    l10n_hasHeaders,
-    l10n_loadingPreview
-  } = useLocale('FileStep');
+  const l10n = useLocale('FileStep');
 
   // clear selected file
   // preview result content to display
@@ -128,7 +122,7 @@ export const FileStep: React.FC<{
       return (
         <div className="CSVImporter_FileStep__mainResultBlock">
           <FormatErrorMessage onCancelClick={() => setSelectedFile(null)}>
-            {l10n_importError}{' '}
+            {l10n.importError}{' '}
             <b>{preview.parseError.message || String(preview.parseError)}</b>
           </FormatErrorMessage>
         </div>
@@ -138,7 +132,7 @@ export const FileStep: React.FC<{
     return (
       <div className="CSVImporter_FileStep__mainResultBlock">
         <div className="CSVImporter_FileStep__header">
-          {l10n_rawFileContents}
+          {l10n.rawFileContents}
         </div>
 
         <FormatRawPreview
@@ -150,7 +144,7 @@ export const FileStep: React.FC<{
         {preview.parseWarning ? null : (
           <>
             <div className="CSVImporter_FileStep__header">
-              {l10n_previewImport}
+              {l10n.previewImport}
               {!preview.isSingleLine && ( // hide setting if only one line anyway
                 <label className="CSVImporter_FileStep__headerToggle">
                   <input
@@ -160,7 +154,7 @@ export const FileStep: React.FC<{
                       setHasHeaders((prev) => !prev);
                     }}
                   />
-                  <span>{l10n_hasHeaders}</span>
+                  <span>{l10n.hasHeaders}</span>
                 </label>
               )}
             </div>
@@ -174,11 +168,11 @@ export const FileStep: React.FC<{
     );
   }, [
     preview,
-    l10n_rawFileContents,
-    l10n_previewImport,
+    l10n.rawFileContents,
+    l10n.previewImport,
     hasHeaders,
-    l10n_hasHeaders,
-    l10n_importError
+    l10n.hasHeaders,
+    l10n.importError
   ]);
 
   if (!selectedFile) {
@@ -200,7 +194,7 @@ export const FileStep: React.FC<{
     >
       {reportBlock || (
         <div className="CSVImporter_FileStep__mainPendingBlock">
-          {l10n_loadingPreview}
+          {l10n.loadingPreview}
         </div>
       )}
     </ImporterFrame>

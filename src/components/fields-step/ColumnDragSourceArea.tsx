@@ -43,11 +43,7 @@ const SourceBox: React.FC<{
     column
   ]);
 
-  const {
-    l10n_clearAssignment,
-    l10n_selectColumn,
-    l10n_unselectColumn
-  } = useLocale('SourceBox');
+  const l10n = useLocale('SourceBox');
 
   return (
     <div className="CSVImporter_ColumnDragSourceArea__box">
@@ -65,7 +61,7 @@ const SourceBox: React.FC<{
         {isAssigned ? (
           <IconButton
             key="clear" // key-prop helps clear focus on click
-            label={l10n_clearAssignment}
+            label={l10n.clearAssignment}
             small
             type="replay"
             onClick={() => {
@@ -78,8 +74,8 @@ const SourceBox: React.FC<{
             focusOnly
             label={
               dragState && dragState.column === column
-                ? l10n_unselectColumn
-                : l10n_selectColumn
+                ? l10n.unselectColumn
+                : l10n.selectColumn
             }
             small
             type="back"
@@ -137,22 +133,16 @@ export const ColumnDragSourceArea: React.FC<{
     );
   }
 
-  const {
-    l10n_ariaLabel,
-    l10n_getPageIndicator,
-    l10n_getAssigningColumn,
-    l10n_nextColumns,
-    l10n_previousColumns
-  } = useLocale('ColumnDragSourceArea');
+  const l10n = useLocale('ColumnDragSourceArea');
 
   return (
     <section
       className="CSVImporter_ColumnDragSourceArea"
-      aria-label={l10n_ariaLabel}
+      aria-label={l10n.ariaLabel}
     >
       <div className="CSVImporter_ColumnDragSourceArea__control">
         <IconButton
-          label={l10n_previousColumns}
+          label={l10n.previousColumns}
           type="back"
           disabled={page === 0}
           onClick={() => {
@@ -167,7 +157,7 @@ export const ColumnDragSourceArea: React.FC<{
             className="CSVImporter_ColumnDragSourceArea__pageIndicator"
             role="status"
           >
-            {l10n_getAssigningColumn(dragState.column.code)}
+            {l10n.getAssigningColumn(dragState.column.code)}
           </div>
         ) : (
           // show page number if needed (and treat as status role if it has changed)
@@ -177,7 +167,7 @@ export const ColumnDragSourceArea: React.FC<{
               className="CSVImporter_ColumnDragSourceArea__pageIndicator"
               role={pageChanged ? 'status' : 'text'}
             >
-              {l10n_getPageIndicator(page + 1, pageCount)}
+              {l10n.getPageIndicator(page + 1, pageCount)}
             </div>
           )
         )}
@@ -186,7 +176,7 @@ export const ColumnDragSourceArea: React.FC<{
       </div>
       <div className="CSVImporter_ColumnDragSourceArea__control">
         <IconButton
-          label={l10n_nextColumns}
+          label={l10n.nextColumns}
           type="forward"
           disabled={page === pageCount - 1}
           onClick={() => {
