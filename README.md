@@ -180,3 +180,7 @@ You can use your own fork of this library in your own project by referencing the
   - first beta release
   - true streaming support using shim for PapaParse
   - lifecycle hooks receive info about the import
+
+## Credits
+
+Translations contributed by: [**@tstehr**](https://github.com/tstehr) and [**@Valodim**](https://github.com/Valodim).
