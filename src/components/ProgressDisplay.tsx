@@ -7,6 +7,7 @@ import { ImporterFilePreview, ImportInfo } from './ImporterProps';
 import { ImporterFrame } from './ImporterFrame';
 
 import './ProgressDisplay.scss';
+import { useLocale } from '../locale/LocaleContext';
 
 // compute actual UTF-8 bytes used by a string
 // (inspired by https://stackoverflow.com/questions/10576905/how-to-convert-javascript-unicode-notation-code-to-utf-8)
@@ -170,16 +171,26 @@ export function ProgressDisplay<Row extends BaseRow>({
     return Math.floor(1000 - 1000 * progressLeft) / 10;
   }, [estimatedRowCount, progressCount, isComplete]);
 
+  const {
+    subtitleText,
+    uploadMoreText,
+    finishText,
+    statusErrorText,
+    statusCompleteText,
+    statusPendingText,
+    processedRowsText
+  } = useLocale('ProgressDisplay');
+
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle="Import"
+      subtitle={subtitleText}
       error={error && (error.message || String(error))}
       secondaryDisabled={!isComplete || isDismissed}
-      secondaryLabel={onRestart && onClose ? 'Upload More' : undefined}
+      secondaryLabel={onRestart && onClose ? uploadMoreText : undefined}
       onSecondary={onRestart && onClose ? onRestart : undefined}
       nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
-      nextLabel={!onClose && onRestart ? 'Upload More' : 'Finish'}
+      nextLabel={!onClose && onRestart ? uploadMoreText : finishText}
       onNext={() => {
         setIsDismissed(true);
 
@@ -198,19 +209,19 @@ export function ProgressDisplay<Row extends BaseRow>({
             tabIndex={-1}
             ref={statusRef}
           >
-            {error ? 'Could not import' : 'Complete'}
+            {error ? statusErrorText : statusCompleteText}
           </div>
         ) : (
           <div
             className="CSVImporter_ProgressDisplay__status -pending"
             role="status"
           >
-            Importing...
+            {statusPendingText}
           </div>
         )}
 
         <div className="CSVImporter_ProgressDisplay__count" role="text">
-          <var>Processed rows:</var> {progressCount}
+          <var>{processedRowsText}</var> {progressCount}
         </div>
 
         <div className="CSVImporter_ProgressDisplay__progressBar">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ImporterLocale } from '../locale';
 import { CustomizablePapaParseConfig, ParseCallback, BaseRow } from '../parser';
 
 // information for displaying a spreadsheet-style column
@@ -43,4 +44,5 @@ export interface ImporterProps<Row extends BaseRow>
   onComplete?: (info: ImportInfo) => void;
   onClose?: (info: ImportInfo) => void;
   children?: ImporterContentRenderProp | React.ReactNode;
+  locale?: ImporterLocale;
 }

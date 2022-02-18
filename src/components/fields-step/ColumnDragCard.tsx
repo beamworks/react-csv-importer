@@ -4,6 +4,7 @@ import { PREVIEW_ROW_COUNT } from '../../parser';
 import { Column } from './ColumnPreview';
 
 import './ColumnDragCard.scss';
+import { useLocale } from '../../locale/LocaleContext';
 
 // @todo sort out "grabbing" cursor state (does not work with pointer-events:none)
 export const ColumnDragCard: React.FC<{
@@ -46,6 +47,8 @@ export const ColumnDragCard: React.FC<{
     headerValue === undefined ? rowCount : rowCount - 1
   );
 
+  const { getHeaderText, dummyHeaderText } = useLocale('ColumnDragCard');
+
   return (
     // not changing variant dynamically because it causes a height jump
     <div
@@ -60,9 +63,9 @@ export const ColumnDragCard: React.FC<{
     >
       <div className="CSVImporter_ColumnDragCard__cardHeader">
         {isDummy ? (
-          <var role="text">Unassigned field</var>
+          <var role="text">{dummyHeaderText}</var>
         ) : (
-          <var role="text">Column {column.code}</var>
+          <var role="text">{getHeaderText(column.code)}</var>
         )}
         {isDummy || isAssigned ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>

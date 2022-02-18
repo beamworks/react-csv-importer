@@ -13,6 +13,7 @@ import { FormatDataRowPreview } from './FormatDataRowPreview';
 import { FormatErrorMessage } from './FormatErrorMessage';
 
 import './FileStep.scss';
+import { useLocale } from '../../locale/LocaleContext';
 
 export interface FileStepState extends PreviewReport {
   papaParseConfig: CustomizablePapaParseConfig; // config that was used for preview parsing
@@ -108,6 +109,14 @@ export const FileStep: React.FC<{
     };
   }, [selectedFile, preview]);
 
+  const {
+    importErrorText,
+    rawFileContentsText,
+    previewImportText,
+    hasHeadersText,
+    loadingPreviewText
+  } = useLocale('FileStep');
+
   // clear selected file
   // preview result content to display
   const reportBlock = useMemo(() => {
@@ -119,7 +128,7 @@ export const FileStep: React.FC<{
       return (
         <div className="CSVImporter_FileStep__mainResultBlock">
           <FormatErrorMessage onCancelClick={() => setSelectedFile(null)}>
-            Import error:{' '}
+            {importErrorText}{' '}
             <b>{preview.parseError.message || String(preview.parseError)}</b>
           </FormatErrorMessage>
         </div>
@@ -128,7 +137,9 @@ export const FileStep: React.FC<{
 
     return (
       <div className="CSVImporter_FileStep__mainResultBlock">
-        <div className="CSVImporter_FileStep__header">Raw File Contents</div>
+        <div className="CSVImporter_FileStep__header">
+          {rawFileContentsText}
+        </div>
 
         <FormatRawPreview
           chunk={preview.firstChunk}
@@ -139,7 +150,7 @@ export const FileStep: React.FC<{
         {preview.parseWarning ? null : (
           <>
             <div className="CSVImporter_FileStep__header">
-              Preview Import
+              {previewImportText}
               {!preview.isSingleLine && ( // hide setting if only one line anyway
                 <label className="CSVImporter_FileStep__headerToggle">
                   <input
@@ -149,7 +160,7 @@ export const FileStep: React.FC<{
                       setHasHeaders((prev) => !prev);
                     }}
                   />
-                  <span>Data has headers</span>
+                  <span>{hasHeadersText}</span>
                 </label>
               )}
             </div>
@@ -161,7 +172,14 @@ export const FileStep: React.FC<{
         )}
       </div>
     );
-  }, [preview, hasHeaders]);
+  }, [
+    preview,
+    rawFileContentsText,
+    previewImportText,
+    hasHeaders,
+    hasHeadersText,
+    importErrorText
+  ]);
 
   if (!selectedFile) {
     return <FileSelector onSelected={(file) => setSelectedFile(file)} />;
@@ -182,7 +200,7 @@ export const FileStep: React.FC<{
     >
       {reportBlock || (
         <div className="CSVImporter_FileStep__mainPendingBlock">
-          Loading preview...
+          {loadingPreviewText}
         </div>
       )}
     </ImporterFrame>
