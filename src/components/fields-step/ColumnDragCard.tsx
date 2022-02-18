@@ -47,7 +47,7 @@ export const ColumnDragCard: React.FC<{
     headerValue === undefined ? rowCount : rowCount - 1
   );
 
-  const { getHeaderText, dummyHeaderText } = useLocale('ColumnDragCard');
+  const { l10n_getHeader, l10n_dummyHeader } = useLocale('ColumnDragCard');
 
   return (
     // not changing variant dynamically because it causes a height jump
@@ -63,9 +63,9 @@ export const ColumnDragCard: React.FC<{
     >
       <div className="CSVImporter_ColumnDragCard__cardHeader">
         {isDummy ? (
-          <var role="text">{dummyHeaderText}</var>
+          <var role="text">{l10n_dummyHeader}</var>
         ) : (
-          <var role="text">{getHeaderText(column.code)}</var>
+          <var role="text">{l10n_getHeader(column.code)}</var>
         )}
         {isDummy || isAssigned ? '\u00a0' : <b aria-hidden>{column.code}</b>}
       </div>

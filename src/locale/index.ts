@@ -3,64 +3,64 @@
 export interface ImporterLocale {
   components: {
     ColumnDragCard: {
-      dummyHeaderText: string;
-      getHeaderText: (code: string) => string;
+      l10n_dummyHeader: string;
+      l10n_getHeader: (code: string) => string;
     };
     ColumnDragSourceArea: {
-      ariaLabelText: string;
-      getPageIndicatorText: (currentPage: number, pageCount: number) => string;
-      getAssigningColumnText: (columnCode: string) => string;
-      nextColumnsText: string;
-      previousColumnsText: string;
+      l10n_ariaLabel: string;
+      l10n_getPageIndicator: (currentPage: number, pageCount: number) => string;
+      l10n_getAssigningColumn: (columnCode: string) => string;
+      l10n_nextColumns: string;
+      l10n_previousColumns: string;
     };
     ColumnDragTargetArea: {
-      ariaLabelText: string;
+      l10n_ariaLabel: string;
     };
     ColumnPicker: {
-      requiredFieldsErrorText: string;
-      subtitleText: string;
+      l10n_requiredFieldsError: string;
+      l10n_subtitle: string;
     };
     FileSelector: {
-      defaultText: string;
-      dragActiveText: string;
+      l10n_default: string;
+      l10n_dragActive: string;
     };
     FormatErrorMessage: {
-      backText: string;
+      l10n_back: string;
     };
     FileStep: {
-      importErrorText: string;
-      rawFileContentsText: string;
-      previewImportText: string;
-      hasHeadersText: string;
-      loadingPreviewText: string;
+      l10n_importError: string;
+      l10n_rawFileContents: string;
+      l10n_previewImport: string;
+      l10n_hasHeaders: string;
+      l10n_loadingPreview: string;
     };
     FormatRawPreview: {
-      getWarningText: (warningMessage: string) => string;
+      l10n_getWarning: (warningMessage: string) => string;
     };
     ImporterFrame: {
-      previousStepText: string;
-      nextStepText: string;
+      l10n_previousStep: string;
+      l10n_nextStep: string;
     };
     ProgressDisplay: {
-      subtitleText: string;
-      uploadMoreText: string;
-      finishText: string;
-      statusErrorText: string;
-      statusCompleteText: string;
-      statusPendingText: string;
-      processedRowsText: string;
+      l10n_subtitle: string;
+      l10n_uploadMore: string;
+      l10n_finish: string;
+      l10n_statusError: string;
+      l10n_statusComplete: string;
+      l10n_statusPending: string;
+      l10n_processedRows: string;
     };
     SourceBox: {
-      clearAssignmentText: string;
-      selectColumnText: string;
-      unselectColumnText: string;
+      l10n_clearAssignment: string;
+      l10n_selectColumn: string;
+      l10n_unselectColumn: string;
     };
     TargetBox: {
-      optionalAriaLabelText: string;
-      requiredAriaLabelText: string;
-      boxPlaceholderText: string;
-      getBoxValueActionText: (columnCode: string) => string;
-      clearText: string;
+      l10n_optionalAriaLabel: string;
+      l10n_requiredAriaLabel: string;
+      l10n_boxPlaceholder: string;
+      l10n_getBoxValueAction: (columnCode: string) => string;
+      l10n_clear: string;
     };
   };
 }
@@ -68,68 +68,68 @@ export interface ImporterLocale {
 export const enUS: ImporterLocale = {
   components: {
     ColumnDragCard: {
-      dummyHeaderText: 'Unassigned field',
-      getHeaderText: (code) => `Column ${code}`
+      l10n_dummyHeader: 'Unassigned field',
+      l10n_getHeader: (code) => `Column ${code}`
     },
     ColumnDragSourceArea: {
-      ariaLabelText: 'Columns to import',
-      getPageIndicatorText: (currentPage: number, pageCount: number) =>
+      l10n_ariaLabel: 'Columns to import',
+      l10n_getPageIndicator: (currentPage: number, pageCount: number) =>
         `Page ${currentPage} of ${pageCount}`,
-      getAssigningColumnText: (columnCode: string) =>
+      l10n_getAssigningColumn: (columnCode: string) =>
         `Assigning column ${columnCode}`,
-      nextColumnsText: 'Show next columns',
-      previousColumnsText: 'Show previous columns'
+      l10n_nextColumns: 'Show next columns',
+      l10n_previousColumns: 'Show previous columns'
     },
     ColumnDragTargetArea: {
-      ariaLabelText: 'Target fields'
+      l10n_ariaLabel: 'Target fields'
     },
     ColumnPicker: {
-      requiredFieldsErrorText: 'Please assign all required fields',
-      subtitleText: 'Select Columns'
+      l10n_requiredFieldsError: 'Please assign all required fields',
+      l10n_subtitle: 'Select Columns'
     },
     FileSelector: {
-      defaultText: 'Drag-and-drop CSV file here, or click to select in folder',
-      dragActiveText: 'Drop CSV file here...'
+      l10n_default: 'Drag-and-drop CSV file here, or click to select in folder',
+      l10n_dragActive: 'Drop CSV file here...'
     },
     FileStep: {
-      importErrorText: 'Import error:',
-      rawFileContentsText: 'Raw File Contents',
-      previewImportText: 'Preview Import',
-      hasHeadersText: 'Data has headers',
-      loadingPreviewText: 'Loading preview...'
+      l10n_importError: 'Import error:',
+      l10n_rawFileContents: 'Raw File Contents',
+      l10n_previewImport: 'Preview Import',
+      l10n_hasHeaders: 'Data has headers',
+      l10n_loadingPreview: 'Loading preview...'
     },
     FormatRawPreview: {
-      getWarningText: (warningMessage: string) =>
+      l10n_getWarning: (warningMessage: string) =>
         `${warningMessage}: please check data formatting`
     },
     FormatErrorMessage: {
-      backText: 'Go Back'
+      l10n_back: 'Go Back'
     },
     ImporterFrame: {
-      previousStepText: 'Go to previous step',
-      nextStepText: 'Next'
+      l10n_previousStep: 'Go to previous step',
+      l10n_nextStep: 'Next'
     },
     ProgressDisplay: {
-      subtitleText: 'Import',
-      uploadMoreText: 'Upload More',
-      finishText: 'Finish',
-      statusErrorText: 'Could not import',
-      statusCompleteText: 'Complete',
-      statusPendingText: 'Importing...',
-      processedRowsText: 'Processed rows:'
+      l10n_subtitle: 'Import',
+      l10n_uploadMore: 'Upload More',
+      l10n_finish: 'Finish',
+      l10n_statusError: 'Could not import',
+      l10n_statusComplete: 'Complete',
+      l10n_statusPending: 'Importing...',
+      l10n_processedRows: 'Processed rows:'
     },
     SourceBox: {
-      clearAssignmentText: 'Clear column assignment',
-      selectColumnText: 'Select column for assignment',
-      unselectColumnText: 'Unselect column'
+      l10n_clearAssignment: 'Clear column assignment',
+      l10n_selectColumn: 'Select column for assignment',
+      l10n_unselectColumn: 'Unselect column'
     },
     TargetBox: {
-      optionalAriaLabelText: 'optional',
-      requiredAriaLabelText: 'required',
-      boxPlaceholderText: 'Drag column here',
-      getBoxValueActionText: (columnCode: string) =>
+      l10n_optionalAriaLabel: 'optional',
+      l10n_requiredAriaLabel: 'required',
+      l10n_boxPlaceholder: 'Drag column here',
+      l10n_getBoxValueAction: (columnCode: string) =>
         `Assign column ${columnCode}`,
-      clearText: 'Clear column assignment'
+      l10n_clear: 'Clear column assignment'
     }
   }
 };
@@ -137,70 +137,70 @@ export const enUS: ImporterLocale = {
 export const deDE: ImporterLocale = {
   components: {
     ColumnDragCard: {
-      dummyHeaderText: 'Nicht zugewiesenes Feld',
-      getHeaderText: (code) => `Spalte ${code}`
+      l10n_dummyHeader: 'Nicht zugewiesenes Feld',
+      l10n_getHeader: (code) => `Spalte ${code}`
     },
     ColumnDragSourceArea: {
-      ariaLabelText: 'Zu importierende Spalte',
-      getPageIndicatorText: (currentPage: number, pageCount: number) =>
+      l10n_ariaLabel: 'Zu importierende Spalte',
+      l10n_getPageIndicator: (currentPage: number, pageCount: number) =>
         `Seite ${currentPage} von ${pageCount}`,
-      getAssigningColumnText: (columnCode: string) =>
+      l10n_getAssigningColumn: (columnCode: string) =>
         `Spalte ${columnCode} zuweisen`,
-      nextColumnsText: 'Nächste Spalten anzeigen',
-      previousColumnsText: 'Vorherige Spalten anzeigen'
+      l10n_nextColumns: 'Nächste Spalten anzeigen',
+      l10n_previousColumns: 'Vorherige Spalten anzeigen'
     },
     ColumnDragTargetArea: {
-      ariaLabelText: 'Zielfelder'
+      l10n_ariaLabel: 'Zielfelder'
     },
     ColumnPicker: {
-      requiredFieldsErrorText:
+      l10n_requiredFieldsError:
         'Bitte weise allen nicht optionalen Spalten einen Wert zu',
-      subtitleText: 'Spalten auswählen'
+      l10n_subtitle: 'Spalten auswählen'
     },
     FileSelector: {
-      defaultText:
+      l10n_default:
         'CSV-Datei auf dieses Feld ziehen, oder klicken um eine Datei auszuwählen',
-      dragActiveText: 'CSV-Datei auf dieses Feld ziehen...'
+      l10n_dragActive: 'CSV-Datei auf dieses Feld ziehen...'
     },
     FileStep: {
-      importErrorText: 'Fehler beim Import:',
-      rawFileContentsText: 'Originaler Datei-Inhalt',
-      previewImportText: 'Import-Vorschau',
-      hasHeadersText: 'Mit Kopfzeile',
-      loadingPreviewText: 'Vorschau wird geladen...'
+      l10n_importError: 'Fehler beim Import:',
+      l10n_rawFileContents: 'Originaler Datei-Inhalt',
+      l10n_previewImport: 'Import-Vorschau',
+      l10n_hasHeaders: 'Mit Kopfzeile',
+      l10n_loadingPreview: 'Vorschau wird geladen...'
     },
     FormatRawPreview: {
-      getWarningText: (warningMessage: string) =>
+      l10n_getWarning: (warningMessage: string) =>
         `${warningMessage}: bitte Datenformat überprüfen`
     },
     FormatErrorMessage: {
-      backText: 'Zurück'
+      l10n_back: 'Zurück'
     },
     ImporterFrame: {
-      previousStepText: 'Zum vorherigen Schritt',
-      nextStepText: 'Weiter'
+      l10n_previousStep: 'Zum vorherigen Schritt',
+      l10n_nextStep: 'Weiter'
     },
     ProgressDisplay: {
-      subtitleText: 'Importieren',
-      uploadMoreText: 'Weitere hochladen',
-      finishText: 'Abschließen',
-      statusErrorText: 'Konnte nicht importiert werden',
-      statusCompleteText: 'Fertig',
-      statusPendingText: 'Wird importiert...',
-      processedRowsText: 'Verarbeitete Zeilen:'
+      l10n_subtitle: 'Importieren',
+      l10n_uploadMore: 'Weitere hochladen',
+      l10n_finish: 'Abschließen',
+      l10n_statusError: 'Konnte nicht importiert werden',
+      l10n_statusComplete: 'Fertig',
+      l10n_statusPending: 'Wird importiert...',
+      l10n_processedRows: 'Verarbeitete Zeilen:'
     },
     SourceBox: {
-      clearAssignmentText: 'Zugewiesene Spalte entfernen',
-      selectColumnText: 'Spalte zum Zuweisen auswählen',
-      unselectColumnText: 'Spalte abwählen'
+      l10n_clearAssignment: 'Zugewiesene Spalte entfernen',
+      l10n_selectColumn: 'Spalte zum Zuweisen auswählen',
+      l10n_unselectColumn: 'Spalte abwählen'
     },
     TargetBox: {
-      optionalAriaLabelText: 'optional',
-      requiredAriaLabelText: 'erforderlich',
-      boxPlaceholderText: 'Spalte hierher ziehen',
-      getBoxValueActionText: (columnCode: string) =>
+      l10n_optionalAriaLabel: 'optional',
+      l10n_requiredAriaLabel: 'erforderlich',
+      l10n_boxPlaceholder: 'Spalte hierher ziehen',
+      l10n_getBoxValueAction: (columnCode: string) =>
         `Spalte ${columnCode} zuweisen`,
-      clearText: 'Zugewiesene Spalte entfernen'
+      l10n_clear: 'Zugewiesene Spalte entfernen'
     }
   }
 };

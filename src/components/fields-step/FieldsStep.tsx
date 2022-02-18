@@ -121,12 +121,12 @@ export const FieldsStep: React.FC<{
     onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
   }, [fieldAssignments]);
 
-  const { requiredFieldsErrorText, subtitleText } = useLocale('ColumnPicker');
+  const { l10n_requiredFieldsError, l10n_subtitle } = useLocale('ColumnPicker');
 
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle={subtitleText}
+      subtitle={l10n_subtitle}
       error={validationError}
       onCancel={onCancel}
       onNext={() => {
@@ -146,7 +146,7 @@ export const FieldsStep: React.FC<{
         if (!hasUnassignedRequired) {
           onAccept();
         } else {
-          setValidationError(requiredFieldsErrorText);
+          setValidationError(l10n_requiredFieldsError);
         }
       }}
     >

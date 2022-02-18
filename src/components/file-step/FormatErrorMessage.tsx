@@ -9,11 +9,11 @@ export const FormatErrorMessage: React.FC<{
   onCancelClick: () => void;
   // eslint-disable-next-line react/display-name
 }> = React.memo(({ onCancelClick, children }) => {
-  const { backText } = useLocale('FormatErrorMessage');
+  const { l10n_back } = useLocale('FormatErrorMessage');
   return (
     <div className="CSVImporter_FormatErrorMessage">
       <span>{children}</span>
-      <TextButton onClick={onCancelClick}>{backText}</TextButton>
+      <TextButton onClick={onCancelClick}>{l10n_back}</TextButton>
     </div>
   );
 });

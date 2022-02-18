@@ -16,7 +16,7 @@ export const FormatRawPreview: React.FC<{
   const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
   const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
 
-  const { getWarningText } = useLocale('FormatRawPreview');
+  const { l10n_getWarning } = useLocale('FormatRawPreview');
 
   return (
     <div className="CSVImporter_FormatRawPreview">
@@ -29,7 +29,7 @@ export const FormatRawPreview: React.FC<{
 
       {warning ? (
         <FormatErrorMessage onCancelClick={onCancelClick}>
-          {getWarningText(warning.message || String(warning))}
+          {l10n_getWarning(warning.message || String(warning))}
         </FormatErrorMessage>
       ) : null}
     </div>

@@ -172,25 +172,25 @@ export function ProgressDisplay<Row extends BaseRow>({
   }, [estimatedRowCount, progressCount, isComplete]);
 
   const {
-    subtitleText,
-    uploadMoreText,
-    finishText,
-    statusErrorText,
-    statusCompleteText,
-    statusPendingText,
-    processedRowsText
+    l10n_subtitle,
+    l10n_uploadMore,
+    l10n_finish,
+    l10n_statusError,
+    l10n_statusComplete,
+    l10n_statusPending,
+    l10n_processedRows
   } = useLocale('ProgressDisplay');
 
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle={subtitleText}
+      subtitle={l10n_subtitle}
       error={error && (error.message || String(error))}
       secondaryDisabled={!isComplete || isDismissed}
-      secondaryLabel={onRestart && onClose ? uploadMoreText : undefined}
+      secondaryLabel={onRestart && onClose ? l10n_uploadMore : undefined}
       onSecondary={onRestart && onClose ? onRestart : undefined}
       nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
-      nextLabel={!onClose && onRestart ? uploadMoreText : finishText}
+      nextLabel={!onClose && onRestart ? l10n_uploadMore : l10n_finish}
       onNext={() => {
         setIsDismissed(true);
 
@@ -209,19 +209,19 @@ export function ProgressDisplay<Row extends BaseRow>({
             tabIndex={-1}
             ref={statusRef}
           >
-            {error ? statusErrorText : statusCompleteText}
+            {error ? l10n_statusError : l10n_statusComplete}
           </div>
         ) : (
           <div
             className="CSVImporter_ProgressDisplay__status -pending"
             role="status"
           >
-            {statusPendingText}
+            {l10n_statusPending}
           </div>
         )}
 
         <div className="CSVImporter_ProgressDisplay__count" role="text">
-          <var>{processedRowsText}</var> {progressCount}
+          <var>{l10n_processedRows}</var> {progressCount}
         </div>
 
         <div className="CSVImporter_ProgressDisplay__progressBar">
