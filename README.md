@@ -3,7 +3,7 @@
 [![https://www.npmjs.com/package/react-csv-importer](https://img.shields.io/npm/v/react-csv-importer)](https://www.npmjs.com/package/react-csv-importer) [![https://github.com/beamworks/react-csv-importer/actions](https://github.com/beamworks/react-csv-importer/actions/workflows/test.yml/badge.svg)](https://github.com/beamworks/react-csv-importer/actions)
 
 This library combines an uploader + CSV parser + raw file preview + UI for custom user column
-mapping, all in one. Wraps the popular PapaParse CSV library to preview and process file contents directly in-browser.
+mapping, all in one. It wraps the popular PapaParse CSV library to preview and process file contents directly in-browser.
 
 Use this to implement the following bulk data import story in your app:
 
@@ -11,19 +11,13 @@ Use this to implement the following bulk data import story in your app:
 - previews the raw uploaded data before parsing
 - picks which columns to import
 
-Then your front-end code receives parsed CSV data as a series of JSON objects. You can validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time. Meanwhile, the user will see an animated progress bar.
+Then your front-end code will receive parsed CSV data as a series of JSON objects. You can validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time. Meanwhile, the user will see an animated progress bar.
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
 [Try the live editable code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox) or see the [themed demo app](https://react-csv-importer.vercel.app/).
 
-The UI theme CSS is standalone (no external dependencies such as Material UI) and tailored to
-universally fit within most application design frameworks. Interface elements are tested for screen
-reader accessibility and keyboard-only usage (yes, actually!).
-
-This package is easy to fork with your own customizations, and you can use your fork directly as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in any of your projects, see below.
-
-Feature summary:
+### Feature summary:
 
 - wraps around the well-known Papa Parse CSV library
 - raw file preview
@@ -34,13 +28,17 @@ Feature summary:
 - keyboard a11y
 - i18n
 
-Enterprise-level data file handling:
+### Enterprise-level data file handling:
 
 - 1GB+ CSV file size (true streaming support without crashing browser)
 - automatically strip leading BOM character in data
 - correctly handles multibyte streaming (see https://github.com/mholt/PapaParse/issues/908)
 - runs entirely in-browser
 - async parsing logic (pauses while your app makes backend updates)
+
+The UI theme CSS is standalone (no external dependencies such as Material UI) and tailored to
+universally fit within most application design frameworks. Interface elements are tested for screen
+reader accessibility and keyboard-only usage (yes, actually!).
 
 ## Install
 
@@ -51,6 +49,8 @@ npm install --save react-csv-importer
 # using Yarn
 yarn add react-csv-importer
 ```
+
+This package is easy to fork with your own customizations, and you can use your fork directly as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in any of your projects, see below.
 
 ## Example Usage
 
