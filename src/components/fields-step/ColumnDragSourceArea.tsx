@@ -43,7 +43,7 @@ const SourceBox: React.FC<{
     column
   ]);
 
-  const l10n = useLocale('SourceBox');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <div className="CSVImporter_ColumnDragSourceArea__box">
@@ -133,7 +133,7 @@ export const ColumnDragSourceArea: React.FC<{
     );
   }
 
-  const l10n = useLocale('ColumnDragSourceArea');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <section

@@ -109,7 +109,7 @@ export const FileStep: React.FC<{
     };
   }, [selectedFile, preview]);
 
-  const l10n = useLocale('FileStep');
+  const l10n = useLocale('fileStep');
 
   // clear selected file
   // preview result content to display

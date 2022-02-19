@@ -121,7 +121,7 @@ export const FieldsStep: React.FC<{
     onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
   }, [fieldAssignments]);
 
-  const l10n = useLocale('ColumnPicker');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <ImporterFrame

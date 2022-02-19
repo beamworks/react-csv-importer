@@ -24,7 +24,7 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
     onDrop: dropHandler
   });
 
-  const l10n = useLocale('FileSelector');
+  const l10n = useLocale('fileStep');
 
   return (
     <div

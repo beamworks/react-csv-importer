@@ -125,7 +125,7 @@ const TargetBox: React.FC<{
     );
   }, [hasHeaders, field, touched, assignedColumn, sourceColumn, isReDragged]);
 
-  const l10n = useLocale('TargetBox');
+  const l10n = useLocale('fieldsStep');
 
   // @todo mouse cursor changes to reflect draggable state
   return (
@@ -210,7 +210,7 @@ export const ColumnDragTargetArea: React.FC<{
   onAssign,
   onUnassign
 }) => {
-  const l10n = useLocale('ColumnDragTargetArea');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <section

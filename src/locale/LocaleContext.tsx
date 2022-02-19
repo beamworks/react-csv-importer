@@ -1,16 +1,14 @@
 import React from 'react';
 import { ImporterLocale, enUS } from '.';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 
 export const LocaleContext = React.createContext<ImporterLocale>(enUS);
 
-type LocalizedComponentName = keyof ImporterLocale['components'];
+type I18nNamespace = keyof ImporterLocale;
 
-export function useLocale<C extends LocalizedComponentName>(
-  component: C
-): ImporterLocale['components'][C] {
+export function useLocale<N extends I18nNamespace>(
+  namespace: N
+): ImporterLocale[N] {
   const locale = useContext(LocaleContext);
-  return useMemo(() => {
-    return locale.components[component];
-  }, [component, locale.components]);
+  return locale[namespace]; // not using memo for basic property getter
 }

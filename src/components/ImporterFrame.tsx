@@ -41,7 +41,7 @@ export const ImporterFrame: React.FC<{
     }
   }, []);
 
-  const l10n = useLocale('ImporterFrame');
+  const l10n = useLocale('general');
 
   return (
     <div className="CSVImporter_ImporterFrame">

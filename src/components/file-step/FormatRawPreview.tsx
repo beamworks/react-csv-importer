@@ -16,7 +16,7 @@ export const FormatRawPreview: React.FC<{
   const chunkSlice = chunk.slice(0, RAW_PREVIEW_SIZE);
   const chunkHasMore = chunk.length > RAW_PREVIEW_SIZE;
 
-  const l10n = useLocale('FormatRawPreview');
+  const l10n = useLocale('fileStep');
 
   return (
     <div className="CSVImporter_FormatRawPreview">

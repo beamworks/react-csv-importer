@@ -171,7 +171,7 @@ export function ProgressDisplay<Row extends BaseRow>({
     return Math.floor(1000 - 1000 * progressLeft) / 10;
   }, [estimatedRowCount, progressCount, isComplete]);
 
-  const l10n = useLocale('ProgressDisplay');
+  const l10n = useLocale('progressStep');
 
   return (
     <ImporterFrame

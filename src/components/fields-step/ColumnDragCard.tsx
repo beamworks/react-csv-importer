@@ -47,7 +47,7 @@ export const ColumnDragCard: React.FC<{
     headerValue === undefined ? rowCount : rowCount - 1
   );
 
-  const l10n = useLocale('ColumnDragCard');
+  const l10n = useLocale('fieldsStep');
 
   return (
     // not changing variant dynamically because it causes a height jump
