@@ -123,17 +123,16 @@ Importer component children may be defined as a render-prop function that receiv
 You can swap the text used in the UI to a different locale.
 
 ```
-import { Importer, LocaleContext, deDE } from 'react-csv-importer';
+import { Importer, deDE } from 'react-csv-importer';
 
 // provide the locale to main UI
-<LocaleContext.Provider value={deDE}>
-  <Importer
-    // normal props, etc
-  />
-</LocaleContext.Provider>
+<Importer
+  locale={deDE}
+  // normal props, etc
+/>
 ```
 
-You can also pass your own fully custom locale definition as the locale context value. See `ImporterLocale` interface in `src/locale` for the full definition, and use an existing locale like `en-US` as basis.
+You can also pass your own fully custom locale definition as the locale value. See `ImporterLocale` interface in `src/locale` for the full definition, and use an existing locale like `enUS` as basis. For better performance, please ensure that the value is stable (i.e. does not change on every render).
 
 ## Local Development
 
