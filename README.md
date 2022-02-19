@@ -118,6 +118,23 @@ Importer component children may be defined as a render-prop function that receiv
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
 - [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
 
+## Internationalization (i18n) and Localization (l10n)
+
+You can swap the text used in the UI to a different locale.
+
+```
+import { Importer, LocaleContext, deDE } from 'react-csv-importer';
+
+// provide the locale to main UI
+<LocaleContext.Provider value={deDE}>
+  <Importer
+    // normal props, etc
+  />
+</LocaleContext.Provider>
+```
+
+You can also pass your own fully custom locale definition as the locale context value. See `ImporterLocale` interface in `src/locale` for the full definition, and use an existing locale like `en-US` as basis.
+
 ## Local Development
 
 Perform local `git clone`, etc. Then ensure modules are installed:
