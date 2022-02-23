@@ -7,11 +7,11 @@ mapping, all in one. It wraps the popular PapaParse CSV library to preview and p
 
 Use this to implement the following bulk data import story in your app:
 
-- user drag-drops (or selects) a file for upload
-- previews the raw uploaded data before parsing
-- picks which columns to import
+- 📤 user drag-drops (or selects) a file for upload
+- 👓 previews the raw uploaded data before parsing
+- ✏ picks which columns to import
 
-Then your front-end code will receive parsed CSV data as a series of JSON objects. You can validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time. Meanwhile, the user will see an animated progress bar.
+Your front-end code will receive parsed CSV data as a series of JSON objects. You can then validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time: meanwhile, the user will see an animated progress bar.
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
@@ -19,7 +19,7 @@ Then your front-end code will receive parsed CSV data as a series of JSON object
 
 ### Feature summary:
 
-- wraps around the well-known Papa Parse CSV library
+- wraps the well-known Papa Parse CSV library
 - raw file preview
 - user-selectable column mapping (drag-drop UI)
 - auto-map fields to matching column names
