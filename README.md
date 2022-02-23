@@ -168,6 +168,8 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- 0.7.0
+  - add i18n
 - 0.6.0
   - improve multibyte stream parsing safety
   - support all browser encodings via TextDecoder
