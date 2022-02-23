@@ -24,7 +24,7 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
     onDrop: dropHandler
   });
 
-  const { defaultText, dragActiveText } = useLocale('FileSelector');
+  const l10n = useLocale('FileSelector');
 
   return (
     <div
@@ -35,9 +35,9 @@ export const FileSelector: React.FC<{ onSelected: (file: File) => void }> = ({
       <input {...getInputProps()} />
 
       {isDragActive ? (
-        <span>{dragActiveText}</span>
+        <span>{l10n.dragActive}</span>
       ) : (
-        <span>{defaultText}</span>
+        <span>{l10n.default}</span>
       )}
     </div>
   );
