@@ -41,13 +41,13 @@ export const ImporterFrame: React.FC<{
     }
   }, []);
 
-  const l10n = useLocale('ImporterFrame');
+  const l10n = useLocale('general');
 
   return (
     <div className="CSVImporter_ImporterFrame">
       <div className="CSVImporter_ImporterFrame__header">
         <IconButton
-          label={l10n.previousStep}
+          label={l10n.goToPreviousStepTooltip}
           type="arrowBack"
           disabled={!onCancel}
           onClick={onCancel}
@@ -95,7 +95,7 @@ export const ImporterFrame: React.FC<{
           </div>
         ) : null}
         <TextButton disabled={!!nextDisabled} onClick={onNext}>
-          {nextLabel || l10n.nextStep}
+          {nextLabel || l10n.nextButton}
         </TextButton>
       </div>
     </div>

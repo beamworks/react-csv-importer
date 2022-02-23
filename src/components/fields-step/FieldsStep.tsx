@@ -121,12 +121,12 @@ export const FieldsStep: React.FC<{
     onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
   }, [fieldAssignments]);
 
-  const l10n = useLocale('ColumnPicker');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <ImporterFrame
       fileName={fileState.file.name}
-      subtitle={l10n.subtitle}
+      subtitle={l10n.stepSubtitle}
       error={validationError}
       onCancel={onCancel}
       onNext={() => {

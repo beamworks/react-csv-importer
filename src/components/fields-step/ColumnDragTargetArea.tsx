@@ -125,15 +125,17 @@ const TargetBox: React.FC<{
     );
   }, [hasHeaders, field, touched, assignedColumn, sourceColumn, isReDragged]);
 
-  const l10n = useLocale('TargetBox');
+  const l10n = useLocale('fieldsStep');
 
   // @todo mouse cursor changes to reflect draggable state
   return (
     <section
       className="CSVImporter_ColumnDragTargetArea__box"
-      aria-label={`${field.label} (${
-        field.isOptional ? l10n.optionalAriaLabel : l10n.requiredAriaLabel
-      })`}
+      aria-label={
+        field.isOptional
+          ? l10n.getDragTargetOptionalCaption(field.label)
+          : l10n.getDragTargetRequiredCaption(field.label)
+      }
       ref={containerRef}
     >
       <div className="CSVImporter_ColumnDragTargetArea__boxLabel" aria-hidden>
@@ -147,7 +149,7 @@ const TargetBox: React.FC<{
             className="CSVImporter_ColumnDragTargetArea__boxPlaceholderHelp"
             aria-hidden
           >
-            {l10n.boxPlaceholder}
+            {l10n.dragTargetPlaceholder}
           </div>
         )}
 
@@ -157,7 +159,7 @@ const TargetBox: React.FC<{
         {dragState && !dragState.pointerStartInfo ? (
           <div className="CSVImporter_ColumnDragTargetArea__boxValueAction">
             <IconButton
-              label={l10n.getBoxValueAction(dragState.column.code)}
+              label={l10n.getDragTargetAssignTooltip(dragState.column.code)}
               small
               type="forward"
               onClick={() => onAssign(field.name)}
@@ -168,7 +170,7 @@ const TargetBox: React.FC<{
           assignedColumn && (
             <div className="CSVImporter_ColumnDragTargetArea__boxValueAction">
               <IconButton
-                label={l10n.clear}
+                label={l10n.dragTargetClearTooltip}
                 small
                 type="close"
                 onClick={() => onUnassign(assignedColumn)}
@@ -208,12 +210,12 @@ export const ColumnDragTargetArea: React.FC<{
   onAssign,
   onUnassign
 }) => {
-  const l10n = useLocale('ColumnDragTargetArea');
+  const l10n = useLocale('fieldsStep');
 
   return (
     <section
       className="CSVImporter_ColumnDragTargetArea"
-      aria-label={l10n.ariaLabel}
+      aria-label={l10n.dragTargetAreaCaption}
     >
       {fields.map((field) => {
         const assignedColumnIndex = fieldAssignments[field.name];
