@@ -32,7 +32,7 @@ Your front-end code will receive parsed CSV data as a series of JSON objects. Yo
 
 - 1GB+ CSV file size (true streaming support without crashing browser)
 - automatically strip leading BOM character in data
-- correctly handles multibyte streaming (see https://github.com/mholt/PapaParse/issues/908)
+- fixes a [multibyte streaming issue in PapaParse](https://github.com/mholt/PapaParse/issues/908)
 - runs entirely in-browser
 - async parsing logic (pauses while your app makes backend updates)
 
