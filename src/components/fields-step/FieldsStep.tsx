@@ -149,6 +149,7 @@ export const FieldsStep: React.FC<{
           setValidationError(l10n.requiredFieldsError);
         }
       }}
+      nextLabel={l10n.nextButton}
     >
       <ColumnDragSourceArea
         columns={columns}

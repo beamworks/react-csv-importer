@@ -12,7 +12,7 @@ export const ImporterFrame: React.FC<{
   secondaryDisabled?: boolean;
   secondaryLabel?: string;
   nextDisabled?: boolean;
-  nextLabel?: string;
+  nextLabel: string;
   error?: string | null;
   onSecondary?: () => void;
   onNext: () => void;
@@ -95,7 +95,7 @@ export const ImporterFrame: React.FC<{
           </div>
         ) : null}
         <TextButton disabled={!!nextDisabled} onClick={onNext}>
-          {nextLabel || l10n.nextButton}
+          {nextLabel}
         </TextButton>
       </div>
     </div>
