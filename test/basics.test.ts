@@ -149,7 +149,7 @@ describe('importer basics', () => {
     describe('with preview accepted', () => {
       beforeEach(async () => {
         const nextButton = await getDriver().findElement(
-          By.xpath('//button[text() = "Next"]')
+          By.xpath('//button[text() = "Choose columns"]')
         );
 
         await nextButton.click();
@@ -181,7 +181,7 @@ describe('importer basics', () => {
 
       it('does not allow to proceed without assignment', async () => {
         const nextButton = await getDriver().findElement(
-          By.xpath('//button[text() = "Next"]')
+          By.xpath('//button[text() = "Import"]')
         );
 
         await nextButton.click();
@@ -231,7 +231,7 @@ describe('importer basics', () => {
         describe('with confirmation to start processing', () => {
           beforeEach(async () => {
             const nextButton = await getDriver().findElement(
-              By.xpath('//button[text() = "Next"]')
+              By.xpath('//button[text() = "Import"]')
             );
 
             await nextButton.click();
