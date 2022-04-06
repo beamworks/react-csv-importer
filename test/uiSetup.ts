@@ -83,7 +83,7 @@ export function uiHelperSetup(getDriver: () => ThenableWebDriver) {
 
     async advanceToFieldStepAndFinish() {
       const previewNextButton = await getDriver().findElement(
-        By.xpath('//button[text() = "Next"]')
+        By.xpath('//button[text() = "Choose columns"]')
       );
 
       await previewNextButton.click();
@@ -115,7 +115,7 @@ export function uiHelperSetup(getDriver: () => ThenableWebDriver) {
       await assignButton.click();
 
       const fieldsNextButton = await getDriver().findElement(
-        By.xpath('//button[text() = "Next"]')
+        By.xpath('//button[text() = "Import"]')
       );
 
       await fieldsNextButton.click();

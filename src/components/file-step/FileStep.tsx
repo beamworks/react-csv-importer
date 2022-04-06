@@ -185,6 +185,7 @@ export const FileStep: React.FC<{
         onAccept();
       }}
       onCancel={() => setSelectedFile(null)}
+      nextLabel={l10n.nextButton}
     >
       {reportBlock || (
         <div className="CSVImporter_FileStep__mainPendingBlock">

@@ -94,7 +94,7 @@ describe('importer with custom Papa Parse config', () => {
     describe('after accepting and assigning fields', () => {
       beforeEach(async () => {
         const previewNextButton = await getDriver().findElement(
-          By.xpath('//button[text() = "Next"]')
+          By.xpath('//button[text() = "Choose columns"]')
         );
 
         await previewNextButton.click();
@@ -126,7 +126,7 @@ describe('importer with custom Papa Parse config', () => {
         await assignButton.click();
 
         const fieldsNextButton = await getDriver().findElement(
-          By.xpath('//button[text() = "Next"]')
+          By.xpath('//button[text() = "Import"]')
         );
 
         await fieldsNextButton.click();

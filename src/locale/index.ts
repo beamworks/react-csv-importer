@@ -3,7 +3,6 @@
 export interface ImporterLocale {
   general: {
     goToPreviousStepTooltip: string;
-    nextButton: string;
   };
 
   fileStep: {
@@ -13,6 +12,7 @@ export interface ImporterLocale {
     getImportError: (message: string) => string;
     getDataFormatError: (message: string) => string;
     goBackButton: string;
+    nextButton: string;
 
     rawFileContentsHeading: string;
     previewImportHeading: string;
@@ -23,6 +23,7 @@ export interface ImporterLocale {
   fieldsStep: {
     stepSubtitle: string;
     requiredFieldsError: string;
+    nextButton: string;
 
     dragSourceAreaCaption: string;
     getDragSourcePageIndicator: (
@@ -60,8 +61,7 @@ export interface ImporterLocale {
 
 export const enUS: ImporterLocale = {
   general: {
-    goToPreviousStepTooltip: 'Go to previous step',
-    nextButton: 'Next'
+    goToPreviousStepTooltip: 'Go to previous step'
   },
 
   fileStep: {
@@ -72,6 +72,7 @@ export const enUS: ImporterLocale = {
     getImportError: (message) => `Import error: ${message}`,
     getDataFormatError: (message) => `Please check data formatting: ${message}`,
     goBackButton: 'Go Back',
+    nextButton: 'Choose columns',
 
     rawFileContentsHeading: 'Raw File Contents',
     previewImportHeading: 'Preview Import',
@@ -82,6 +83,7 @@ export const enUS: ImporterLocale = {
   fieldsStep: {
     stepSubtitle: 'Select Columns',
     requiredFieldsError: 'Please assign all required fields',
+    nextButton: 'Import',
 
     dragSourceAreaCaption: 'Columns to import',
     getDragSourcePageIndicator: (currentPage: number, pageCount: number) =>
@@ -119,14 +121,14 @@ export const enUS: ImporterLocale = {
 
 export const deDE: ImporterLocale = {
   general: {
-    goToPreviousStepTooltip: 'Zum vorherigen Schritt',
-    nextButton: 'Weiter'
+    goToPreviousStepTooltip: 'Zum vorherigen Schritt'
   },
 
   fileStep: {
     initialDragDropPrompt:
       'CSV-Datei auf dieses Feld ziehen, oder klicken um eine Datei auszuwählen',
     activeDragDropPrompt: 'CSV-Datei auf dieses Feld ziehen...',
+    nextButton: 'Spalten auswählen',
 
     getImportError: (message) => `Fehler beim Import: ${message}`,
     getDataFormatError: (message: string) =>
@@ -143,6 +145,7 @@ export const deDE: ImporterLocale = {
     stepSubtitle: 'Spalten auswählen',
     requiredFieldsError:
       'Bitte weise allen nicht optionalen Spalten einen Wert zu',
+    nextButton: 'Importieren',
 
     dragSourceAreaCaption: 'Zu importierende Spalte',
     getDragSourcePageIndicator: (currentPage: number, pageCount: number) =>
