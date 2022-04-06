@@ -181,14 +181,14 @@ export function ProgressDisplay<Row extends BaseRow>({
       secondaryDisabled={!isComplete || isDismissed}
       secondaryLabel={onRestart && onClose ? l10n.uploadMoreButton : undefined}
       onSecondary={onRestart && onClose ? onRestart : undefined}
-      nextDisabled={(!onClose && !onRestart) || !isComplete || isDismissed}
+      nextDisabled={!isComplete || isDismissed}
       nextLabel={
-        !onClose && onRestart ? l10n.uploadMoreButton : l10n.finishButton
+        !!(onClose || onRestart) &&
+        (onRestart ? l10n.uploadMoreButton : l10n.finishButton)
       }
       onNext={() => {
-        setIsDismissed(true);
-
         if (onClose) {
+          setIsDismissed(true);
           onClose(importInfo);
         } else if (onRestart) {
           onRestart();

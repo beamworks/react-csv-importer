@@ -12,7 +12,7 @@ export const ImporterFrame: React.FC<{
   secondaryDisabled?: boolean;
   secondaryLabel?: string;
   nextDisabled?: boolean;
-  nextLabel: string;
+  nextLabel: string | false;
   error?: string | null;
   onSecondary?: () => void;
   onNext: () => void;
@@ -81,6 +81,7 @@ export const ImporterFrame: React.FC<{
 
       <div className="CSVImporter_ImporterFrame__footer">
         <div className="CSVImporter_ImporterFrame__footerFill" />
+
         {error ? (
           <div className="CSVImporter_ImporterFrame__footerError" role="status">
             {error}
@@ -94,9 +95,14 @@ export const ImporterFrame: React.FC<{
             </TextButton>
           </div>
         ) : null}
-        <TextButton disabled={!!nextDisabled} onClick={onNext}>
-          {nextLabel}
-        </TextButton>
+
+        {nextLabel !== false ? (
+          <div className="CSVImporter_ImporterFrame__footerNext">
+            <TextButton disabled={!!nextDisabled} onClick={onNext}>
+              {nextLabel}
+            </TextButton>
+          </div>
+        ) : null}
       </div>
     </div>
   );

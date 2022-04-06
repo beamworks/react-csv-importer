@@ -290,6 +290,20 @@ describe('importer basics', () => {
               ]);
               expect(chunkInfo).to.deep.equal({ startIndex: 0 });
             });
+
+            it('does not show any interactable buttons', async () => {
+              const anyButtons = await getDriver().findElements(
+                By.xpath('//button')
+              );
+
+              expect(anyButtons.length).to.equal(1);
+              expect(await anyButtons[0].getAttribute('aria-label')).to.equal(
+                'Go to previous step'
+              );
+              expect(await anyButtons[0].getAttribute('disabled')).to.equal(
+                'true'
+              );
+            });
           });
         });
       });

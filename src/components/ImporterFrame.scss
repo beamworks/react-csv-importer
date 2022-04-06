@@ -64,7 +64,6 @@
 
   &__footerError {
     flex: none;
-    margin-right: 1em;
     line-height: 0.8; // in case of line break
     color: $errorTextColor;
     word-break: break-word;
@@ -73,6 +72,12 @@
   &__footerSecondary {
     flex: none;
     display: flex; // for more consistent button alignment
-    margin-right: 1em;
+    margin-left: 1em;
+  }
+
+  &__footerNext {
+    flex: none;
+    display: flex; // for more consistent button alignment
+    margin-left: 1em;
   }
 }
