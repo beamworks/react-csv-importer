@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useDrag } from 'react-use-gesture';
+import { useDrag } from '@use-gesture/react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
@@ -47,7 +47,10 @@ const SourceBox: React.FC<{
 
   return (
     <div className="CSVImporter_ColumnDragSourceArea__box">
-      <div {...(isAssigned ? {} : eventHandlers)}>
+      <div
+        {...(isAssigned ? {} : eventHandlers)}
+        style={{ touchAction: 'none' }}
+      >
         <ColumnDragCard
           column={column}
           isAssigned={isAssigned}

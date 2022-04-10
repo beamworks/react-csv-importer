@@ -14,7 +14,7 @@ export const ColumnDragObject: React.FC<{
   // @todo wrap in a no-events overlay to clip against screen edges
   const dragBoxRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal =
-    dragState && dragState.pointerStartInfo
+    dragState && dragState.pointerStartClone
       ? createPortal(
           <div className="CSVImporter_ColumnDragObject">
             <div
@@ -31,40 +31,36 @@ export const ColumnDragObject: React.FC<{
       : null;
 
   // set up initial position
-  const pointerStartInfo = dragState && dragState.pointerStartInfo;
+  const pointerStartClone = dragState && dragState.pointerStartClone;
   useLayoutEffect(() => {
-    if (!pointerStartInfo || !dragBoxRef.current) {
+    if (!pointerStartClone || !dragBoxRef.current) {
       return;
     }
 
-    const { initialXY, initialWidth } = pointerStartInfo;
-
-    dragBoxRef.current.style.left = `${initialXY[0]}px`;
-    dragBoxRef.current.style.top = `${initialXY[1]}px`;
-    dragBoxRef.current.style.width = `${initialWidth}px`;
+    const rect = pointerStartClone.getBoundingClientRect();
+    dragBoxRef.current.style.left = `${rect.left + rect.width / 2.2}px`;
+    dragBoxRef.current.style.top = `${rect.top}px`;
+    dragBoxRef.current.style.width = `${rect.width}px`;
+    dragBoxRef.current.style.height = `${rect.height}px`;
 
     // copy known font style from main content
     // @todo consider other text style properties?
-    if (referenceBoxRef.current) {
-      const computedStyle = window.getComputedStyle(referenceBoxRef.current);
-      dragBoxRef.current.style.fontFamily = computedStyle.fontFamily;
-      dragBoxRef.current.style.fontSize = computedStyle.fontSize;
-      dragBoxRef.current.style.fontWeight = computedStyle.fontWeight;
-      dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
-      dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
-    }
-  }, [pointerStartInfo]);
+    const computedStyle = window.getComputedStyle(pointerStartClone);
+    dragBoxRef.current.style.fontFamily = computedStyle.fontFamily;
+    dragBoxRef.current.style.fontSize = computedStyle.fontSize;
+    dragBoxRef.current.style.fontWeight = computedStyle.fontWeight;
+    dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
+    dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
+  }, [pointerStartClone]);
 
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
     if (dragState) {
-      dragState.updateListeners['dragObj'] = (xy: number[]) => {
-        if (!dragBoxRef.current) {
-          return;
-        }
+      dragState.updateListeners['dragObj'] = (movement: number[]) => {
+        if (!dragBoxRef.current) return;
 
-        dragBoxRef.current.style.left = `${xy[0]}px`;
-        dragBoxRef.current.style.top = `${xy[1]}px`;
+        const [x, y] = movement;
+        dragBoxRef.current.style.transform = `translate(${x}px, ${y}px)`;
       };
     }
   }, [dragState]);
