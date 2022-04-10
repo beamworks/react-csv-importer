@@ -45,10 +45,10 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-react-csv-importer@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.6.0.tgz#3ccee3538f0d1ac44296657713adbb3f49a61933"
-  integrity sha512-8VHyXnv/5jwKj2eHtncY6YV3moHNSW/OxxAGyqgy4vbkHCPSc2hPnNFsOOiZgMrRoB1xhEvD14LchnE+IoB6NQ==
+react-csv-importer@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/react-csv-importer/-/react-csv-importer-0.7.0.tgz#186ebfeb88388d957b319ce24a384dbfe5211062"
+  integrity sha512-eDo3b5PpMV6KAkJ+zEZXc26sgfAjTur1zfY/nJ9wPbAS9yUzw8pp6CJdfx+qmimrf3Q4yj54mfXPLs/IhntpJQ==
   dependencies:
     papaparse "^5.3.0"
     react-dropzone "^11.0.3"
