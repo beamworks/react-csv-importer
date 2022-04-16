@@ -103,7 +103,7 @@
   },
   "peerDependencies": {
     "react": "^16.8.0 || >=17.0.0",
-    "react-dom": "^16.8.0 || ^18.0.0"
+    "react-dom": "^16.8.0 || >=17.0.0"
   },
   "dependencies": {
     "papaparse": "^5.3.0",
