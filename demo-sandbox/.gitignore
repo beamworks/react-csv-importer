@@ -1,1 +1,4 @@
 /node_modules
+
+# ignore this lockfile to keep versioning simple
+/yarn.lock
