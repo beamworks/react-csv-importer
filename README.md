@@ -81,8 +81,8 @@ import 'react-csv-importer/dist/index.css';
     showMyAppToastNotification();
   }}
   onClose={({ file, preview, fields, columnFields }) => {
-    // optional, invoked when import is done and user clicked "Finish"
-    // (if this is not specified, the widget lets the user upload another file)
+    // optional, if this is specified the user will see a "Finish" button after import is done,
+    // which will call this when clicked
     goToMyAppNextPage();
   }}
 
@@ -168,6 +168,10 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- 0.7.1
+  - fix peerDependencies for React 18+
+  - hide Finish button by default
+  - button label tweaks
 - 0.7.0
   - add i18n
 - 0.6.0
