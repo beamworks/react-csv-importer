@@ -11,7 +11,12 @@ export interface Field {
 }
 
 export interface DragState {
-  pointerStartClone?: HTMLElement;
+  // null if this is a non-pointer-initiated state
+  pointerStartInfo: {
+    // position + size of originating card relative to viewport overlay
+    initialClientRect: DOMRectReadOnly;
+  } | null;
+
   column: Column;
   dropFieldName: string | null;
   updateListeners: { [key: string]: (xy: number[]) => void };
@@ -92,11 +97,18 @@ export function useColumnDragState(
   );
 
   const bindDrag = useDrag(
-    ({ first, last, movement, args, currentTarget }) => {
+    ({ first, last, movement, xy, args, currentTarget }) => {
       if (first) {
         const [column, startFieldName] = args as [Column, string | undefined];
+
+        // create new pointer-based drag state
         setDragState({
-          pointerStartClone: currentTarget as HTMLElement,
+          pointerStartInfo: {
+            initialClientRect:
+              currentTarget instanceof HTMLElement
+                ? currentTarget.getBoundingClientRect()
+                : new DOMRect(xy[0], xy[1], 0, 0) // fall back on just pointer position
+          },
           column,
           dropFieldName: startFieldName !== undefined ? startFieldName : null,
           updateListeners: {}

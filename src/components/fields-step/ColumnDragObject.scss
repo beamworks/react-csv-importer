@@ -1,26 +1,30 @@
 .CSVImporter_ColumnDragObject {
-  // scroll-independent container
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: none; // clipping to avoid triggering scrollbar when dragging near edges
-  pointer-events: none;
+  &__overlay {
+    // scroll-independent container
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: none; // clipping to avoid triggering scrollbar when dragging near edges
+    pointer-events: none;
+  }
 
   &__positioner {
+    // movement of mouse gesture inside overlay
     position: absolute; // @todo this is not working with scroll
     top: 0;
     left: 0;
     min-width: 8em; // in case could not compute
     width: 0; // dynamically set at drag start
-    height: 0;
+    height: 0; // dynamically set at drag start
   }
 
   &__holder {
+    // placement of visible card relative to mouse pointer
     position: absolute;
-    bottom: -0.75em;
-    left: -50%;
+    top: -0.75em;
+    left: -0.75em;
     width: 100%;
     opacity: 0.9;
   }

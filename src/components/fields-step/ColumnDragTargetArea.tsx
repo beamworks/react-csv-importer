@@ -122,7 +122,7 @@ const TargetBox: React.FC<{
         </div>
 
         {/* tab order after column contents */}
-        {dragState && !dragState.pointerStartClone ? (
+        {dragState && !dragState.pointerStartInfo ? (
           <div className="CSVImporter_ColumnDragTargetArea__boxValueAction">
             <IconButton
               label={l10n.getDragTargetAssignTooltip(dragState.column.code)}
