@@ -117,8 +117,9 @@ export function useColumnDragState(
         }
       }
     },
-    // this is the only line you need to make the logic compatible with latest @use-gesture/react
-    { pointer: { capture: false } }
+    {
+      pointer: { capture: false } // turn off pointer capture to avoid interfering with hover tests
+    }
   );
 
   // when dragging, set root-level user-select:none to prevent text selection, see Importer.scss

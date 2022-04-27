@@ -155,7 +155,7 @@ export const ColumnDragSourceArea: React.FC<{
         />
       </div>
       <div className="CSVImporter_ColumnDragSourceArea__page">
-        {dragState && !dragState.pointerStartInfo ? (
+        {dragState && !dragState.pointerStartClone ? (
           <div
             className="CSVImporter_ColumnDragSourceArea__pageIndicator"
             role="status"
