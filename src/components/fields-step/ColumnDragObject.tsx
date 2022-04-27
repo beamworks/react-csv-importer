@@ -45,12 +45,14 @@ export const ColumnDragObject: React.FC<{
 
     // copy known font style from main content
     // @todo consider other text style properties?
-    const computedStyle = window.getComputedStyle(pointerStartClone);
-    dragBoxRef.current.style.fontFamily = computedStyle.fontFamily;
-    dragBoxRef.current.style.fontSize = computedStyle.fontSize;
-    dragBoxRef.current.style.fontWeight = computedStyle.fontWeight;
-    dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
-    dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
+    if (referenceBoxRef.current) {
+      const computedStyle = window.getComputedStyle(referenceBoxRef.current);
+      dragBoxRef.current.style.fontFamily = computedStyle.fontFamily;
+      dragBoxRef.current.style.fontSize = computedStyle.fontSize;
+      dragBoxRef.current.style.fontWeight = computedStyle.fontWeight;
+      dragBoxRef.current.style.fontStyle = computedStyle.fontStyle;
+      dragBoxRef.current.style.letterSpacing = computedStyle.letterSpacing;
+    }
   }, [pointerStartClone]);
 
   // subscribe to live position updates without state changes
