@@ -1,0 +1,15 @@
+@import '../../theme.scss';
+
+.CSVImporter_DropdownField {
+  &__label {
+    margin-bottom: 0.25em;
+    font-weight: bold;
+    color: $textColor;
+    word-break: break-word;
+
+    & > b {
+      margin-left: 0.25em;
+      color: $errorTextColor;
+    }
+  }
+}

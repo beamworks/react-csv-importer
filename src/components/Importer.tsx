@@ -3,7 +3,8 @@ import React, { useMemo, useState, useEffect, useContext } from 'react';
 import { BaseRow } from '../parser';
 import { FileStep, FileStepState } from './file-step/FileStep';
 import { generatePreviewColumns } from './fields-step/ColumnPreview';
-import { FieldsStep, Field, FieldsStepState } from './fields-step/FieldsStep';
+import { Field, FieldsStepState } from './fields-step/FieldsStep';
+import { FieldsDropdownStep } from './fields-step/FieldsDropdownStep';
 import { ProgressDisplay } from './ProgressDisplay';
 import {
   ImporterFilePreview,
@@ -165,7 +166,7 @@ export function Importer<Row extends BaseRow>({
     return (
       <LocaleContext.Provider value={locale}>
         <div className="CSVImporter_Importer">
-          <FieldsStep
+          <FieldsDropdownStep
             fileState={fileState}
             fields={fields}
             prevState={fieldsState}
