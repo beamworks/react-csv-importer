@@ -21,6 +21,52 @@ export interface FieldsStepState {
   fieldAssignments: FieldAssignmentMap;
 }
 
+// prep insensitive/fuzzy match stems for known columns
+function computeFuzzyFieldAssignments(fields: Field[], columns: Column[]) {
+  const columnStems = columns.map((column) => {
+    const trimmed = column.header && column.header.trim();
+
+    if (!trimmed) {
+      return undefined;
+    }
+
+    return trimmed.toLowerCase();
+  });
+
+  // pre-assign corresponding fields
+  const result: FieldAssignmentMap = {};
+  const assignedColumnIndexes: boolean[] = [];
+
+  fields.forEach((field) => {
+    // find by field stem
+    const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
+
+    const matchingColumnIndex = columnStems.findIndex(
+      (columnStem, columnIndex) => {
+        // no headers or no meaningful stem value
+        if (columnStem === undefined) {
+          return false;
+        }
+
+        // always check against assigning twice
+        if (assignedColumnIndexes[columnIndex]) {
+          return false;
+        }
+
+        return columnStem === fieldLabelStem;
+      }
+    );
+
+    // assign if found
+    if (matchingColumnIndex !== -1) {
+      assignedColumnIndexes[matchingColumnIndex] = true;
+      result[field.name] = matchingColumnIndex;
+    }
+  });
+
+  return result;
+}
+
 export const FieldsStep: React.FC<{
   fileState: FileStepState;
   fields: Field[];
@@ -41,52 +87,14 @@ export const FieldsStep: React.FC<{
     [fileState]
   );
 
-  const initialAssignments = useMemo<FieldAssignmentMap>(() => {
-    // prep insensitive/fuzzy match stems for known columns
-    // (this is ignored if there is already previous state to seed from)
-    const columnStems = columns.map((column) => {
-      const trimmed = column.header && column.header.trim();
+  const prevFieldAssignments = useMemo<FieldAssignmentMap>(() => {
+    if (prevState) {
+      return prevState.fieldAssignments;
+    }
 
-      if (!trimmed) {
-        return undefined;
-      }
-
-      return trimmed.toLowerCase();
-    });
-
-    // pre-assign corresponding fields
-    const result: FieldAssignmentMap = {};
-    const assignedColumnIndexes: boolean[] = [];
-
-    fields.forEach((field) => {
-      // find by field stem
-      const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
-
-      const matchingColumnIndex = columnStems.findIndex(
-        (columnStem, columnIndex) => {
-          // no headers or no meaningful stem value
-          if (columnStem === undefined) {
-            return false;
-          }
-
-          // always check against assigning twice
-          if (assignedColumnIndexes[columnIndex]) {
-            return false;
-          }
-
-          return columnStem === fieldLabelStem;
-        }
-      );
-
-      // assign if found
-      if (matchingColumnIndex !== -1) {
-        assignedColumnIndexes[matchingColumnIndex] = true;
-        result[field.name] = matchingColumnIndex;
-      }
-    });
-
-    return result;
-  }, [fields, columns]);
+    // initial fuzzy match
+    return computeFuzzyFieldAssignments(fields, columns);
+  }, [prevState, fields, columns]);
 
   // track which fields need to show validation warning
   const [fieldTouched, setFieldTouched] = useState<FieldTouchedMap>({});
@@ -100,21 +108,17 @@ export const FieldsStep: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(
-    fields,
-    prevState ? prevState.fieldAssignments : initialAssignments,
-    (fieldName) => {
-      setFieldTouched((prev) => {
-        if (prev[fieldName]) {
-          return prev;
-        }
+  } = useColumnDragState(fields, prevFieldAssignments, (fieldName) => {
+    setFieldTouched((prev) => {
+      if (prev[fieldName]) {
+        return prev;
+      }
 
-        const copy = { ...prev };
-        copy[fieldName] = true;
-        return copy;
-      });
-    }
-  );
+      const copy = { ...prev };
+      copy[fieldName] = true;
+      return copy;
+    });
+  });
 
   // notify of current state
   useEffect(() => {
