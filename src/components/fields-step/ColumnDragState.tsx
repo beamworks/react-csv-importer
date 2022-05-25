@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useDrag } from 'react-use-gesture';
+import { useDrag } from '@use-gesture/react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
@@ -13,8 +13,8 @@ export interface Field {
 export interface DragState {
   // null if this is a non-pointer-initiated state
   pointerStartInfo: {
-    initialXY: number[];
-    initialWidth: number;
+    // position + size of originating card relative to viewport overlay
+    initialClientRect: DOMRectReadOnly;
   } | null;
 
   column: Column;
@@ -96,42 +96,43 @@ export function useColumnDragState(
     []
   );
 
-  const bindDrag = useDrag(({ first, last, event, xy, args }) => {
-    if (first && event) {
-      // only prevent default inside first event
-      // (touchmove uses passive event handler and would trigger warning)
-      event.preventDefault();
+  const bindDrag = useDrag(
+    ({ first, last, movement, xy, args, currentTarget }) => {
+      if (first) {
+        const [column, startFieldName] = args as [Column, string | undefined];
 
-      const [column, startFieldName] = args as [Column, string | undefined];
+        // create new pointer-based drag state
+        setDragState({
+          pointerStartInfo: {
+            initialClientRect:
+              currentTarget instanceof HTMLElement
+                ? currentTarget.getBoundingClientRect()
+                : new DOMRect(xy[0], xy[1], 0, 0) // fall back on just pointer position
+          },
+          column,
+          dropFieldName: startFieldName !== undefined ? startFieldName : null,
+          updateListeners: {}
+        });
+      } else if (last) {
+        setDragState(null);
 
-      setDragState({
-        pointerStartInfo: {
-          initialXY: xy,
-          initialWidth:
-            event.currentTarget instanceof HTMLElement
-              ? event.currentTarget.offsetWidth
-              : 0
-        },
-        column,
-        dropFieldName: startFieldName !== undefined ? startFieldName : null,
-        updateListeners: {}
-      });
-    } else if (last) {
-      setDragState(null);
+        if (dragState) {
+          internalAssignHandler(dragState.column, dragState.dropFieldName);
+        }
+      }
 
+      // @todo figure out a cleaner event stream solution
       if (dragState) {
-        internalAssignHandler(dragState.column, dragState.dropFieldName);
+        const listeners = dragState.updateListeners;
+        for (const key of Object.keys(listeners)) {
+          listeners[key](movement);
+        }
       }
+    },
+    {
+      pointer: { capture: false } // turn off pointer capture to avoid interfering with hover tests
     }
-
-    // @todo figure out a cleaner event stream solution
-    if (dragState) {
-      const listeners = dragState.updateListeners;
-      for (const key of Object.keys(listeners)) {
-        listeners[key](xy);
-      }
-    }
-  }, {});
+  );
 
   // when dragging, set root-level user-select:none to prevent text selection, see Importer.scss
   // (done via class toggle to avoid interfering with any other dynamic style changes)

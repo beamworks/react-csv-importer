@@ -1,5 +1,5 @@
-import React, { useMemo, useEffect, useRef } from 'react';
-import { useDrag } from 'react-use-gesture';
+import React, { useMemo, useRef } from 'react';
+import { useDrag } from '@use-gesture/react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
@@ -36,47 +36,9 @@ const TargetBox: React.FC<{
   onAssign,
   onUnassign
 }) => {
-  // wrap in ref to avoid re-triggering effect
-  const onHoverRef = useRef(onHover);
-  onHoverRef.current = onHover;
-
   // respond to hover events when there is active mouse drag happening
   // (not keyboard-emulated one)
   const containerRef = useRef<HTMLDivElement>(null);
-  const isHoveredRef = useRef(false); // simple tracking of current hover state to avoid spamming onHover (not for display)
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!dragState || !dragState.pointerStartInfo || !container) {
-      return;
-    }
-
-    // measure the current scroll-independent position
-    const rect = container.getBoundingClientRect();
-    const minX = rect.x;
-    const maxX = rect.x + rect.width;
-    const minY = rect.y;
-    const maxY = rect.y + rect.height;
-
-    // listen for pointer movement (mouse or touch) and detect hover
-    const listeners = dragState.updateListeners;
-    const listenerName = `field:${field.name}`;
-
-    listeners[listenerName] = (xy: number[]) => {
-      const isInBounds =
-        xy[0] >= minX && xy[0] < maxX && xy[1] >= minY && xy[1] < maxY;
-
-      if (isInBounds !== isHoveredRef.current) {
-        // cannot use local var for isHovered state because the effect re-triggers after this
-        isHoveredRef.current = isInBounds;
-        onHoverRef.current(field.name, isInBounds);
-      }
-    };
-
-    // cleanup
-    return () => {
-      delete listeners[listenerName];
-    };
-  }, [dragState, field.name]);
 
   // if this field is the current highlighted drop target,
   // get the originating column data for display
@@ -137,6 +99,8 @@ const TargetBox: React.FC<{
           : l10n.getDragTargetRequiredCaption(field.label)
       }
       ref={containerRef}
+      onPointerEnter={() => onHover(field.name, true)}
+      onPointerLeave={() => onHover(field.name, false)}
     >
       <div className="CSVImporter_ColumnDragTargetArea__boxLabel" aria-hidden>
         {field.label}
@@ -153,7 +117,9 @@ const TargetBox: React.FC<{
           </div>
         )}
 
-        <div {...dragStartHandlers}>{valueContents}</div>
+        <div {...dragStartHandlers} style={{ touchAction: 'none' }}>
+          {valueContents}
+        </div>
 
         {/* tab order after column contents */}
         {dragState && !dragState.pointerStartInfo ? (

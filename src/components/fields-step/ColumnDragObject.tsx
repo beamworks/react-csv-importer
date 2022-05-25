@@ -11,12 +11,12 @@ export const ColumnDragObject: React.FC<{
 }> = ({ dragState }) => {
   const referenceBoxRef = useRef<HTMLDivElement | null>(null);
 
-  // @todo wrap in a no-events overlay to clip against screen edges
+  // the dragged box is wrapped in a no-events overlay to clip against screen edges
   const dragBoxRef = useRef<HTMLDivElement | null>(null);
   const dragObjectPortal =
     dragState && dragState.pointerStartInfo
       ? createPortal(
-          <div className="CSVImporter_ColumnDragObject">
+          <div className="CSVImporter_ColumnDragObject__overlay">
             <div
               className="CSVImporter_ColumnDragObject__positioner"
               ref={dragBoxRef}
@@ -30,20 +30,22 @@ export const ColumnDragObject: React.FC<{
         )
       : null;
 
-  // set up initial position
+  // set up initial position when pointer-based gesture is started
   const pointerStartInfo = dragState && dragState.pointerStartInfo;
   useLayoutEffect(() => {
+    // ignore non-pointer drag states
     if (!pointerStartInfo || !dragBoxRef.current) {
       return;
     }
 
-    const { initialXY, initialWidth } = pointerStartInfo;
+    // place based on initial position + size relative to viewport overlay
+    const rect = pointerStartInfo.initialClientRect;
+    dragBoxRef.current.style.left = `${rect.left}px`;
+    dragBoxRef.current.style.top = `${rect.top}px`;
+    dragBoxRef.current.style.width = `${rect.width}px`;
+    dragBoxRef.current.style.height = `${rect.height}px`;
 
-    dragBoxRef.current.style.left = `${initialXY[0]}px`;
-    dragBoxRef.current.style.top = `${initialXY[1]}px`;
-    dragBoxRef.current.style.width = `${initialWidth}px`;
-
-    // copy known font style from main content
+    // copy known cascaded font style from main content into portal content
     // @todo consider other text style properties?
     if (referenceBoxRef.current) {
       const computedStyle = window.getComputedStyle(referenceBoxRef.current);
@@ -58,13 +60,17 @@ export const ColumnDragObject: React.FC<{
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
     if (dragState) {
-      dragState.updateListeners['dragObj'] = (xy: number[]) => {
-        if (!dragBoxRef.current) {
-          return;
-        }
+      dragState.updateListeners['dragObj'] = (movement: number[]) => {
+        if (!dragBoxRef.current) return;
 
-        dragBoxRef.current.style.left = `${xy[0]}px`;
-        dragBoxRef.current.style.top = `${xy[1]}px`;
+        // update the visible offset relative to starting position
+        const [x, y] = movement;
+        dragBoxRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      };
+
+      // clean up listener
+      return () => {
+        delete dragState.updateListeners['dragObj'];
       };
     }
   }, [dragState]);
