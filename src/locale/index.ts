@@ -198,7 +198,7 @@ export const itIT: ImporterLocale = {
 
     rawFileContentsHeading: 'Contenuto delfile caricato',
     previewImportHeading: 'Anteprima dei dati',
-    dataHasHeadersCheckbox: 'Il file ha l\'intestazione',
+    dataHasHeadersCheckbox: 'Intestazione presente nel file',
     previewLoadingStatus: 'Caricamento anteprima...'
   },
 
@@ -209,9 +209,9 @@ export const itIT: ImporterLocale = {
 
     dragSourceAreaCaption: 'Colonne da importare',
     getDragSourcePageIndicator: (currentPage: number, pageCount: number) =>
-      `Page ${currentPage} of ${pageCount}`,
+      `Pagina ${currentPage} di ${pageCount}`,
     getDragSourceActiveStatus: (columnCode: string) =>
-      `Assigning column ${columnCode}`,
+      `Assegnamento alla colonna ${columnCode}`,
     nextColumnsTooltip: 'Mostra colonna successiva',
     previousColumnsTooltip: 'Mostra colonna precedente',
     clearAssignmentTooltip: 'Cancella tutti gli assegnamenti delle colonne',
@@ -219,11 +219,11 @@ export const itIT: ImporterLocale = {
     unselectColumnTooltip: 'Deseleziona colonna',
 
     dragTargetAreaCaption: 'Campi richiesti',
-    getDragTargetOptionalCaption: (field) => `${field} (optional)`,
-    getDragTargetRequiredCaption: (field) => `${field} (required)`,
+    getDragTargetOptionalCaption: (field) => `${field} (opzionale)`,
+    getDragTargetRequiredCaption: (field) => `${field} (obbligatorio)`,
     dragTargetPlaceholder: 'Trascina qui la colonna',
     getDragTargetAssignTooltip: (columnCode: string) =>
-      `Assign column ${columnCode}`,
+      `Assegnamento alla colonna ${columnCode}`,
     dragTargetClearTooltip: 'Cancella gli assegnamenti alla colonna',
 
     columnCardDummyHeader: 'Campo non assegnato',
