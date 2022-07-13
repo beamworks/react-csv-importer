@@ -184,7 +184,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       nextDisabled={!isComplete || isDismissed}
       nextLabel={
         !!(onClose || onRestart) &&
-        (onRestart ? l10n.uploadMoreButton : l10n.finishButton)
+        (onClose ? l10n.finishButton : l10n.uploadMoreButton)
       }
       onNext={() => {
         if (onClose) {
