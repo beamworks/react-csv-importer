@@ -248,7 +248,7 @@ export const daDK: ImporterLocale = {
 
   fileStep: {
     initialDragDropPrompt:
-      "Træ og slip CSV-fil her eller klik for at vælge fra en mappe",
+      "Træk og slip CSV-fil her eller klik for at vælge fra en mappe",
     activeDragDropPrompt: "Slip CSV-fil her...",
 
     getImportError: (message) => `Import-fejl: ${message}`,
