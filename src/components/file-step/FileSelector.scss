@@ -9,6 +9,10 @@
   color: $textColor;
   cursor: pointer;
 
+  &--error {
+    color: $errorTextColor;
+  }
+
   &[data-active='true'] {
     background: darken($fillColor, 10%);
     transition: background 0.1s ease-out;

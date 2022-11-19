@@ -11,6 +11,7 @@ export interface ImporterLocale {
 
     getImportError: (message: string) => string;
     getDataFormatError: (message: string) => string;
+    unsupportedFileFormatError: string;
     goBackButton: string;
     nextButton: string;
 
@@ -71,6 +72,7 @@ export const enUS: ImporterLocale = {
 
     getImportError: (message) => `Import error: ${message}`,
     getDataFormatError: (message) => `Please check data formatting: ${message}`,
+    unsupportedFileFormatError: 'File format not supported',
     goBackButton: 'Go Back',
     nextButton: 'Choose columns',
 
@@ -133,6 +135,7 @@ export const deDE: ImporterLocale = {
     getImportError: (message) => `Fehler beim Import: ${message}`,
     getDataFormatError: (message: string) =>
       `Bitte Datenformat überprüfen: ${message}`,
+    unsupportedFileFormatError  : 'Dateiformat nicht unterstützt',
     goBackButton: 'Zurück',
 
     rawFileContentsHeading: 'Originaler Datei-Inhalt',
@@ -193,6 +196,7 @@ export const itIT: ImporterLocale = {
 
     getImportError: (message) => `Errore durante l'importazione: ${message}`,
     getDataFormatError: (message) => `Si prega di controllare il formato dei dati: ${message}`,
+    unsupportedFileFormatError  : 'Formato file non supportato',
     goBackButton: 'Torna indietro',
     nextButton: 'Seleziona le colonne',
 
@@ -253,6 +257,7 @@ export const ptBR: ImporterLocale = {
 
     getImportError: (message) => `Erro ao importar: ${message}`,
     getDataFormatError: (message) => `Por favor confira a formatação dos dados: ${message}`,
+    unsupportedFileFormatError  : 'Formato de arquivo não suportado',
     goBackButton: 'Voltar',
     nextButton: 'Escolher Colunas',
 
@@ -314,6 +319,7 @@ export const daDK: ImporterLocale = {
     getImportError: (message) => `Import-fejl: ${message}`,
     getDataFormatError: (message) =>
       `Kontrollér venligst data-formatering: ${message}`,
+    unsupportedFileFormatError  : 'Filformat understøttes ikke',
     goBackButton: "Gå tilbage",
     nextButton: "Vælg kolonner",
 
@@ -375,6 +381,7 @@ export const trTR: ImporterLocale = {
     getImportError: (message) => `Import hatası: ${message}`,
     getDataFormatError: (message) =>
       `Lütfen veri formatını kontrol edin: ${message}`,
+    unsupportedFileFormatError  : 'Dosya formatı desteklenmiyor',
     goBackButton: "Geri",
     nextButton: "Kolonları Seç",
 

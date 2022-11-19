@@ -62,6 +62,21 @@ describe('importer basics', () => {
     expect(await fileInput.getAttribute('type')).to.equal('file');
   });
 
+  it('with unsupported file selected', async () => {
+    const filePath = path.resolve(__dirname, './fixtures/img.png');
+
+    const fileInput = await getDriver().findElement(By.xpath('//input'));
+    await fileInput.sendKeys(filePath);
+
+    await getDriver().wait(
+      until.elementLocated(By.xpath('//*[contains(., "File format not supported")]')),
+      300 // extra time
+    );
+
+    const errorBlock = await getDriver().findElement(By.xpath('//*[contains(., "File format not supported")]'))
+    expect(await errorBlock.getText()).to.include("File format not supported")
+  })
+
   describe('with file selected', () => {
     beforeEach(async () => {
       const filePath = path.resolve(__dirname, './fixtures/simple.csv');
