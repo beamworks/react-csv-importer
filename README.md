@@ -3,16 +3,14 @@
 [![https://www.npmjs.com/package/react-csv-importer](https://img.shields.io/npm/v/react-csv-importer)](https://www.npmjs.com/package/react-csv-importer) [![https://github.com/beamworks/react-csv-importer/actions](https://github.com/beamworks/react-csv-importer/actions/workflows/test.yml/badge.svg)](https://github.com/beamworks/react-csv-importer/actions)
 
 This library combines an uploader + CSV parser + raw file preview + UI for custom user column
-mapping, all in one. It wraps the popular PapaParse CSV library to process file contents directly in-browser.
+mapping, all in one.
 
 Use this to provide a typical bulk data import experience:
 
-- 📤 user drag-drops (or selects) a file for upload
-- 👓 previews the raw uploaded data before parsing
-- ✏ picks which columns to import
-- ⏳ waits for your app to finish uploading data
-
-Parsed CSV data arrives to your front-end code as a series of JSON objects. You can then validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time: meanwhile, the user will see an animated progress bar.
+- 📤 drag-drop or select a file for upload
+- 👓 preview the raw uploaded data
+- ✏ pick which columns to import
+- ⏳ wait for backend logic to finish processing data
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
@@ -20,26 +18,21 @@ Parsed CSV data arrives to your front-end code as a series of JSON objects. You 
 
 ### Feature summary:
 
-- wraps the well-known Papa Parse CSV library
 - raw file preview
-- user-selectable column mapping (drag-drop UI)
-- auto-map fields to matching column names
-- TypeScript support
-- screen reader a11y
+- drag-drop UI to remap input columns as needed
+- i18n (EN, DA, DE, IT, PT, TR or custom)
+- screen reader accessibility (yes, really!)
 - keyboard a11y
-- i18n
+- standalone CSS stylesheet (no frameworks required)
+- existing parser implementation: Papa Parse CSV
+- TypeScript support
 
 ### Enterprise-level data file handling:
 
 - 1GB+ CSV file size (true streaming support without crashing browser)
 - automatically strip leading BOM character in data
+- async parsing logic (pause file read while your app makes backend updates)
 - fixes a [multibyte streaming issue in PapaParse](https://github.com/mholt/PapaParse/issues/908)
-- runs entirely in-browser
-- async parsing logic (pauses while your app makes backend updates)
-
-The UI theme CSS is standalone (no external dependencies such as Material UI) and tailored to
-universally fit within most application design frameworks. Interface elements are tested for screen
-reader accessibility and keyboard-only usage (yes, actually!).
 
 ## Install
 
@@ -51,7 +44,17 @@ npm install --save react-csv-importer
 yarn add react-csv-importer
 ```
 
-This package is easy to fork with your own customizations, and you can use your fork directly as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in any of your projects, see below.
+Make sure that the bundled CSS stylesheet (`/dist/index.css`) is present in your app's page or bundle.
+
+This package is easy to fork with your own customizations, and you can use your fork directly as a [Git dependency](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) in any of your projects, see below. For simple CSS customization you can also just override the built-in styling with your own style rules.
+
+## How It Works
+
+Render the React CSV Importer UI component where you need it in your app. This will present the upload widget to the user. After a file is selected and reviewed by the user, CSV file data is parsed in-browser and passed to your front-end code as a list of JSON objects. Each object will have fields corresponding to the columns that the user selected.
+
+Large files (can be up to 1GB and more!) are parsed in chunks: return a promise from your data handler and the file reader will pause until you are ready for more data.
+
+Instead of a custom CSV parser this library uses the popular Papa Parse CSV reader. Because the file reader runs in-browser, your backend (if you have one) never has to deal with raw CSV data.
 
 ## Example Usage
 
@@ -123,12 +126,6 @@ The `preview` object available to some callbacks above contains a snippet of CSV
 
 Importer component children may be defined as a render-prop function that receives an object with `preview` and `file` fields (see above). It can then, for example, dynamically return different fields depending which headers are present in the CSV.
 
-## Dependencies
-
-- [Papa Parse](https://www.papaparse.com/) for CSV parsing
-- [react-dropzone](https://react-dropzone.js.org/) for file upload
-- [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
-
 ## Internationalization (i18n) and Localization (l10n)
 
 You can swap the text used in the UI to a different locale.
@@ -143,7 +140,22 @@ import { Importer, deDE } from 'react-csv-importer';
 />
 ```
 
-You can also pass your own fully custom locale definition as the locale value. See `ImporterLocale` interface in `src/locale` for the full definition, and use an existing locale like `enUS` as basis. For better performance, please ensure that the value is stable (i.e. does not change on every render).
+These locales are provided as part of the NPM module:
+
+- `en-US`
+- `de-DE`
+- `it-IT`
+- `pt-BR`
+- `da-DK`
+- `tr-TR`
+
+You can also pass your own fully custom locale definition as the locale value. See `ImporterLocale` interface in `src/locale` for the full definition, and use an existing locale like `en-US` as basis. For better performance, please ensure that the customized locale value does not change on every render.
+
+## Dependencies
+
+- [Papa Parse](https://www.papaparse.com/) for CSV parsing
+- [react-dropzone](https://react-dropzone.js.org/) for file upload
+- [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
 
 ## Local Development
 
