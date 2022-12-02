@@ -3,19 +3,20 @@
 [![https://www.npmjs.com/package/react-csv-importer](https://img.shields.io/npm/v/react-csv-importer)](https://www.npmjs.com/package/react-csv-importer) [![https://github.com/beamworks/react-csv-importer/actions](https://github.com/beamworks/react-csv-importer/actions/workflows/test.yml/badge.svg)](https://github.com/beamworks/react-csv-importer/actions)
 
 This library combines an uploader + CSV parser + raw file preview + UI for custom user column
-mapping, all in one. It wraps the popular PapaParse CSV library to preview and process file contents directly in-browser.
+mapping, all in one. It wraps the popular PapaParse CSV library to process file contents directly in-browser.
 
-Use this to implement the following bulk data import story in your app:
+Use this to provide a typical bulk data import experience:
 
 - 📤 user drag-drops (or selects) a file for upload
 - 👓 previews the raw uploaded data before parsing
 - ✏ picks which columns to import
+- ⏳ waits for your app to finish uploading data
 
-Your front-end code will receive parsed CSV data as a series of JSON objects. You can then validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time: meanwhile, the user will see an animated progress bar.
+Parsed CSV data arrives to your front-end code as a series of JSON objects. You can then validate and send the data to the backend in any final format it may require instead of raw CSV. Parsing is async-enabled, so your logic can take its time: meanwhile, the user will see an animated progress bar.
 
 ![React CSV Importer usage demo](https://github.com/beamworks/react-csv-importer/raw/59f967c13bbbd20eb2a663538797dd718f9bc57e/package-core/react-csv-importer-demo-20200915.gif)
 
-[Try the live editable code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox) or see the [themed demo app](https://react-csv-importer.vercel.app/).
+[Try it in the live code sandbox](https://codesandbox.io/s/github/beamworks/react-csv-importer/tree/master/demo-sandbox)
 
 ### Feature summary:
 
