@@ -16,14 +16,12 @@ import { LocaleContext } from '../locale/LocaleContext';
 import { enUS } from '../locale';
 
 // internal context for registering field definitions
-type FieldDef = Field & { id: number };
+type FieldDef = Field & { id: symbol };
 type FieldListSetter = (prev: FieldDef[]) => FieldDef[];
 
 const FieldDefinitionContext = React.createContext<
   ((setter: FieldListSetter) => void) | null
 >(null);
-
-let fieldIdCount = 0;
 
 // defines a field to be filled from file column during import
 export const ImporterField: React.FC<ImporterFieldProps> = ({
@@ -31,8 +29,8 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   label,
   optional
 }) => {
-  // @todo this is not SSR-compatible
-  const fieldId = useMemo(() => (fieldIdCount += 1), []);
+  // make unique internal ID (this is never rendered in HTML and does not affect SSR)
+  const fieldId = useMemo(() => Symbol('internal unique field ID'), []);
   const fieldSetter = useContext(FieldDefinitionContext);
 
   // update central list as needed
@@ -68,9 +66,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
     }
 
     return () => {
-      fieldSetter((prev) => {
-        return prev.filter((field) => field.id !== fieldId);
-      });
+      fieldSetter((prev) => prev.filter((field) => field.id !== fieldId));
     };
   }, [fieldId, fieldSetter]);
 
