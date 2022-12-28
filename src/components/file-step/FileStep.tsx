@@ -27,6 +27,8 @@ export const FileStep: React.FC<{
   onChange: (state: FileStepState | null) => void;
   onAccept: () => void;
 }> = ({ customConfig, assumeNoHeaders, prevState, onChange, onAccept }) => {
+  const l10n = useLocale('fileStep');
+
   // seed from previous state as needed
   const [selectedFile, setSelectedFile] = useState<File | null>(
     prevState ? prevState.file : null
@@ -108,8 +110,6 @@ export const FileStep: React.FC<{
       asyncLockRef.current += 1;
     };
   }, [selectedFile, preview]);
-
-  const l10n = useLocale('fileStep');
 
   // clear selected file
   // preview result content to display

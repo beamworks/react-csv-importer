@@ -117,21 +117,6 @@ export function Importer<Row extends BaseRow>({
     );
   }, [fileState]);
 
-  // render provided child content that defines the fields
-  const contentNodes = useMemo(() => {
-    return typeof content === 'function'
-      ? content({
-          file: fileState && fileState.file,
-          preview: externalPreview
-        })
-      : content;
-  }, [fileState, externalPreview, content]);
-  const contentWrap = (
-    <FieldDefinitionContext.Provider value={setFields}>
-      {contentNodes}
-    </FieldDefinitionContext.Provider>
-  );
-
   // fall back to enUS if no default locale provided
   locale = locale ?? enUS;
 
@@ -150,8 +135,6 @@ export function Importer<Row extends BaseRow>({
               setFileAccepted(true);
             }}
           />
-
-          {contentWrap}
         </div>
       </LocaleContext.Provider>
     );
@@ -177,7 +160,17 @@ export function Importer<Row extends BaseRow>({
             }}
           />
 
-          {contentWrap}
+          <FieldDefinitionContext.Provider value={setFields}>
+            {
+              // render the provided child content that defines the fields
+              typeof content === 'function'
+                ? content({
+                    file: fileState && fileState.file,
+                    preview: externalPreview
+                  })
+                : content
+            }
+          </FieldDefinitionContext.Provider>
         </div>
       </LocaleContext.Provider>
     );
@@ -206,8 +199,6 @@ export function Importer<Row extends BaseRow>({
           onComplete={onComplete}
           onClose={onClose}
         />
-
-        {contentWrap}
       </div>
     </LocaleContext.Provider>
   );
