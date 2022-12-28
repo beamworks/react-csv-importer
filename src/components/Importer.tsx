@@ -16,7 +16,7 @@ import { LocaleContext } from '../locale/LocaleContext';
 import { enUS } from '../locale';
 
 // internal context for registering field definitions
-type FieldDef = Field & { id: symbol };
+type FieldDef = Field & { instanceId: symbol };
 type FieldListSetter = (prev: FieldDef[]) => FieldDef[];
 
 const FieldDefinitionContext = React.createContext<
@@ -30,7 +30,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
   optional
 }) => {
   // make unique internal ID (this is never rendered in HTML and does not affect SSR)
-  const fieldId = useMemo(() => Symbol('internal unique field ID'), []);
+  const instanceId = useMemo(() => Symbol('internal unique field ID'), []);
   const fieldSetter = useContext(FieldDefinitionContext);
 
   // update central list as needed
@@ -42,11 +42,18 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
     fieldSetter((prev) => {
       const copy = [...prev];
-      const existingIndex = copy.findIndex((item) => item.id === fieldId);
+      const existingIndex = copy.findIndex(
+        (item) => item.instanceId === instanceId
+      );
 
-      // preserve existing array position if possible
-      // @todo keep both copies in a map to deal with dynamic fields better
-      const newField = { id: fieldId, name, label, isOptional: !!optional };
+      // add or update the field definition instance in-place
+      // (using internal field instance ID helps gracefully tolerate duplicates, renames, etc)
+      const newField = {
+        instanceId,
+        name,
+        label,
+        isOptional: !!optional
+      };
       if (existingIndex === -1) {
         copy.push(newField);
       } else {
@@ -55,7 +62,7 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
 
       return copy;
     });
-  }, [fieldId, fieldSetter, name, label, optional]);
+  }, [instanceId, fieldSetter, name, label, optional]);
 
   // on component unmount, remove this field from list by ID
   useEffect(() => {
@@ -65,9 +72,11 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
     }
 
     return () => {
-      fieldSetter((prev) => prev.filter((field) => field.id !== fieldId));
+      fieldSetter((prev) =>
+        prev.filter((field) => field.instanceId !== instanceId)
+      );
     };
-  }, [fieldId, fieldSetter]);
+  }, [instanceId, fieldSetter]);
 
   return null;
 };
