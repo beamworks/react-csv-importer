@@ -13,6 +13,7 @@ export const IconButton: React.FC<{
   return (
     <button
       className="CSVImporter_IconButton"
+      type="button" // avoid triggering form submit
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
