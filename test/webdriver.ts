@@ -1,16 +1,38 @@
+import * as path from 'path';
+import * as child_process from 'child_process';
 import { Builder, ThenableWebDriver } from 'selenium-webdriver';
-import { Options as ChromeOptions } from 'selenium-webdriver/chrome';
-import 'chromedriver';
+import * as chrome from 'selenium-webdriver/chrome';
+// import 'chromedriver';
+
+async function getGlobalChromedriverPath() {
+  const yarnGlobalPath = await new Promise<string>((resolve, reject) => {
+    child_process.exec('yarn global bin', { timeout: 8000 }, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result.trim());
+      }
+    });
+  });
+
+  return path.resolve(yarnGlobalPath, './chromedriver');
+}
 
 export function runDriver(): () => ThenableWebDriver {
   let webdriver: ThenableWebDriver | null = null;
 
   // same webdriver instance serves all the tests in the suite
-  before(function () {
+  before(async function () {
+    const chromedriverPath = await getGlobalChromedriverPath();
+    console.log('bin result:', JSON.stringify(chromedriverPath));
+
+    const service = new chrome.ServiceBuilder(chromedriverPath).build();
+    chrome.setDefaultService(service);
+
     webdriver = new Builder()
       .forBrowser('chrome')
       .setChromeOptions(
-        process.env.CI ? new ChromeOptions().headless() : new ChromeOptions()
+        process.env.CI ? new chrome.Options().headless() : new chrome.Options()
       )
       .build();
   });
