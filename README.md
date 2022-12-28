@@ -155,7 +155,7 @@ You can also pass your own fully custom locale definition as the locale value. S
 
 - [Papa Parse](https://www.papaparse.com/) for CSV parsing
 - [react-dropzone](https://react-dropzone.js.org/) for file upload
-- [react-use-gesture](https://github.com/react-spring/react-use-gesture) for drag-and-drop
+- [@use-gesture/react](https://github.com/pmndrs/use-gesture) for drag-and-drop
 
 ## Local Development
 
