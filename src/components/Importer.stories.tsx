@@ -3,6 +3,7 @@ import { Story, Meta } from '@storybook/react';
 
 import { ImporterProps } from './ImporterProps';
 import { Importer, ImporterField } from './Importer';
+import { deDE } from '../locale';
 
 export default {
   title: 'Importer',
@@ -17,6 +18,17 @@ type SampleImporterProps = ImporterProps<{ fieldA: string }>;
 export const Main: Story<SampleImporterProps> = (args: SampleImporterProps) => {
   return (
     <Importer {...args}>
+      <ImporterField name="fieldA" label="Field A" />
+      <ImporterField name="fieldB" label="Field B" optional />
+    </Importer>
+  );
+};
+
+export const LocaleDE: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <Importer {...args} locale={deDE}>
       <ImporterField name="fieldA" label="Field A" />
       <ImporterField name="fieldB" label="Field B" optional />
     </Importer>

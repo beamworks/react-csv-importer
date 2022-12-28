@@ -1,4 +1,11 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
   padding: 1em;
+  background: #e0f4f8;
+  background-image: radial-gradient(#d0e0e0 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+h1 {
+  color: #304040;
 }
