@@ -185,6 +185,7 @@ You can use your own fork of this library in your own project by referencing the
   - more translations (thanks [**@p-multani-0**](https://github.com/p-multani-0), [**@GuilhermeMelati**](https://github.com/GuilhermeMelati), [**@tobiaskkd**](https://github.com/tobiaskkd) and [**@memoricab**](https://github.com/memoricab))
   - refactor to work with later versions of @use-gesture/react (thanks [**@dbismut**](https://github.com/dbismut))
   - upgrade to newer version of react-dropzone
+  - bug fixes for button type and labels
 - 0.7.1
   - fix peerDependencies for React 18+ (thanks [**@timarney**](https://github.com/timarney))
   - hide Finish button by default
