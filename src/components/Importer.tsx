@@ -41,13 +41,12 @@ export const ImporterField: React.FC<ImporterFieldProps> = ({
     }
 
     fieldSetter((prev) => {
-      const newField = { id: fieldId, name, label, isOptional: !!optional };
-
       const copy = [...prev];
-      const existingIndex = copy.findIndex((item) => item.name === name);
+      const existingIndex = copy.findIndex((item) => item.id === fieldId);
 
       // preserve existing array position if possible
       // @todo keep both copies in a map to deal with dynamic fields better
+      const newField = { id: fieldId, name, label, isOptional: !!optional };
       if (existingIndex === -1) {
         copy.push(newField);
       } else {
