@@ -2,11 +2,10 @@ import * as path from 'path';
 import * as child_process from 'child_process';
 import { Builder, ThenableWebDriver } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
-// import 'chromedriver';
 
 async function getGlobalChromedriverPath() {
   const yarnGlobalPath = await new Promise<string>((resolve, reject) => {
-    child_process.exec('yarn global bin', { timeout: 8000 }, (err, result) => {
+    child_process.exec('yarn global dir', { timeout: 8000 }, (err, result) => {
       if (err) {
         reject(err);
       } else {
@@ -15,7 +14,11 @@ async function getGlobalChromedriverPath() {
     });
   });
 
-  return path.resolve(yarnGlobalPath, './chromedriver');
+  return path.resolve(
+    yarnGlobalPath,
+    './node_modules/chromedriver/lib/chromedriver',
+    process.platform === 'win32' ? './chromedriver.exe' : './chromedriver'
+  );
 }
 
 export function runDriver(): () => ThenableWebDriver {
@@ -24,7 +27,6 @@ export function runDriver(): () => ThenableWebDriver {
   // same webdriver instance serves all the tests in the suite
   before(async function () {
     const chromedriverPath = await getGlobalChromedriverPath();
-    console.log('bin result:', JSON.stringify(chromedriverPath));
 
     const service = new chrome.ServiceBuilder(chromedriverPath).build();
     chrome.setDefaultService(service);
