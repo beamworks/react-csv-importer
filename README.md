@@ -181,12 +181,16 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- _publishing soon_
+  - more translations (thanks [**@p-multani-0**](https://github.com/p-multani-0), [**@GuilhermeMelati**](https://github.com/GuilhermeMelati), [**@tobiaskkd**](https://github.com/tobiaskkd) and [**@memoricab**](https://github.com/memoricab))
+  - refactor to work with later versions of @use-gesture/react (thanks [**@dbismut**](https://github.com/dbismut))
+  - upgrade to newer version of react-dropzone
 - 0.7.1
-  - fix peerDependencies for React 18+
+  - fix peerDependencies for React 18+ (thanks [**@timarney**](https://github.com/timarney))
   - hide Finish button by default
   - button label tweaks
 - 0.7.0
-  - add i18n
+  - add i18n (thanks [**@tstehr**](https://github.com/tstehr) and [**@Valodim**](https://github.com/Valodim))
 - 0.6.0
   - improve multibyte stream parsing safety
   - support all browser encodings via TextDecoder
@@ -225,7 +229,3 @@ You can use your own fork of this library in your own project by referencing the
   - first beta release
   - true streaming support using shim for PapaParse
   - lifecycle hooks receive info about the import
-
-## Credits
-
-Translations contributed by: [**@tstehr**](https://github.com/tstehr) and [**@Valodim**](https://github.com/Valodim).
