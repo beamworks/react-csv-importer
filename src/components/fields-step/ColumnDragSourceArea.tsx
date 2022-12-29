@@ -116,11 +116,13 @@ export const ColumnDragSourceArea: React.FC<{
   // track pagination state (resilient to page size changes)
   const [pageStart, setPageStart] = useState<number>(0);
   const [pageChanged, setPageChanged] = useState<boolean>(false);
-  const pageCount = Math.ceil(columns.length / pageSize);
-  const page = Math.ceil(pageStart / pageSize); // round up in case page size changes
 
+  const page = Math.floor(pageStart / pageSize); // round down in case page size changes
+  const pageCount = Math.ceil(columns.length / pageSize);
+
+  // display page items and fill up with dummy divs up to pageSize
   const pageContents = columns
-    .slice(pageStart, pageStart + pageSize)
+    .slice(page * pageSize, (page + 1) * pageSize)
     .map((column, columnIndex) => (
       <SourceBox
         key={columnIndex}
@@ -153,9 +155,11 @@ export const ColumnDragSourceArea: React.FC<{
         <IconButton
           label={l10n.previousColumnsTooltip}
           type="back"
-          disabled={pageStart === 0}
+          disabled={page === 0}
           onClick={() => {
-            setPageStart((prev) => Math.max(0, prev - pageSize));
+            setPageStart(
+              (prev) => Math.max(0, Math.floor(prev / pageSize) - 1) * pageSize
+            );
             setPageChanged(true);
           }}
         />
@@ -189,8 +193,10 @@ export const ColumnDragSourceArea: React.FC<{
           type="forward"
           disabled={page >= pageCount - 1}
           onClick={() => {
-            setPageStart((prev) =>
-              Math.min(columns.length - 1, prev + pageSize)
+            setPageStart(
+              (prev) =>
+                Math.min(pageCount - 1, Math.floor(prev / pageSize) + 1) *
+                pageSize
             );
           }}
         />
