@@ -26,12 +26,12 @@ describe('importer with input not terminated by EOL character at end of file', (
         React.createElement(
           ReactCSVImporter,
           {
-            processChunk: (rows, info) => {
+            dataHandler: (rows, info) => {
               const rawWin = window as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-              rawWin.TEST_PROCESS_CHUNK_ROWS = (
-                rawWin.TEST_PROCESS_CHUNK_ROWS || []
+              rawWin.TEST_DATA_HANDLER_ROWS = (
+                rawWin.TEST_DATA_HANDLER_ROWS || []
               ).concat(rows);
-              rawWin.TEST_PROCESS_CHUNK_INFO = info;
+              rawWin.TEST_DATA_HANDLER_INFO = info;
             }
           },
           [
@@ -72,10 +72,10 @@ describe('importer with input not terminated by EOL character at end of file', (
         // await getDriver().sleep(10000);
 
         const parsedData = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_ROWS'
+          'return window.TEST_DATA_HANDLER_ROWS'
         );
         const chunkInfo = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_INFO'
+          'return window.TEST_DATA_HANDLER_INFO'
         );
 
         expect(parsedData).to.deep.equal([

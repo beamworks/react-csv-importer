@@ -25,7 +25,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   fileState,
   fieldsState,
   externalPreview,
-  processChunk,
+  dataHandler,
   onStart,
   onComplete,
   onRestart,
@@ -34,7 +34,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   fileState: FileStepState;
   fieldsState: FieldsStepState;
   externalPreview: ImporterFilePreview;
-  processChunk: ParseCallback<Row>;
+  dataHandler: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;
   onComplete?: (info: ImportInfo) => void;
   onRestart?: () => void;
@@ -116,7 +116,7 @@ export function ProgressDisplay<Row extends BaseRow>({
   }, [isComplete, error]);
 
   // perform main async parse
-  const processChunkRef = useRef(processChunk); // wrap in ref to avoid re-triggering
+  const dataHandlerRef = useRef(dataHandler); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
     const oplock = asyncLockRef.current;
@@ -131,7 +131,7 @@ export function ProgressDisplay<Row extends BaseRow>({
 
         setProgressCount((prev) => prev + deltaCount);
       },
-      processChunkRef.current
+      dataHandlerRef.current
     ).then(
       () => {
         // ignore if stale

@@ -22,11 +22,11 @@ export interface FileStepState extends PreviewReport {
 
 export const FileStep: React.FC<{
   customConfig: CustomizablePapaParseConfig;
-  assumeNoHeaders?: boolean;
+  defaultNoHeader?: boolean;
   prevState: FileStepState | null;
   onChange: (state: FileStepState | null) => void;
   onAccept: () => void;
-}> = ({ customConfig, assumeNoHeaders, prevState, onChange, onAccept }) => {
+}> = ({ customConfig, defaultNoHeader, prevState, onChange, onAccept }) => {
   const l10n = useLocale('fileStep');
 
   // seed from previous state as needed
@@ -53,8 +53,8 @@ export const FileStep: React.FC<{
   // wrap in ref to avoid triggering effect
   const customConfigRef = useRef(customConfig);
   customConfigRef.current = customConfig;
-  const assumeNoHeadersRef = useRef(assumeNoHeaders);
-  assumeNoHeadersRef.current = assumeNoHeaders;
+  const defaultNoHeaderRef = useRef(defaultNoHeader);
+  defaultNoHeaderRef.current = defaultNoHeader;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -101,7 +101,7 @@ export const FileStep: React.FC<{
       setHasHeaders(
         results.parseError
           ? false
-          : !assumeNoHeadersRef.current && !results.isSingleLine
+          : !defaultNoHeaderRef.current && !results.isSingleLine
       );
     });
 
