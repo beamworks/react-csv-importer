@@ -157,7 +157,7 @@ export const ColumnDragTargetArea: React.FC<{
   hasHeaders: boolean; // for correct display of dummy card
   fields: Field[];
   columns: Column[];
-  displayFieldCountPerRow?: number;
+  fieldRowSize?: number;
   fieldTouched: FieldTouchedMap;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
@@ -173,7 +173,7 @@ export const ColumnDragTargetArea: React.FC<{
   hasHeaders,
   fields,
   columns,
-  displayFieldCountPerRow,
+  fieldRowSize,
   fieldTouched,
   fieldAssignments,
   dragState,
@@ -185,9 +185,7 @@ export const ColumnDragTargetArea: React.FC<{
   const l10n = useLocale('fieldsStep');
 
   // override flex basis for unusual situations
-  const flexBasis = displayFieldCountPerRow
-    ? `${100 / displayFieldCountPerRow}%`
-    : undefined;
+  const flexBasis = fieldRowSize ? `${100 / fieldRowSize}%` : undefined;
 
   return (
     <section

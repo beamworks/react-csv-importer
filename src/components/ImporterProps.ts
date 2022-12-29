@@ -57,8 +57,8 @@ export type ImporterProps<Row extends BaseRow> = ImporterDataHandlerProps<
    */
   assumeNoHeaders?: boolean;
 
-  dragDropColumnCount?: number;
-  dragDropFieldCount?: number;
+  displayColumnPageSize?: number;
+  displayFieldRowSize?: number;
 
   restartable?: boolean;
   onStart?: (info: ImportInfo) => void;

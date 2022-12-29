@@ -94,8 +94,8 @@ export const CustomWidth: Story<SampleImporterProps> = (
 };
 
 CustomWidth.args = {
-  dragDropColumnCount: 2, // fewer columns for e.g. a narrower display
-  dragDropFieldCount: 3 // fewer columns for e.g. a narrower display
+  displayColumnPageSize: 2, // fewer columns for e.g. a narrower display
+  displayFieldRowSize: 3 // fewer columns for e.g. a narrower display
 };
 
 export const RenderProp: Story<SampleImporterProps> = (

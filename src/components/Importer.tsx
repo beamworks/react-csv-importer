@@ -24,8 +24,8 @@ export function Importer<Row extends BaseRow>(
     defaultNoHeader,
     assumeNoHeaders,
     restartable,
-    dragDropFieldCount,
-    dragDropColumnCount,
+    displayFieldRowSize,
+    displayColumnPageSize,
     onStart,
     onComplete,
     onClose,
@@ -98,8 +98,8 @@ export function Importer<Row extends BaseRow>(
             fileState={fileState}
             fields={fields}
             prevState={fieldsState}
-            dragDropFieldCount={dragDropFieldCount}
-            dragDropColumnCount={dragDropColumnCount}
+            displayFieldRowSize={displayFieldRowSize}
+            displayColumnPageSize={displayColumnPageSize}
             onChange={(state) => {
               setFieldsState(state);
             }}
