@@ -4,12 +4,6 @@ import { useDrag } from '@use-gesture/react';
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
 
-export interface Field {
-  name: string;
-  label: string;
-  isOptional: boolean;
-}
-
 export interface DragState {
   // null if this is a non-pointer-initiated state
   pointerStartInfo: {

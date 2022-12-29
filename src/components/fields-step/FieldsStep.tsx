@@ -8,14 +8,12 @@ import {
   generateColumnCode,
   Column
 } from './ColumnPreview';
-import { useColumnDragState, Field as DragField } from './ColumnDragState';
+import { useColumnDragState } from './ColumnDragState';
 import { ColumnDragObject } from './ColumnDragObject';
 import { ColumnDragSourceArea } from './ColumnDragSourceArea';
 import { ColumnDragTargetArea, FieldTouchedMap } from './ColumnDragTargetArea';
+import { Field } from '../ImporterField';
 import { useLocale } from '../../locale/LocaleContext';
-
-// re-export from a central spot
-export type Field = DragField;
 
 export interface FieldsStepState {
   fieldAssignments: FieldAssignmentMap;

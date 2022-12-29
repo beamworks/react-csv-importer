@@ -1,7 +1,12 @@
 import React, { useMemo, useState, useEffect, useContext } from 'react';
 
-import { Field } from './fields-step/FieldsStep';
 import { ImporterFieldProps } from './ImporterProps';
+
+export interface Field {
+  name: string;
+  label: string;
+  isOptional: boolean;
+}
 
 // internal context for registering field definitions
 type FieldDef = Field & { instanceId: symbol };
