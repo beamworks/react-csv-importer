@@ -129,7 +129,8 @@ export function Importer<Row extends BaseRow>(
           fileState={fileState}
           fieldsState={fieldsState}
           externalPreview={externalPreview}
-          dataHandler={dataHandler ?? processChunk}
+          // @todo remove assertion after upgrading to TS 4.1+
+          dataHandler={dataHandler ?? processChunk!} // eslint-disable-line @typescript-eslint/no-non-null-assertion
           onStart={onStart}
           onRestart={
             restartable
