@@ -22,13 +22,15 @@ export interface FieldsStepState {
 }
 
 export const FieldsStep: React.FC<{
-  fileState: FileStepState;
-  fields: Field[];
-  prevState: FieldsStepState | null;
+  fields: Field[]; // current field definitions
+  fileState: FileStepState; // output from the file selector step
+  prevState: FieldsStepState | null; // confirmed field selections so far
   onChange: (state: FieldsStepState) => void;
   onAccept: () => void;
   onCancel: () => void;
-}> = ({ fileState, fields, prevState, onChange, onAccept, onCancel }) => {
+}> = ({ fields, fileState, prevState, onChange, onAccept, onCancel }) => {
+  const l10n = useLocale('fieldsStep');
+
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -120,8 +122,6 @@ export const FieldsStep: React.FC<{
   useEffect(() => {
     onChangeRef.current({ fieldAssignments: { ...fieldAssignments } });
   }, [fieldAssignments]);
-
-  const l10n = useLocale('fieldsStep');
 
   return (
     <ImporterFrame
