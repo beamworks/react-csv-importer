@@ -15,13 +15,6 @@ ReactDOM.render(
     <h1>React CSV Importer sandbox</h1>
 
     <Importer
-      chunkSize={10000} // optional, internal parsing chunk size in bytes
-      defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
-      restartable={false} // optional, lets user choose to upload another file when import is complete
-      onStart={({ file, fields }) => {
-        // optional, invoked when user has mapped columns and started import
-        console.log("starting import of file", file, "with fields", fields);
-      }}
       dataHandler={async (rows) => {
         // required, receives a list of parsed objects based on defined fields and user column mapping;
         // may be called several times if file is large
@@ -30,6 +23,13 @@ ReactDOM.render(
 
         // mock timeout to simulate processing
         await new Promise((resolve) => setTimeout(resolve, 500));
+      }}
+      chunkSize={10000} // optional, internal parsing chunk size in bytes
+      defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
+      restartable={false} // optional, lets user choose to upload another file when import is complete
+      onStart={({ file, fields }) => {
+        // optional, invoked when user has mapped columns and started import
+        console.log("starting import of file", file, "with fields", fields);
       }}
       onComplete={({ file, fields }) => {
         // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)

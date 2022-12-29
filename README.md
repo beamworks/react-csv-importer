@@ -66,12 +66,6 @@ import 'react-csv-importer/dist/index.css';
 
 // in your component code:
 <Importer
-  defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
-  restartable={false} // optional, lets user choose to upload another file when import is complete
-  onStart={({ file, preview, fields, columnFields }) => {
-    // optional, invoked when user has mapped columns and started import
-    prepMyAppForIncomingData();
-  }}
   dataHandler={async (rows, { startIndex }) => {
     // required, may be called several times
     // receives a list of parsed objects based on defined fields and user column mapping;
@@ -79,6 +73,12 @@ import 'react-csv-importer/dist/index.css';
     for (row of rows) {
       await myAppMethod(row);
     }
+  }}
+  defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
+  restartable={false} // optional, lets user choose to upload another file when import is complete
+  onStart={({ file, preview, fields, columnFields }) => {
+    // optional, invoked when user has mapped columns and started import
+    prepMyAppForIncomingData();
   }}
   onComplete={({ file, preview, fields, columnFields }) => {
     // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
