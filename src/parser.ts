@@ -33,6 +33,7 @@ export type PreviewResults =
 
 export const PREVIEW_ROW_COUNT = 5;
 
+// for each given target field name, source from original CSV column index
 export type FieldAssignmentMap = { [name: string]: number | undefined };
 
 export type BaseRow = { [name: string]: unknown };

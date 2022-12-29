@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Story, Meta } from '@storybook/react';
 
 import { ImporterProps } from './ImporterProps';
@@ -105,5 +105,50 @@ export const RenderProp: Story<SampleImporterProps> = (
         );
       }}
     </Importer>
+  );
+};
+
+const PresetSelector: React.FC<{
+  children: (fieldContent: React.ReactNode) => React.ReactElement;
+}> = ({ children }) => {
+  const [selection, setSelection] = useState('Person');
+
+  return (
+    <div>
+      <div style={{ marginBottom: '1rem' }}>
+        <select
+          style={{ fontSize: '150%' }}
+          value={selection}
+          onChange={(event) => setSelection(event.target.value)}
+        >
+          <option>Person</option>
+          <option>Car</option>
+        </select>
+      </div>
+
+      {children(
+        selection === 'Person' ? (
+          <>
+            <ImporterField name="person_name" label="Preset A: Person Name" />
+            <ImporterField name="person_age" label="Preset A: Person Age" />
+          </>
+        ) : (
+          <>
+            <ImporterField name="car_make" label="Preset B: Car Make" />
+            <ImporterField name="car_model" label="Preset B: Car Model" />
+          </>
+        )
+      )}
+    </div>
+  );
+};
+
+export const ChooseFieldPresets: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <PresetSelector>
+      {(fields) => <Importer {...args}>{fields}</Importer>}
+    </PresetSelector>
   );
 };

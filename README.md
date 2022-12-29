@@ -126,6 +126,8 @@ The `preview` object available to some callbacks above contains a snippet of CSV
 
 Importer component children may be defined as a render-prop function that receives an object with `preview` and `file` fields (see above). It can then, for example, dynamically return different fields depending which headers are present in the CSV.
 
+For more, please see [storybook examples](src/components/Importer.stories.tsx).
+
 ## Internationalization (i18n) and Localization (l10n)
 
 You can swap the text used in the UI to a different locale.

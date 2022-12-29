@@ -3,9 +3,10 @@ import { useDrag } from '@use-gesture/react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
-import { DragState, Field } from './ColumnDragState';
+import { DragState } from './ColumnDragState';
 import { ColumnDragCard } from './ColumnDragCard';
 import { IconButton } from '../IconButton';
+import { Field } from '../ImporterField';
 
 export type FieldTouchedMap = { [name: string]: boolean | undefined };
 
