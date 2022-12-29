@@ -10,7 +10,7 @@ import { IconButton } from '../IconButton';
 import './ColumnDragSourceArea.scss';
 import { useLocale } from '../../locale/LocaleContext';
 
-const SOURCES_PAGE_SIZE = 5; // fraction of 10 for easier counting
+const DEFAULT_PAGE_SIZE = 5; // fraction of 10 for easier counting
 
 // @todo readable status text if not mouse-drag
 const SourceBox: React.FC<{
@@ -95,6 +95,7 @@ const SourceBox: React.FC<{
 // @todo current page indicator (dots)
 export const ColumnDragSourceArea: React.FC<{
   columns: Column[];
+  columnPageSize?: number;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   eventBinder: (column: Column) => ReturnType<typeof useDrag>;
@@ -102,19 +103,26 @@ export const ColumnDragSourceArea: React.FC<{
   onUnassign: (column: Column) => void;
 }> = ({
   columns,
+  columnPageSize,
   fieldAssignments,
   dragState,
   eventBinder,
   onSelect,
   onUnassign
 }) => {
-  const [page, setPage] = useState<number>(0);
-  const [pageChanged, setPageChanged] = useState<boolean>(false);
-  const pageCount = Math.ceil(columns.length / SOURCES_PAGE_SIZE);
+  // sanitize page size setting
+  const pageSize = Math.round(Math.max(1, columnPageSize ?? DEFAULT_PAGE_SIZE));
 
-  const start = page * SOURCES_PAGE_SIZE;
+  // track pagination state (resilient to page size changes)
+  const [pageStart, setPageStart] = useState<number>(0);
+  const [pageChanged, setPageChanged] = useState<boolean>(false);
+
+  const page = Math.floor(pageStart / pageSize); // round down in case page size changes
+  const pageCount = Math.ceil(columns.length / pageSize);
+
+  // display page items and fill up with dummy divs up to pageSize
   const pageContents = columns
-    .slice(start, start + SOURCES_PAGE_SIZE)
+    .slice(page * pageSize, (page + 1) * pageSize)
     .map((column, columnIndex) => (
       <SourceBox
         key={columnIndex}
@@ -127,7 +135,7 @@ export const ColumnDragSourceArea: React.FC<{
       />
     ));
 
-  while (pageContents.length < SOURCES_PAGE_SIZE) {
+  while (pageContents.length < pageSize) {
     pageContents.push(
       <div
         key={pageContents.length}
@@ -149,7 +157,9 @@ export const ColumnDragSourceArea: React.FC<{
           type="back"
           disabled={page === 0}
           onClick={() => {
-            setPage((prev) => Math.max(0, prev - 1));
+            setPageStart(
+              (prev) => Math.max(0, Math.floor(prev / pageSize) - 1) * pageSize
+            );
             setPageChanged(true);
           }}
         />
@@ -181,9 +191,13 @@ export const ColumnDragSourceArea: React.FC<{
         <IconButton
           label={l10n.nextColumnsTooltip}
           type="forward"
-          disabled={page === pageCount - 1}
+          disabled={page >= pageCount - 1}
           onClick={() => {
-            setPage((prev) => Math.min(pageCount - 1, prev + 1));
+            setPageStart(
+              (prev) =>
+                Math.min(pageCount - 1, Math.floor(prev / pageSize) + 1) *
+                pageSize
+            );
           }}
         />
       </div>

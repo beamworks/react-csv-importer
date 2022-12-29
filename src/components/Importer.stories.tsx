@@ -80,6 +80,24 @@ export const InsideScrolledPage: Story<SampleImporterProps> = (
   );
 };
 
+export const CustomWidth: Story<SampleImporterProps> = (
+  args: SampleImporterProps
+) => {
+  return (
+    <div style={{ width: '20rem' }}>
+      <Importer {...args}>
+        <ImporterField name="fieldA" label="Field A" />
+        <ImporterField name="fieldB" label="Field B" optional />
+      </Importer>
+    </div>
+  );
+};
+
+CustomWidth.args = {
+  displayColumnPageSize: 2, // fewer columns for e.g. a narrower display
+  displayFieldRowSize: 3 // fewer columns for e.g. a narrower display
+};
+
 export const RenderProp: Story<SampleImporterProps> = (
   args: SampleImporterProps
 ) => {

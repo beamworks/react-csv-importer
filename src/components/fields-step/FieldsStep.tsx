@@ -22,12 +22,25 @@ export interface FieldsStepState {
 
 export const FieldsStep: React.FC<{
   fields: Field[]; // current field definitions
+  displayFieldRowSize?: number; // override defaults for unusual widths
+  displayColumnPageSize?: number;
+
   fileState: FileStepState; // output from the file selector step
   prevState: FieldsStepState | null; // confirmed field selections so far
+
   onChange: (state: FieldsStepState) => void;
   onAccept: () => void;
   onCancel: () => void;
-}> = ({ fields, fileState, prevState, onChange, onAccept, onCancel }) => {
+}> = ({
+  fields,
+  displayColumnPageSize,
+  displayFieldRowSize,
+  fileState,
+  prevState,
+  onChange,
+  onAccept,
+  onCancel
+}) => {
   const l10n = useLocale('fieldsStep');
 
   const onChangeRef = useRef(onChange);
@@ -264,6 +277,7 @@ export const FieldsStep: React.FC<{
     >
       <ColumnDragSourceArea
         columns={columns}
+        columnPageSize={displayColumnPageSize}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
         eventBinder={bindDrag}
@@ -273,6 +287,7 @@ export const FieldsStep: React.FC<{
 
       <ColumnDragTargetArea
         hasHeaders={fileState.hasHeaders}
+        fieldRowSize={displayFieldRowSize}
         fields={fields}
         columns={columns}
         fieldTouched={fieldTouched}
