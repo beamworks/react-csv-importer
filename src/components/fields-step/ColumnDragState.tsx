@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
 
-import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
 
 export interface DragState {
@@ -37,47 +36,13 @@ export interface DragInfo {
 // - assign picked column to field (drag end)
 // @todo move the useDrag setup outside as well?
 export function useColumnDragState(
-  onChange: (
-    mutation: (prev: FieldAssignmentMap) => FieldAssignmentMap
-  ) => void,
-  onTouched: (fieldName: string) => void
+  onColumnAssignment: (column: Column, fieldName: string | null) => void
 ): DragInfo {
   // wrap in ref to avoid re-triggering effects
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
-  const onTouchedRef = useRef(onTouched);
-  onTouchedRef.current = onTouched;
+  const onColumnAssignmentRef = useRef(onColumnAssignment);
+  onColumnAssignmentRef.current = onColumnAssignment;
 
   const [dragState, setDragState] = useState<DragState | null>(null);
-
-  // @todo move out
-  const internalAssignHandler = useCallback(
-    (column: Column, fieldName: string | null) => {
-      onChangeRef.current((prevAssignments) => {
-        const copy = { ...prevAssignments };
-
-        // ensure dropped column does not show up elsewhere
-        Object.keys(prevAssignments).forEach((name) => {
-          if (copy[name] === column.index) {
-            delete copy[name];
-          }
-        });
-
-        // set new field column
-        if (fieldName !== null) {
-          copy[fieldName] = column.index;
-        }
-
-        return copy;
-      });
-
-      // mark for validation display
-      if (fieldName) {
-        onTouchedRef.current(fieldName);
-      }
-    },
-    []
-  );
 
   const dragStartHandler = useCallback(
     (
@@ -115,9 +80,9 @@ export function useColumnDragState(
     setDragState(null);
 
     if (dragState) {
-      internalAssignHandler(dragState.column, dragState.dropFieldName);
+      onColumnAssignmentRef.current(dragState.column, dragState.dropFieldName);
     }
-  }, [internalAssignHandler, dragState]);
+  }, [dragState]);
 
   const columnSelectHandler = useCallback((column: Column) => {
     setDragState((prev) => {
@@ -166,27 +131,17 @@ export function useColumnDragState(
       setDragState(null);
 
       if (dragState) {
-        internalAssignHandler(dragState.column, fieldName);
+        onColumnAssignmentRef.current(dragState.column, fieldName);
       }
     },
-    [internalAssignHandler, dragState]
+    [dragState]
   );
 
-  // @todo move out, also clear drag state?
   const unassignHandler = useCallback((column: Column) => {
-    onChangeRef.current((prev) => {
-      const assignedFieldName = Object.keys(prev).find(
-        (fieldName) => prev[fieldName] === column.index
-      );
+    // clear active drag state
+    setDragState(null);
 
-      if (assignedFieldName === undefined) {
-        return prev;
-      }
-
-      const copy = { ...prev };
-      delete copy[assignedFieldName];
-      return copy;
-    });
+    onColumnAssignmentRef.current(column, null);
   }, []);
 
   return {

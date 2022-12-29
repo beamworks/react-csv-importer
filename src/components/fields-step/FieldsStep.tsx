@@ -137,7 +137,7 @@ export const FieldsStep: React.FC<{
     });
   }, [fields]);
 
-  // main state tracker
+  // abstract mouse drag/keyboard state tracker
   const {
     dragState,
 
@@ -149,14 +149,43 @@ export const FieldsStep: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(setFieldAssignments, (fieldName) => {
-    setFieldTouched((prev) => {
-      if (prev[fieldName]) {
+  } = useColumnDragState((column: Column, fieldName: string | null) => {
+    // update field assignment map state
+    setFieldAssignments((prev) => {
+      const currentFieldName = Object.keys(prev).find(
+        (fieldName) => prev[fieldName] === column.index
+      );
+
+      // see if there is nothing to do
+      if (currentFieldName === undefined && fieldName === null) {
         return prev;
       }
 
-      return { ...prev, [fieldName]: true };
+      const copy = { ...prev };
+
+      // ensure dropped column does not show up elsewhere
+      if (currentFieldName) {
+        delete copy[currentFieldName];
+      }
+
+      // set new field column
+      if (fieldName !== null) {
+        copy[fieldName] = column.index;
+      }
+
+      return copy;
     });
+
+    // mark for validation display
+    if (fieldName) {
+      setFieldTouched((prev) => {
+        if (prev[fieldName]) {
+          return prev;
+        }
+
+        return { ...prev, [fieldName]: true };
+      });
+    }
   });
 
   // drag gesture wire-up
