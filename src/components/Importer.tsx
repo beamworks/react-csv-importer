@@ -24,6 +24,8 @@ export function Importer<Row extends BaseRow>(
     defaultNoHeader,
     assumeNoHeaders,
     restartable,
+    dragDropFieldCount,
+    dragDropColumnCount,
     onStart,
     onComplete,
     onClose,
@@ -96,6 +98,8 @@ export function Importer<Row extends BaseRow>(
             fileState={fileState}
             fields={fields}
             prevState={fieldsState}
+            dragDropFieldCount={dragDropFieldCount}
+            dragDropColumnCount={dragDropColumnCount}
             onChange={(state) => {
               setFieldsState(state);
             }}
