@@ -146,18 +146,15 @@ export const FieldsStep: React.FC<{
     columnSelectHandler,
     assignHandler,
     unassignHandler
-  } = useColumnDragState(
-    setFieldAssignments, // prevState ? prevState.fieldAssignments : initialAssignments,
-    (fieldName) => {
-      setFieldTouched((prev) => {
-        if (prev[fieldName]) {
-          return prev;
-        }
+  } = useColumnDragState(setFieldAssignments, (fieldName) => {
+    setFieldTouched((prev) => {
+      if (prev[fieldName]) {
+        return prev;
+      }
 
-        return { ...prev, [fieldName]: true };
-      });
-    }
-  );
+      return { ...prev, [fieldName]: true };
+    });
+  });
 
   // notify of current state
   useEffect(() => {
