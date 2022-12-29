@@ -43,19 +43,24 @@ export const FieldsStep: React.FC<{
     [fileState]
   );
 
-  const initialAssignments = useMemo<FieldAssignmentMap>(() => {
-    // prep insensitive/fuzzy match stems for known columns
-    // (this is ignored if there is already previous state to seed from)
-    const columnStems = columns.map((column) => {
-      const trimmed = column.header && column.header.trim();
+  // prep insensitive/fuzzy match stems for known columns
+  const columnStemMap = useMemo(() => {
+    const result: Record<string, number | undefined> = {};
 
-      if (!trimmed) {
-        return undefined;
+    for (const column of columns) {
+      const stem = column.header?.trim().toLowerCase() || undefined;
+
+      if (stem) {
+        result[stem] = column.index;
       }
+    }
 
-      return trimmed.toLowerCase();
-    });
+    return result;
+  }, [columns]);
 
+  // insensitive/fuzzy match for known columns
+  // (this is ignored if there is already previous state to seed from)
+  const initialAssignments = useMemo<FieldAssignmentMap>(() => {
     // pre-assign corresponding fields
     const result: FieldAssignmentMap = {};
     const assignedColumnIndexes: boolean[] = [];
@@ -64,31 +69,17 @@ export const FieldsStep: React.FC<{
       // find by field stem
       const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
 
-      const matchingColumnIndex = columnStems.findIndex(
-        (columnStem, columnIndex) => {
-          // no headers or no meaningful stem value
-          if (columnStem === undefined) {
-            return false;
-          }
-
-          // always check against assigning twice
-          if (assignedColumnIndexes[columnIndex]) {
-            return false;
-          }
-
-          return columnStem === fieldLabelStem;
-        }
-      );
+      const matchingColumnIndex = columnStemMap[fieldLabelStem];
 
       // assign if found
-      if (matchingColumnIndex !== -1) {
+      if (matchingColumnIndex !== undefined) {
         assignedColumnIndexes[matchingColumnIndex] = true;
         result[field.name] = matchingColumnIndex;
       }
     });
 
     return result;
-  }, [fields, columns]);
+  }, [fields, columnStemMap]);
 
   // track which fields need to show validation warning
   const [fieldTouched, setFieldTouched] = useState<FieldTouchedMap>({});
