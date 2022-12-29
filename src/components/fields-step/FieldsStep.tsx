@@ -58,6 +58,31 @@ export const FieldsStep: React.FC<{
     return result;
   }, [columns]);
 
+  const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
+    {}
+  );
+
+  // make sure there are no extra fields
+  useEffect(() => {
+    const removedFieldNames = Object.keys(fieldAssignments).filter(
+      (existingFieldName) =>
+        !fields.some((field) => field.name === existingFieldName)
+    );
+
+    if (removedFieldNames.length > 0) {
+      // @todo put everything inside this setter
+      setFieldAssignments((prev) => {
+        const copy = { ...prev };
+
+        removedFieldNames.forEach((fieldName) => {
+          delete copy[fieldName];
+        });
+
+        return copy;
+      });
+    }
+  }, [fields, fieldAssignments]);
+
   // insensitive/fuzzy match for known columns
   // (this is ignored if there is already previous state to seed from)
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
@@ -96,7 +121,6 @@ export const FieldsStep: React.FC<{
 
   // main state tracker
   const {
-    fieldAssignments,
     dragState,
     dragEventBinder,
     dragHoverHandler,
@@ -104,8 +128,7 @@ export const FieldsStep: React.FC<{
     assignHandler,
     unassignHandler
   } = useColumnDragState(
-    fields,
-    prevState ? prevState.fieldAssignments : initialAssignments,
+    setFieldAssignments, // prevState ? prevState.fieldAssignments : initialAssignments,
     (fieldName) => {
       setFieldTouched((prev) => {
         if (prev[fieldName]) {

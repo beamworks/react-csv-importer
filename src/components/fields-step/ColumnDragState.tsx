@@ -23,7 +23,6 @@ export interface DragState {
 }
 
 export interface DragInfo {
-  fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   dragEventBinder: ReturnType<typeof useDrag>;
   columnSelectHandler: (column: Column) => void;
@@ -38,44 +37,22 @@ export interface DragInfo {
 // - assign picked column to field (drag end)
 // @todo move the useDrag setup outside as well?
 export function useColumnDragState(
-  fields: Field[],
-  initialAssignments: FieldAssignmentMap,
+  onChange: (
+    mutation: (prev: FieldAssignmentMap) => FieldAssignmentMap
+  ) => void,
   onTouched: (fieldName: string) => void
 ): DragInfo {
-  // wrap in ref to avoid re-triggering
+  // wrap in ref to avoid re-triggering effects
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
   const onTouchedRef = useRef(onTouched);
   onTouchedRef.current = onTouched;
 
   const [dragState, setDragState] = useState<DragState | null>(null);
 
-  const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
-    initialAssignments
-  );
-
-  // make sure there are no extra fields
-  useEffect(() => {
-    const removedFieldNames = Object.keys(fieldAssignments).filter(
-      (existingFieldName) =>
-        !fields.some((field) => field.name === existingFieldName)
-    );
-
-    if (removedFieldNames.length > 0) {
-      // @todo put everything inside this setter
-      setFieldAssignments((prev) => {
-        const copy = { ...prev };
-
-        removedFieldNames.forEach((fieldName) => {
-          delete copy[fieldName];
-        });
-
-        return copy;
-      });
-    }
-  }, [fields, fieldAssignments]);
-
   const internalAssignHandler = useCallback(
     (column: Column, fieldName: string | null) => {
-      setFieldAssignments((prevAssignments) => {
+      onChangeRef.current((prevAssignments) => {
         const copy = { ...prevAssignments };
 
         // ensure dropped column does not show up elsewhere
@@ -212,7 +189,7 @@ export function useColumnDragState(
   );
 
   const unassignHandler = useCallback((column: Column) => {
-    setFieldAssignments((prev) => {
+    onChangeRef.current((prev) => {
       const assignedFieldName = Object.keys(prev).find(
         (fieldName) => prev[fieldName] === column.index
       );
@@ -228,7 +205,6 @@ export function useColumnDragState(
   }, []);
 
   return {
-    fieldAssignments,
     dragState,
     dragEventBinder: bindDrag,
     dragHoverHandler,
