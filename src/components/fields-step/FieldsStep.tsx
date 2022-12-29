@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useDrag } from '@use-gesture/react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { FileStepState } from '../file-step/FileStep';
@@ -139,8 +140,12 @@ export const FieldsStep: React.FC<{
   // main state tracker
   const {
     dragState,
-    dragEventBinder,
+
+    dragStartHandler,
+    dragMoveHandler,
+    dragEndHandler,
     dragHoverHandler,
+
     columnSelectHandler,
     assignHandler,
     unassignHandler
@@ -153,6 +158,47 @@ export const FieldsStep: React.FC<{
       return { ...prev, [fieldName]: true };
     });
   });
+
+  // drag gesture wire-up
+  const bindDrag = useDrag(
+    ({ first, last, movement, xy, args, currentTarget }) => {
+      if (first) {
+        const [column, startFieldName] = args as [Column, string | undefined];
+        const initialClientRect =
+          currentTarget instanceof HTMLElement
+            ? currentTarget.getBoundingClientRect()
+            : new DOMRect(xy[0], xy[1], 0, 0); // fall back on just pointer position
+
+        dragStartHandler(column, startFieldName, initialClientRect);
+      } else if (last) {
+        dragEndHandler();
+      } else {
+        dragMoveHandler(movement);
+      }
+    },
+    {
+      pointer: { capture: false } // turn off pointer capture to avoid interfering with hover tests
+    }
+  );
+
+  // when dragging, set root-level user-select:none to prevent text selection, see Importer.scss
+  // (done via class toggle to avoid interfering with any other dynamic style changes)
+  useEffect(() => {
+    if (dragState) {
+      document.body.classList.add('CSVImporter_dragging');
+    } else {
+      // remove text selection prevention after a delay (otherwise on iOS it still selects something)
+      const timeoutId = setTimeout(() => {
+        document.body.classList.remove('CSVImporter_dragging');
+      }, 200);
+
+      return () => {
+        // if another drag state comes along then cancel our delay and just clean up class right away
+        clearTimeout(timeoutId);
+        document.body.classList.remove('CSVImporter_dragging');
+      };
+    }
+  }, [dragState]);
 
   // notify of current state
   useEffect(() => {
@@ -191,7 +237,7 @@ export const FieldsStep: React.FC<{
         columns={columns}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
-        eventBinder={dragEventBinder}
+        eventBinder={bindDrag}
         onSelect={columnSelectHandler}
         onUnassign={unassignHandler}
       />
@@ -203,7 +249,7 @@ export const FieldsStep: React.FC<{
         fieldTouched={fieldTouched}
         fieldAssignments={fieldAssignments}
         dragState={dragState}
-        eventBinder={dragEventBinder}
+        eventBinder={bindDrag}
         onHover={dragHoverHandler}
         onAssign={assignHandler}
         onUnassign={unassignHandler}

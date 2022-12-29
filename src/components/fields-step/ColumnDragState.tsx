@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { useDrag } from '@use-gesture/react';
+import { useState, useCallback, useRef } from 'react';
 
 import { FieldAssignmentMap } from '../../parser';
 import { Column } from './ColumnPreview';
@@ -18,8 +17,15 @@ export interface DragState {
 
 export interface DragInfo {
   dragState: DragState | null;
-  dragEventBinder: ReturnType<typeof useDrag>;
   columnSelectHandler: (column: Column) => void;
+  dragStartHandler: (
+    column: Column,
+    startFieldName: string | undefined,
+    initialClientRect: DOMRectReadOnly
+  ) => void;
+  dragMoveHandler: (movement: [number, number]) => void;
+  dragEndHandler: () => void;
+
   dragHoverHandler: (fieldName: string, isOn: boolean) => void;
   assignHandler: (fieldName: string) => void;
   unassignHandler: (column: Column) => void;
@@ -44,6 +50,7 @@ export function useColumnDragState(
 
   const [dragState, setDragState] = useState<DragState | null>(null);
 
+  // @todo move out
   const internalAssignHandler = useCallback(
     (column: Column, fieldName: string | null) => {
       onChangeRef.current((prevAssignments) => {
@@ -72,31 +79,27 @@ export function useColumnDragState(
     []
   );
 
-  const bindDrag = useDrag(
-    ({ first, last, movement, xy, args, currentTarget }) => {
-      if (first) {
-        const [column, startFieldName] = args as [Column, string | undefined];
+  const dragStartHandler = useCallback(
+    (
+      column: Column,
+      startFieldName: string | undefined,
+      initialClientRect: DOMRectReadOnly
+    ) => {
+      // create new pointer-based drag state
+      setDragState({
+        pointerStartInfo: {
+          initialClientRect
+        },
+        column,
+        dropFieldName: startFieldName !== undefined ? startFieldName : null,
+        updateListeners: {}
+      });
+    },
+    []
+  );
 
-        // create new pointer-based drag state
-        setDragState({
-          pointerStartInfo: {
-            initialClientRect:
-              currentTarget instanceof HTMLElement
-                ? currentTarget.getBoundingClientRect()
-                : new DOMRect(xy[0], xy[1], 0, 0) // fall back on just pointer position
-          },
-          column,
-          dropFieldName: startFieldName !== undefined ? startFieldName : null,
-          updateListeners: {}
-        });
-      } else if (last) {
-        setDragState(null);
-
-        if (dragState) {
-          internalAssignHandler(dragState.column, dragState.dropFieldName);
-        }
-      }
-
+  const dragMoveHandler = useCallback(
+    (movement: [number, number]) => {
       // @todo figure out a cleaner event stream solution
       if (dragState) {
         const listeners = dragState.updateListeners;
@@ -105,29 +108,16 @@ export function useColumnDragState(
         }
       }
     },
-    {
-      pointer: { capture: false } // turn off pointer capture to avoid interfering with hover tests
-    }
+    [dragState]
   );
 
-  // when dragging, set root-level user-select:none to prevent text selection, see Importer.scss
-  // (done via class toggle to avoid interfering with any other dynamic style changes)
-  useEffect(() => {
-    if (dragState) {
-      document.body.classList.add('CSVImporter_dragging');
-    } else {
-      // remove text selection prevention after a delay (otherwise on iOS it still selects something)
-      const timeoutId = setTimeout(() => {
-        document.body.classList.remove('CSVImporter_dragging');
-      }, 200);
+  const dragEndHandler = useCallback(() => {
+    setDragState(null);
 
-      return () => {
-        // if another drag state comes along then cancel our delay and just clean up class right away
-        clearTimeout(timeoutId);
-        document.body.classList.remove('CSVImporter_dragging');
-      };
+    if (dragState) {
+      internalAssignHandler(dragState.column, dragState.dropFieldName);
     }
-  }, [dragState]);
+  }, [internalAssignHandler, dragState]);
 
   const columnSelectHandler = useCallback((column: Column) => {
     setDragState((prev) => {
@@ -182,6 +172,7 @@ export function useColumnDragState(
     [internalAssignHandler, dragState]
   );
 
+  // @todo move out, also clear drag state?
   const unassignHandler = useCallback((column: Column) => {
     onChangeRef.current((prev) => {
       const assignedFieldName = Object.keys(prev).find(
@@ -200,7 +191,9 @@ export function useColumnDragState(
 
   return {
     dragState,
-    dragEventBinder: bindDrag,
+    dragStartHandler,
+    dragMoveHandler,
+    dragEndHandler,
     dragHoverHandler,
     columnSelectHandler,
     assignHandler,
