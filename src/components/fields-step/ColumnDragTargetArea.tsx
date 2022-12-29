@@ -14,8 +14,9 @@ import './ColumnDragTargetArea.scss';
 import { useLocale } from '../../locale/LocaleContext';
 
 const TargetBox: React.FC<{
-  hasHeaders: boolean; // for correct display of dummy card
   field: Field;
+  hasHeaders: boolean; // for correct display of dummy card
+  flexBasis?: string; // style override
   touched?: boolean;
   assignedColumn: Column | null;
   dragState: DragState | null;
@@ -27,8 +28,9 @@ const TargetBox: React.FC<{
   onAssign: (fieldName: string) => void;
   onUnassign: (column: Column) => void;
 }> = ({
-  hasHeaders,
   field,
+  hasHeaders,
+  flexBasis,
   touched,
   assignedColumn,
   dragState,
@@ -100,6 +102,7 @@ const TargetBox: React.FC<{
           : l10n.getDragTargetRequiredCaption(field.label)
       }
       ref={containerRef}
+      style={{ flexBasis }}
       onPointerEnter={() => onHover(field.name, true)}
       onPointerLeave={() => onHover(field.name, false)}
     >
@@ -154,6 +157,7 @@ export const ColumnDragTargetArea: React.FC<{
   hasHeaders: boolean; // for correct display of dummy card
   fields: Field[];
   columns: Column[];
+  displayFieldCountPerRow?: number;
   fieldTouched: FieldTouchedMap;
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
@@ -169,6 +173,7 @@ export const ColumnDragTargetArea: React.FC<{
   hasHeaders,
   fields,
   columns,
+  displayFieldCountPerRow,
   fieldTouched,
   fieldAssignments,
   dragState,
@@ -178,6 +183,11 @@ export const ColumnDragTargetArea: React.FC<{
   onUnassign
 }) => {
   const l10n = useLocale('fieldsStep');
+
+  // override flex basis for unusual situations
+  const flexBasis = displayFieldCountPerRow
+    ? `${100 / displayFieldCountPerRow}%`
+    : undefined;
 
   return (
     <section
@@ -191,6 +201,7 @@ export const ColumnDragTargetArea: React.FC<{
           <TargetBox
             key={field.name}
             field={field}
+            flexBasis={flexBasis}
             touched={fieldTouched[field.name]}
             hasHeaders={hasHeaders}
             assignedColumn={

@@ -287,6 +287,7 @@ export const FieldsStep: React.FC<{
 
       <ColumnDragTargetArea
         hasHeaders={fileState.hasHeaders}
+        displayFieldCountPerRow={dragDropFieldCount}
         fields={fields}
         columns={columns}
         fieldTouched={fieldTouched}
