@@ -43,23 +43,9 @@ export const FieldsStep: React.FC<{
     [fileState]
   );
 
-  // prep insensitive/fuzzy match stems for known columns
-  const columnStemMap = useMemo(() => {
-    const result: Record<string, number | undefined> = {};
-
-    for (const column of columns) {
-      const stem = column.header?.trim().toLowerCase() || undefined;
-
-      if (stem) {
-        result[stem] = column.index;
-      }
-    }
-
-    return result;
-  }, [columns]);
-
+  // field assignments state
   const [fieldAssignments, setFieldAssignments] = useState<FieldAssignmentMap>(
-    {}
+    prevState ? prevState.fieldAssignments : {}
   );
 
   // make sure there are no extra fields
@@ -83,25 +69,58 @@ export const FieldsStep: React.FC<{
     }
   }, [fields, fieldAssignments]);
 
-  // insensitive/fuzzy match for known columns
-  // (this is ignored if there is already previous state to seed from)
-  const initialAssignments = useMemo<FieldAssignmentMap>(() => {
-    // pre-assign corresponding fields
-    const result: FieldAssignmentMap = {};
+  // for any field, try to find an automatic match from known column names
+  useEffect(() => {
+    // prep insensitive/fuzzy match stems for known columns
+    const columnStemMap: Record<string, number | undefined> = {};
+    for (const column of columns) {
+      const stem = column.header?.trim().toLowerCase() || undefined;
 
-    fields.forEach((field) => {
-      // find by field stem
-      const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
-      const matchingColumnIndex = columnStemMap[fieldLabelStem];
-
-      // assign if found
-      if (matchingColumnIndex !== undefined) {
-        result[field.name] = matchingColumnIndex;
+      if (stem) {
+        columnStemMap[stem] = column.index;
       }
-    });
+    }
 
-    return result;
-  }, [fields, columnStemMap]);
+    setFieldAssignments((prev) => {
+      // prepare a lookup of already assigned columns
+      const assignedColumns = columns.map(() => false);
+
+      for (const fieldName of Object.keys(prev)) {
+        const assignedColumnIndex = prev[fieldName];
+        if (assignedColumnIndex !== undefined) {
+          assignedColumns[assignedColumnIndex] = true;
+        }
+      }
+
+      // augment with new auto-assignments
+      const copy = { ...prev };
+      for (const field of fields) {
+        // ignore if field is already assigned
+        if (copy[field.name] !== undefined) {
+          continue;
+        }
+
+        // find by field stem
+        const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
+        const matchingColumnIndex = columnStemMap[fieldLabelStem];
+
+        // ignore if equivalent column not found
+        if (matchingColumnIndex === undefined) {
+          continue;
+        }
+
+        // ignore if column is already assigned
+        if (assignedColumns[matchingColumnIndex]) {
+          continue;
+        }
+
+        // auto-assign the column
+        copy[field.name] = matchingColumnIndex;
+      }
+
+      return copy;
+    });
+  }, [fields, columns]);
 
   // track which fields need to show validation warning
   const [fieldTouched, setFieldTouched] = useState<FieldTouchedMap>({});
