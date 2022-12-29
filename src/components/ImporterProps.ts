@@ -37,7 +37,12 @@ export interface ImporterFieldProps {
 
 export interface ImporterProps<Row extends BaseRow>
   extends CustomizablePapaParseConfig {
+  defaultNoHeader?: boolean;
+  /**
+   * @deprecated renamed to `defaultNoHeader`
+   */
   assumeNoHeaders?: boolean;
+
   restartable?: boolean;
   processChunk: ParseCallback<Row>;
   onStart?: (info: ImportInfo) => void;

@@ -16,6 +16,7 @@ import { LocaleContext } from '../locale/LocaleContext';
 import { enUS } from '../locale';
 
 export function Importer<Row extends BaseRow>({
+  defaultNoHeader,
   assumeNoHeaders,
   restartable,
   processChunk,
@@ -68,7 +69,7 @@ export function Importer<Row extends BaseRow>({
         <div className="CSVImporter_Importer">
           <FileStep
             customConfig={customPapaParseConfig}
-            assumeNoHeaders={assumeNoHeaders}
+            defaultNoHeader={defaultNoHeader ?? assumeNoHeaders}
             prevState={fileState}
             onChange={(parsedPreview) => {
               setFileState(parsedPreview);
