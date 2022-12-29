@@ -60,7 +60,7 @@ export const ColumnDragObject: React.FC<{
   // subscribe to live position updates without state changes
   useLayoutEffect(() => {
     if (dragState) {
-      dragState.updateListeners['dragObj'] = (movement: number[]) => {
+      const updateListener = (movement: number[]) => {
         if (!dragBoxRef.current) return;
 
         // update the visible offset relative to starting position
@@ -68,9 +68,14 @@ export const ColumnDragObject: React.FC<{
         dragBoxRef.current.style.transform = `translate(${x}px, ${y}px)`;
       };
 
+      dragState.updateListeners.push(updateListener);
+
       // clean up listener
       return () => {
-        delete dragState.updateListeners['dragObj'];
+        const removeIndex = dragState.updateListeners.indexOf(updateListener);
+        if (removeIndex !== -1) {
+          dragState.updateListeners.splice(removeIndex, 1);
+        }
       };
     }
   }, [dragState]);
