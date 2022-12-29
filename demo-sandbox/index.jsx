@@ -22,7 +22,7 @@ ReactDOM.render(
         // optional, invoked when user has mapped columns and started import
         console.log("starting import of file", file, "with fields", fields);
       }}
-      processChunk={async (rows) => {
+      dataHandler={async (rows) => {
         // required, receives a list of parsed objects based on defined fields and user column mapping;
         // may be called several times if file is large
         // (if this callback returns a promise, the widget will wait for it before parsing more data)

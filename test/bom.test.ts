@@ -32,9 +32,9 @@ describe('importer with input containing BOM character', () => {
             onStart: (info) => {
               ((window as unknown) as RawWindow).TEST_ON_START_INFO = info;
             },
-            processChunk: (rows, info) => {
-              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_ROWS = rows;
-              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_INFO = info;
+            dataHandler: (rows, info) => {
+              ((window as unknown) as RawWindow).TEST_DATA_HANDLER_ROWS = rows;
+              ((window as unknown) as RawWindow).TEST_DATA_HANDLER_INFO = info;
             }
           },
           [
@@ -103,10 +103,10 @@ describe('importer with input containing BOM character', () => {
 
       it('produces parsed data with correct fields', async () => {
         const parsedData = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_ROWS'
+          'return window.TEST_DATA_HANDLER_ROWS'
         );
         const chunkInfo = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_INFO'
+          'return window.TEST_DATA_HANDLER_INFO'
         );
 
         expect(parsedData).to.deep.equal([{ fieldA: '2019-09-16' }]);

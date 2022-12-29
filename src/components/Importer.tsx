@@ -15,18 +15,23 @@ import './Importer.scss';
 import { LocaleContext } from '../locale/LocaleContext';
 import { enUS } from '../locale';
 
-export function Importer<Row extends BaseRow>({
-  defaultNoHeader,
-  assumeNoHeaders,
-  restartable,
-  processChunk,
-  onStart,
-  onComplete,
-  onClose,
-  children: content,
-  locale,
-  ...customPapaParseConfig
-}: ImporterProps<Row>): React.ReactElement {
+export function Importer<Row extends BaseRow>(
+  props: ImporterProps<Row>
+): React.ReactElement {
+  const {
+    dataHandler,
+    processChunk,
+    defaultNoHeader,
+    assumeNoHeaders,
+    restartable,
+    onStart,
+    onComplete,
+    onClose,
+    children: content,
+    locale: userLocale,
+    ...customPapaParseConfig
+  } = props;
+
   // helper to combine our displayed content and the user code that provides field definitions
   const [fields, userFieldContentWrapper] = useFieldDefinitions();
 
@@ -60,8 +65,8 @@ export function Importer<Row extends BaseRow>({
     );
   }, [fileState]);
 
-  // fall back to enUS if no default locale provided
-  locale = locale ?? enUS;
+  // fall back to enUS if no locale provided
+  const locale = userLocale ?? enUS;
 
   if (!fileAccepted || fileState === null || externalPreview === null) {
     return (
@@ -124,7 +129,7 @@ export function Importer<Row extends BaseRow>({
           fileState={fileState}
           fieldsState={fieldsState}
           externalPreview={externalPreview}
-          processChunk={processChunk}
+          dataHandler={dataHandler ?? processChunk}
           onStart={onStart}
           onRestart={
             restartable

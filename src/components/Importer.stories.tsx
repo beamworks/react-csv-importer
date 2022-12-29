@@ -9,7 +9,7 @@ export default {
   title: 'Importer',
   component: Importer,
   parameters: {
-    actions: { argTypesRegex: '^on.*|processChunk' }
+    actions: { argTypesRegex: '^on.*|dataHandler' }
   }
 } as Meta;
 

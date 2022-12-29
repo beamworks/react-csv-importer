@@ -23,15 +23,15 @@ describe('importer with custom Papa Parse config', () => {
           ReactCSVImporter,
           {
             delimiter: '!', // not a normal guessable delimiter for Papa Parse
-            processChunk: (rows, info) => {
+            dataHandler: (rows, info) => {
               ((window as unknown) as Record<
                 string,
                 unknown
-              >).TEST_PROCESS_CHUNK_ROWS = rows;
+              >).TEST_DATA_HANDLER_ROWS = rows;
               ((window as unknown) as Record<
                 string,
                 unknown
-              >).TEST_PROCESS_CHUNK_INFO = info;
+              >).TEST_DATA_HANDLER_INFO = info;
             }
           },
           [
@@ -148,10 +148,10 @@ describe('importer with custom Papa Parse config', () => {
 
       it('produces parsed data with correct fields', async () => {
         const parsedData = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_ROWS'
+          'return window.TEST_DATA_HANDLER_ROWS'
         );
         const chunkInfo = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_INFO'
+          'return window.TEST_DATA_HANDLER_INFO'
         );
 
         expect(parsedData).to.deep.equal([{ fieldA: 'val3' }]);

@@ -72,7 +72,7 @@ import 'react-csv-importer/dist/index.css';
     // optional, invoked when user has mapped columns and started import
     prepMyAppForIncomingData();
   }}
-  processChunk={async (rows, { startIndex }) => {
+  dataHandler={async (rows, { startIndex }) => {
     // required, may be called several times
     // receives a list of parsed objects based on defined fields and user column mapping;
     // (if this callback returns a promise, the widget will wait for it before parsing more data)
@@ -187,6 +187,8 @@ You can use your own fork of this library in your own project by referencing the
   - more translations (thanks [**@p-multani-0**](https://github.com/p-multani-0), [**@GuilhermeMelati**](https://github.com/GuilhermeMelati), [**@tobiaskkd**](https://github.com/tobiaskkd) and [**@memoricab**](https://github.com/memoricab))
   - refactor to work with later versions of @use-gesture/react (thanks [**@dbismut**](https://github.com/dbismut))
   - upgrade to newer version of react-dropzone
+  - rename assumeNoHeaders to defaultNoHeader
+  - rename processChunk to dataHandler
   - bug fixes for button type and labels
 - 0.7.1
   - fix peerDependencies for React 18+ (thanks [**@timarney**](https://github.com/timarney))

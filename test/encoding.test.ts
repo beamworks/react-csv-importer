@@ -30,9 +30,9 @@ describe('importer with custom encoding setting', () => {
           {
             encoding: 'windows-1250', // encoding incompatible with UTF-8
             delimiter: ',',
-            processChunk: (rows, info) => {
-              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_ROWS = rows;
-              ((window as unknown) as RawWindow).TEST_PROCESS_CHUNK_INFO = info;
+            dataHandler: (rows, info) => {
+              ((window as unknown) as RawWindow).TEST_DATA_HANDLER_ROWS = rows;
+              ((window as unknown) as RawWindow).TEST_DATA_HANDLER_INFO = info;
             }
           },
           [
@@ -73,10 +73,10 @@ describe('importer with custom encoding setting', () => {
 
       it('produces parsed data with correct fields', async () => {
         const parsedData = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_ROWS'
+          'return window.TEST_DATA_HANDLER_ROWS'
         );
         const chunkInfo = await getDriver().executeScript(
-          'return window.TEST_PROCESS_CHUNK_INFO'
+          'return window.TEST_DATA_HANDLER_INFO'
         );
 
         expect(parsedData).to.deep.equal([{ fieldA: 'Montréal' }]);
