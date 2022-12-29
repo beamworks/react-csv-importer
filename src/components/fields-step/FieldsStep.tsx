@@ -63,17 +63,14 @@ export const FieldsStep: React.FC<{
   const initialAssignments = useMemo<FieldAssignmentMap>(() => {
     // pre-assign corresponding fields
     const result: FieldAssignmentMap = {};
-    const assignedColumnIndexes: boolean[] = [];
 
     fields.forEach((field) => {
       // find by field stem
       const fieldLabelStem = field.label.trim().toLowerCase(); // @todo consider normalizing other whitespace/non-letters
-
       const matchingColumnIndex = columnStemMap[fieldLabelStem];
 
       // assign if found
       if (matchingColumnIndex !== undefined) {
-        assignedColumnIndexes[matchingColumnIndex] = true;
         result[field.name] = matchingColumnIndex;
       }
     });
@@ -132,7 +129,7 @@ export const FieldsStep: React.FC<{
       error={validationError}
       onCancel={onCancel}
       onNext={() => {
-        // mark all fields as touched
+        // mark all fields as touched (to show all the errors now)
         const fullTouchedMap: typeof fieldTouched = {};
         fields.forEach((field) => {
           fullTouchedMap[field.name] = true;

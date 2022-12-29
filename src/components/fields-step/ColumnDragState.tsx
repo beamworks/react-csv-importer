@@ -26,12 +26,17 @@ export interface DragInfo {
   fieldAssignments: FieldAssignmentMap;
   dragState: DragState | null;
   dragEventBinder: ReturnType<typeof useDrag>;
-  dragHoverHandler: (fieldName: string, isOn: boolean) => void;
   columnSelectHandler: (column: Column) => void;
+  dragHoverHandler: (fieldName: string, isOn: boolean) => void;
   assignHandler: (fieldName: string) => void;
   unassignHandler: (column: Column) => void;
 }
 
+// state machine to represent the steps taken to assign a column to target field:
+// - pick column (drag start or keyboard select)
+// - hover over field (while dragging only)
+// - assign picked column to field (drag end)
+// @todo move the useDrag setup outside as well?
 export function useColumnDragState(
   fields: Field[],
   initialAssignments: FieldAssignmentMap,
