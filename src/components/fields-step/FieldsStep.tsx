@@ -85,6 +85,19 @@ export const FieldsStep: React.FC<{
   const [fieldTouched, setFieldTouched] = useState<FieldTouchedMap>({});
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  // clean up touched field map when dynamic field list changes
+  useEffect(() => {
+    setFieldTouched((prev) => {
+      const result: FieldTouchedMap = {};
+      for (const field of fields) {
+        result[field.name] = prev[field.name];
+      }
+
+      return result;
+    });
+  }, [fields]);
+
+  // main state tracker
   const {
     fieldAssignments,
     dragState,
@@ -102,9 +115,7 @@ export const FieldsStep: React.FC<{
           return prev;
         }
 
-        const copy = { ...prev };
-        copy[fieldName] = true;
-        return copy;
+        return { ...prev, [fieldName]: true };
       });
     }
   );
@@ -123,7 +134,7 @@ export const FieldsStep: React.FC<{
       onNext={() => {
         // mark all fields as touched
         const fullTouchedMap: typeof fieldTouched = {};
-        fields.some((field) => {
+        fields.forEach((field) => {
           fullTouchedMap[field.name] = true;
         });
         setFieldTouched(fullTouchedMap);
