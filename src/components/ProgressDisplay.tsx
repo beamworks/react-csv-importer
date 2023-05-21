@@ -115,10 +115,21 @@ export function ProgressDisplay<Row extends BaseRow>({
     }
   }, [isComplete, error]);
 
+  // trigger processing from an effect to mitigate React 18 double-run in dev
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
   // perform main async parse
   const dataHandlerRef = useRef(dataHandler); // wrap in ref to avoid re-triggering
   const asyncLockRef = useRef<number>(0);
   useEffect(() => {
+    // avoid running on first render due to React 18 double-run
+    if (!ready) {
+      return;
+    }
+
     const oplock = asyncLockRef.current;
 
     processFile(
@@ -155,7 +166,7 @@ export function ProgressDisplay<Row extends BaseRow>({
       // invalidate current oplock on change or unmount
       asyncLockRef.current += 1;
     };
-  }, [fileState, fieldsState]);
+  }, [ready, fileState, fieldsState]);
 
   // simulate asymptotic progress percentage
   const progressPercentage = useMemo(() => {
