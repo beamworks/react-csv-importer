@@ -183,6 +183,8 @@ You can use your own fork of this library in your own project by referencing the
 
 ## Changes
 
+- 0.8.1
+  - fix double-start issue for React 18 dev mode
 - 0.8.0
   - more translations (thanks [**@p-multani-0**](https://github.com/p-multani-0), [**@GuilhermeMelati**](https://github.com/GuilhermeMelati), [**@tobiaskkd**](https://github.com/tobiaskkd) and [**@memoricab**](https://github.com/memoricab))
   - refactor to work with later versions of @use-gesture/react (thanks [**@dbismut**](https://github.com/dbismut))
